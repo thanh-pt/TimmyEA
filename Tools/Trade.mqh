@@ -10,27 +10,27 @@ enum e_display
     OPTION, // Selected → Show
 };
 
-input string          LS_; // ● Long Short ●
-input string          LS_apperence; //→ Giao diện:
+input string          Trd_; // ● Trade ●
+input string          Trd_apperence; //→ Giao diện:
 //-------------------------------------------------
-input color           LS_TextColor     = clrMidnightBlue;   // Text Color
-input int             LS_TextSize      = 8;                 // Text Size
-input color           LS_TpColor       = clrSteelBlue;      // TP Color
-input color           LS_SlColor       = clrChocolate;      // SL Color
-input color           LS_EnColor       = clrChocolate;      // EN Color
-input int             LS_LineWidth     = 1;                 // Line Width
-input color           LS_SlBkgrdColor  = clrLavenderBlush;  // SlBg Color
-input color           LS_TpBkgrdColor  = clrWhiteSmoke;     // TpBg Color
+input color           Trd_TextColor     = clrMidnightBlue;   // Text Color
+input int             Trd_TextSize      = 8;                 // Text Size
+input color           Trd_TpColor       = clrSteelBlue;      // TP Color
+input color           Trd_SlColor       = clrChocolate;      // SL Color
+input color           Trd_EnColor       = clrChocolate;      // EN Color
+input int             Trd_LineWidth     = 1;                 // Line Width
+input color           Trd_SlBkgrdColor  = clrLavenderBlush;  // SlBg Color
+input color           Trd_TpBkgrdColor  = clrWhiteSmoke;     // TpBg Color
 //-------------------------------------------------
-input string          LS_calc; //→ Tính toán:
-input double          LS_Cost          = 5;     //Cost ($)
-input e_display       LS_ShowStats     = SHOW;  //Show Stats
-input e_display       LS_ShowPrice     = HIDE;  //Show Price
-input e_display       LS_ShowDollar    = HIDE;  //Show Dollar
+input string          Trd_calc; //→ Tính toán:
+input double          Trd_Cost          = 5;     //Cost ($)
+input e_display       Trd_ShowStats     = SHOW;  //Show Stats
+input e_display       Trd_ShowPrice     = HIDE;  //Show Price
+input e_display       Trd_ShowDollar    = HIDE;  //Show Dollar
 
-int LS_StlSpace = 2;
+int Trd_StlSpace = 2;
 
-class LongShort : public BaseItem
+class Trade : public BaseItem
 {
 // Internal Value
 private:
@@ -72,7 +72,7 @@ private:
     double priceBE;
 
 public:
-    LongShort(const string name, CommonData* commonData, MouseInfo* mouseInfo);
+    Trade(const string name, CommonData* commonData, MouseInfo* mouseInfo);
 
 // Internal Event
 public:
@@ -101,7 +101,7 @@ public:
     void initData();
 };
 
-LongShort::LongShort(const string name, CommonData* commonData, MouseInfo* mouseInfo)
+Trade::Trade(const string name, CommonData* commonData, MouseInfo* mouseInfo)
 {
     mItemName = name;
     pCommonData = commonData;
@@ -114,7 +114,7 @@ LongShort::LongShort(const string name, CommonData* commonData, MouseInfo* mouse
     mTypeNum = 2;
 
     mContextType  =  "Add Spread";
-    mContextType += ",Trade Ready!";
+    mContextType +=  ",Live Trade";
 
     // Other initialize
     string strSymbol = Symbol();
@@ -128,21 +128,21 @@ LongShort::LongShort(const string name, CommonData* commonData, MouseInfo* mouse
     mNativeCurrency = StringSubstr(strSymbol, StringLen(strSymbol)-3, 3);
     if (mNativeCurrency == "JPY")
     {
-        mNativeCost = LS_Cost * 1.49;
+        mNativeCost = Trd_Cost * 1.49;
     }
     else if (strSymbol == "XAUUSD")
     {
-        mNativeCost = LS_Cost * 10;
+        mNativeCost = Trd_Cost * 10;
     }
     else
     {
-        mNativeCost = LS_Cost;
+        mNativeCost = Trd_Cost;
     }
 }
 
 // Internal Event
-void LongShort::prepareActive(){}
-void LongShort::createItem()
+void Trade::prepareActive(){}
+void Trade::createItem()
 {
     ObjectCreate(iBgndSL  , OBJ_RECTANGLE , 0, 0, 0);
     ObjectCreate(iBgndTP  , OBJ_RECTANGLE , 0, 0, 0);
@@ -167,7 +167,7 @@ void LongShort::createItem()
     updateTypeProperty();
     updateDefaultProperty();
 }
-void LongShort::initData()
+void Trade::initData()
 {
     time1   = pCommonData.mMouseTime;
     priceEN = pCommonData.mMousePrice;
@@ -176,7 +176,7 @@ void LongShort::initData()
     priceTP = 4*priceEN - 3*priceSL;
     priceBE = 2*priceEN - 1*priceSL;
 }
-void LongShort::updateDefaultProperty()
+void Trade::updateDefaultProperty()
 {
     //-------------------------------------------------
     ObjectSet(iBgndSL, OBJPROP_BACK, true);
@@ -195,22 +195,22 @@ void LongShort::updateDefaultProperty()
     //-------------------------------------------------
     multiSetStrs(OBJPROP_TOOLTIP, "\n", iBgndSL+iBgndTP+iTpLine+iBeLine+iEnLine+iSlLine+iTpPrice+iEnPrice+iSlPrice+iTpText+iEnText+iSlText+iBeText+cBoder+cPointTP+cPointSL+cPointEN+cPointWD+cPointBE);
 }
-void LongShort::updateTypeProperty()
+void Trade::updateTypeProperty()
 {
-    ObjectSet(iBgndSL, OBJPROP_COLOR, LS_SlBkgrdColor);
-    ObjectSet(iBgndTP, OBJPROP_COLOR, LS_TpBkgrdColor);
+    ObjectSet(iBgndSL, OBJPROP_COLOR, Trd_SlBkgrdColor);
+    ObjectSet(iBgndTP, OBJPROP_COLOR, Trd_TpBkgrdColor);
     ObjectSet(iBeLine, OBJPROP_WIDTH, 1);
     ObjectSet(iBeLine, OBJPROP_STYLE, 2);
     //-------------------------------------------------
-    multiSetProp(OBJPROP_COLOR, LS_TpColor  , iTpLine+iBeLine+cPointTP+cPointBE);
-    multiSetProp(OBJPROP_COLOR, LS_EnColor  , iEnLine+cPointEN+cPointWD);
-    multiSetProp(OBJPROP_COLOR, LS_SlColor  , iSlLine+cPointSL);
-    multiSetProp(OBJPROP_COLOR, LS_TextColor, iTpText+iEnText+iSlText+iBeText+iTpPrice+iEnPrice+iSlPrice);
+    multiSetProp(OBJPROP_COLOR, Trd_TpColor  , iTpLine+iBeLine+cPointTP+cPointBE);
+    multiSetProp(OBJPROP_COLOR, Trd_EnColor  , iEnLine+cPointEN+cPointWD);
+    multiSetProp(OBJPROP_COLOR, Trd_SlColor  , iSlLine+cPointSL);
+    multiSetProp(OBJPROP_COLOR, Trd_TextColor, iTpText+iEnText+iSlText+iBeText+iTpPrice+iEnPrice+iSlPrice);
     //-------------------------------------------------
-    multiSetProp(OBJPROP_WIDTH   , LS_LineWidth, iTpLine+iEnLine+iSlLine);
-    multiSetProp(OBJPROP_FONTSIZE, LS_TextSize , iTpPrice+iEnPrice+iSlPrice+iTpText+iEnText+iSlText+iBeText+iTpPrice+iEnPrice+iSlPrice);
+    multiSetProp(OBJPROP_WIDTH   , Trd_LineWidth, iTpLine+iEnLine+iSlLine);
+    multiSetProp(OBJPROP_FONTSIZE, Trd_TextSize , iTpPrice+iEnPrice+iSlPrice+iTpText+iEnText+iSlText+iBeText+iTpPrice+iEnPrice+iSlPrice);
 }
-void LongShort::activateItem(const string& itemId)
+void Trade::activateItem(const string& itemId)
 {
     iBgndSL  = itemId + "_iBgndSL";
     iBgndTP  = itemId + "_iBgndTP";
@@ -235,8 +235,8 @@ void LongShort::activateItem(const string& itemId)
     mAllItem += iBgndSL+iBgndTP+iTpLine+iEnLine+iSlLine+iBeLine+iTpPrice+iEnPrice+iSlPrice+iTpText+iEnText+iSlText+iBeText;
     mAllItem += cBoder+cPointTP+cPointSL+cPointEN+cPointWD+cPointBE;
 }
-void LongShort::updateItemAfterChangeType(){}
-void LongShort::refreshData()
+void Trade::updateItemAfterChangeType(){}
+void Trade::refreshData()
 {
     if (ObjectFind(ChartID(), iBgndSL) < 0)
     {
@@ -293,12 +293,12 @@ void LongShort::refreshData()
     double be          = (priceBE-priceEN) / (priceEN-priceSL);
     
     mTradeLot          = floor(mNativeCost / slPip * 10)/100;
-    double realCost    = mTradeLot*slPip*10/mNativeCost*LS_Cost;
+    double realCost    = mTradeLot*slPip*10/mNativeCost*Trd_Cost;
     // 2. Thông tin hiển thị
     bool   selectState = (bool)ObjectGet(cPointWD, OBJPROP_SELECTED);
-    bool   showStats   = (LS_ShowStats  == SHOW) || (LS_ShowStats  == OPTION && selectState);
-    bool   showPrice   = (LS_ShowPrice  == SHOW) || (LS_ShowPrice  == OPTION && selectState);
-    bool   showDollar  = (LS_ShowDollar == SHOW) || (LS_ShowDollar == OPTION && selectState);
+    bool   showStats   = (Trd_ShowStats  == SHOW) || (Trd_ShowStats  == OPTION && selectState);
+    bool   showPrice   = (Trd_ShowPrice  == SHOW) || (Trd_ShowPrice  == OPTION && selectState);
+    bool   showDollar  = (Trd_ShowDollar == SHOW) || (Trd_ShowDollar == OPTION && selectState);
     
     // 3. String Data để hiển thị
     string strTpInfo   = DoubleToString(rr,1) + "ʀ"; // RR + dola
@@ -351,18 +351,18 @@ void LongShort::refreshData()
     //scanBackgroundOverlap(iBgndTP);
 
 }
-void LongShort::finishedJobDone(){}
+void Trade::finishedJobDone(){}
 
 // Chart Event
-void LongShort::onMouseMove(){}
-void LongShort::onMouseClick()
+void Trade::onMouseMove(){}
+void Trade::onMouseClick()
 {
     createItem();
     initData();
     refreshData();
     mFinishedJobCb();
 }
-void LongShort::onItemDrag(const string &itemId, const string &objId)
+void Trade::onItemDrag(const string &itemId, const string &objId)
 {
     priceTP =           ObjectGet(cPointTP, OBJPROP_PRICE1);
     priceEN =           ObjectGet(cPointEN, OBJPROP_PRICE1);
@@ -407,7 +407,7 @@ void LongShort::onItemDrag(const string &itemId, const string &objId)
     }
     refreshData();
 }
-void LongShort::onItemClick(const string &itemId, const string &objId)
+void Trade::onItemClick(const string &itemId, const string &objId)
 {
     int selectState = (int)ObjectGet(objId, OBJPROP_SELECTED);
     if (objId == cPointTP || objId == cPointSL || objId == cPointEN || objId == cPointWD || objId == cPointBE)
@@ -419,18 +419,18 @@ void LongShort::onItemClick(const string &itemId, const string &objId)
         ObjectSet(cPointBE, OBJPROP_SELECTED, selectState);
     }
     onItemDrag(itemId, objId);
-    if (objId == cPointWD && selectState == true && LS_ShowPrice != HIDE && pCommonData.mShiftHold)
+    if (objId == cPointWD && selectState == true && Trd_ShowPrice != HIDE && pCommonData.mShiftHold)
     {
         gContextMenu.openContextMenu(objId, mContextType, -1);
     }
 }
-void LongShort::onItemChange(const string &itemId, const string &objId)
+void Trade::onItemChange(const string &itemId, const string &objId)
 {
     onItemDrag(itemId, objId);
 }
 
 //-------------------------------------------------------------------
-void LongShort::showHistory(bool isShow)
+void Trade::showHistory(bool isShow)
 {
     for (int i = ObjectsTotal() - 1; i >= 0; i--)
     {
@@ -497,41 +497,34 @@ void LongShort::showHistory(bool isShow)
     }
 }
 
-void LongShort::onUserRequest(const string &itemId, const string &objId)
+void Trade::onUserRequest(const string &itemId, const string &objId)
 {
     if (gContextMenu.mActivePos == 1)
     {
-    priceEN = NormalizeDouble(priceEN, gSymbolDigits);
-    priceSL = NormalizeDouble(priceSL, gSymbolDigits);
-    priceTP = NormalizeDouble(priceTP, gSymbolDigits);
-    mTradeLot = NormalizeDouble(mTradeLot, 2);
+        priceEN   = NormalizeDouble(priceEN, gSymbolDigits);
+        priceSL   = NormalizeDouble(priceSL, gSymbolDigits);
+        priceTP   = NormalizeDouble(priceTP, gSymbolDigits);
+        mTradeLot = NormalizeDouble(mTradeLot, 2);
         int Cmd = OP_SELLLIMIT;
-       if (priceTP > priceEN) Cmd = OP_BUYLIMIT;
-   
-       int OrderNumber;
-       int Slippage = 200;
-       OrderNumber=OrderSend(Symbol(),Cmd,mTradeLot,priceEN,Slippage,priceSL,priceTP);
-       if(OrderNumber>0){
-           Print("Order ",OrderNumber," open");
-       }
-       else{
-           Print("Order failed with error - ",GetLastError());
-           Alert("Order failed with error - "+IntegerToString(GetLastError()));
-       }
-        /*
-        GlobalVariableSet("GV_priceEN", priceEN);
-        GlobalVariableSet("GV_priceSL", priceSL);
-        GlobalVariableSet("GV_priceTP", priceTP);
-        GlobalVariableSet("GV_lotSize", mTradeLot);
-        GlobalVariableSet("GV_SymbolCode", mSymbolCode);
-        GlobalVariableSet("GV_NewOrder", 1.0);
-        */
+        if (priceTP > priceEN) Cmd = OP_BUYLIMIT;
+    
+        int OrderNumber;
+        int Slippage = 200;
+        OrderNumber=OrderSend(Symbol(),Cmd,mTradeLot,priceEN,Slippage,priceSL,priceTP);
+        if(OrderNumber>0){
+            Print("Order ",OrderNumber," open");
+            // Create Live Trade Item & Remove old trade
+        }
+        else{
+            Print("Order failed with error - ",GetLastError());
+            Alert("Order failed with error - "+IntegerToString(GetLastError()));
+        }
     }
     else if (gContextMenu.mActivePos == 0)
     {
         onItemDrag(itemId, objId);
         double spread = (double)SymbolInfoInteger(Symbol(), SYMBOL_SPREAD);
-        mStlSpace = (double)LS_StlSpace / pow(10, gSymbolDigits);
+        mStlSpace = (double)Trd_StlSpace / pow(10, gSymbolDigits);
         spread = spread / pow(10, gSymbolDigits);
 
         if (priceEN > priceSL) {
@@ -548,7 +541,7 @@ void LongShort::onUserRequest(const string &itemId, const string &objId)
     gContextMenu.clearContextMenu();
 }
 
-void LongShort::createTrade(int id, datetime _time1, datetime _time2, double _priceEN, double _priceSL, double _priceTP, double _priceBE)
+void Trade::createTrade(int id, datetime _time1, datetime _time2, double _priceEN, double _priceSL, double _priceTP, double _priceBE)
 {
     string itemId = mItemName + "_" +IntegerToString(ChartPeriod()) + "#" + IntegerToString(id);
     activateItem(itemId);

@@ -162,7 +162,7 @@ void EraseAll()
     for(int i=ObjectsTotal() - 1 ;  i >= 0 ;  i--)
     {
         string objName = ObjectName(i);
-        // if (StringFind(objName, "LongShort") != -1) continue;
+        // if (StringFind(objName, "Trade") != -1) continue;
         if (StringFind(objName, STATIC_TAG) != -1) continue;
         ObjectDelete(objName);
     }
@@ -194,7 +194,7 @@ void EraseThisTF()
     for(int i=ObjectsTotal() - 1 ;  i >= 0 ;  i--)
     {
         string objName = ObjectName(i);
-        if (StringFind(objName, "LongShort") != -1) continue;
+        if (StringFind(objName, "Trade") != -1) continue;
         if (StringFind(objName, STATIC_TAG) != -1) continue;
 
         string sparamItems[];
@@ -801,7 +801,7 @@ int lowerTF()
     return retTF;
 }
 
-void restoreBacktestingTrade() // TODO: Đẩy vào LongShort Class
+void restoreBacktestingTrade() // TODO: Đẩy vào Trade Class
 {
     long chartID = ChartID();
     string objEn = "";
@@ -835,7 +835,7 @@ void restoreBacktestingTrade() // TODO: Đẩy vào LongShort Class
         priceTP = priceEN + 2 * (isBuy ? 1 : -1) * fabs(priceEN-priceSL);
         priceBE = priceEN + (isBuy ? 1 : -1) * fabs(priceEN-priceSL);
         time2   = time1 + ChartPeriod()*600;
-        // Step 3: Create LongShort
-        gpLongShort.createTrade(idx, time1, time2, priceEN, priceSL, priceTP, priceBE);
+        // Step 3: Create Trade
+        gpTrade.createTrade(idx, time1, time2, priceEN, priceSL, priceTP, priceBE);
     }
 }

@@ -4,7 +4,7 @@
 #include "../Tools/ZigZag.mqh"
 #include "../Tools/Rectangle.mqh"
 #include "../Tools/CallOut.mqh"
-#include "../Tools/LongShort.mqh"
+#include "../Tools/Trade.mqh"
 #include "../Tools/Fibonacci.mqh"
 #include "../Tools/Alert.mqh"
 #include "../Tools/Points.mqh"
@@ -19,7 +19,7 @@
 #define IDX_RECTANGLE   2
 #define IDX_FIBONACI    3
 #define IDX_CALLOUT     4
-#define IDX_LONGSHORT   5
+#define IDX_TRADE       5
 #define IDX_ALERT       6
 #define IDX_POINT       7
 #define IDX_LABEL       8
@@ -29,7 +29,7 @@
 #define ITEM_RECTANGLE  ".Rectangle"
 #define ITEM_FIBONACI   ".Fibonacci"
 #define ITEM_CALLOUT    ".CallOut"
-#define ITEM_LONGSHORT  ".LongShort"
+#define ITEM_TRADE      ".Trade"
 #define ITEM_ALERT      ".Alert"
 #define ITEM_POINT      ".Point"
 #define ITEM_LABEL      ".Label"
@@ -69,12 +69,12 @@ void Controller::Controller(CommonData* commonData, MouseInfo* mouseInfo)
     mListItem[IDX_RECTANGLE ]    = new Rectangle ( ITEM_RECTANGLE , commonData, mouseInfo);
     mListItem[IDX_FIBONACI  ]    = new Fibonacci ( ITEM_FIBONACI  , commonData, mouseInfo);
     mListItem[IDX_CALLOUT   ]    = new CallOut   ( ITEM_CALLOUT   , commonData, mouseInfo);
-    mListItem[IDX_LONGSHORT ]    = new LongShort ( ITEM_LONGSHORT , commonData, mouseInfo);
+    mListItem[IDX_TRADE     ]    = new Trade     ( ITEM_TRADE     , commonData, mouseInfo);
     mListItem[IDX_ALERT     ]    = new Alert     ( ITEM_ALERT     , commonData, mouseInfo);
-    mListItem[IDX_POINT]         = new Point     ( ITEM_POINT     , commonData, mouseInfo);
-    mListItem[IDX_LABEL]         = new LabelText ( ITEM_LABEL     , commonData, mouseInfo);
+    mListItem[IDX_POINT     ]    = new Point     ( ITEM_POINT     , commonData, mouseInfo);
+    mListItem[IDX_LABEL     ]    = new LabelText ( ITEM_LABEL     , commonData, mouseInfo);
 
-    gpLongShort = (LongShort*)mListItem[IDX_LONGSHORT];
+    gpTrade = (Trade*)mListItem[IDX_TRADE];
 }
 
 Controller::~Controller()
@@ -84,7 +84,7 @@ Controller::~Controller()
     delete mListItem[IDX_RECTANGLE ];
     delete mListItem[IDX_FIBONACI  ];
     delete mListItem[IDX_CALLOUT   ];
-    delete mListItem[IDX_LONGSHORT ];
+    delete mListItem[IDX_TRADE ];
     delete mListItem[IDX_ALERT     ];
     delete mListItem[IDX_POINT     ];
     delete mListItem[IDX_LABEL     ];
@@ -105,7 +105,7 @@ void Controller::finishedJob()
 
 int Controller::findItemIdByKey(const int key)
 {
-    if (key == 'W') return IDX_LONGSHORT ;
+    if (key == 'W') return IDX_TRADE     ;
     if (key == 'R') return IDX_RECTANGLE ;
     if (key == 'T') return IDX_TREND     ;
     if (key == 'F') return IDX_FIBONACI  ;
@@ -124,7 +124,7 @@ int Controller::findItemIdByName(const string& name)
     if (name == ITEM_RECTANGLE ) return IDX_RECTANGLE ;
     if (name == ITEM_FIBONACI  ) return IDX_FIBONACI  ;
     if (name == ITEM_CALLOUT   ) return IDX_CALLOUT   ;
-    if (name == ITEM_LONGSHORT ) return IDX_LONGSHORT ;
+    if (name == ITEM_TRADE     ) return IDX_TRADE     ;
     if (name == ITEM_ALERT     ) return IDX_ALERT     ;
     if (name == ITEM_POINT     ) return IDX_POINT     ;
     if (name == ITEM_LABEL     ) return IDX_LABEL     ;
@@ -157,10 +157,10 @@ void Controller::handleKeyEvent(const long &key)
         break;
     // QWERT Line
     case 'Y':
-        ((LongShort*)mListItem[IDX_LONGSHORT]).showHistory(true);
+        ((Trade*)mListItem[IDX_TRADE]).showHistory(true);
         break;
     case 'U':
-        ((LongShort*)mListItem[IDX_LONGSHORT]).showHistory(false);
+        ((Trade*)mListItem[IDX_TRADE]).showHistory(false);
         break;
     case 'H':
         SetChartFree(true);

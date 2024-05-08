@@ -14,7 +14,7 @@ color gColorMousePoint = clrSlateGray;
 void FinishedJobFunc();
 void detectMouseDraging(const string &sparam);
 
-LongShort* gpLongShort;
+Trade* gpTrade;
 
 CommonData gCommonData;
 CrossHair   gCrossHair(&gCommonData);
