@@ -179,7 +179,6 @@ void Alert::initAlarm()
 
 void Alert::checkAlert()
 {
-    if (InpAlertActive == false) return;
     mAlertNumber  = StringSplit(mListAlertStr,',',mListAlertArr);
     mListAlertRemainStr = "";
     for (int i = 0; i < mAlertNumber; i++)
@@ -218,6 +217,7 @@ void Alert::checkAlert()
 
 void Alert::sendNotification(string msg)
 {
+    if (InpAlertActive == false) return;
     if (InpNotiType == ENotiPhone){
         SendNotification(msg);
     } else {

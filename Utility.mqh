@@ -226,6 +226,9 @@ void SetChartFree(bool bFree)
 
 void scaleChart(bool isUp)
 {
+    if (gScaleRange == 0) {
+        gScaleRange = ((High[1]-Low[1])+(High[2]-Low[2])+(High[3]-Low[3])+(High[4]-Low[4])+(High[5]-Low[5])+(High[6]-Low[6])+(High[7]-Low[7]))/35;
+    }
     ChartSetInteger(ChartID(), CHART_SCALEFIX, 0, 1);
     double chartMin = 0;
     double chartMax = 0;
