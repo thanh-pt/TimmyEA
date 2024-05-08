@@ -1,4 +1,4 @@
-#include "../CommonData.mqh"
+#include "../Home/CommonData.mqh"
 #include "../InfoItem/MouseInfo.mqh"
 
 typedef void(*FinishedJob)();

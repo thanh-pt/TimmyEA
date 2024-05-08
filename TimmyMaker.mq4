@@ -8,8 +8,8 @@ color gColorMousePoint = clrSlateGray;
 #include "InfoItem/CrossHair.mqh"
 #include "InfoItem/MouseInfo.mqh"
 #include "InfoItem/ContextMenu.mqh"
-#include "Controller.mqh"
-#include "CommonData.mqh"
+#include "Home/Controller.mqh"
+#include "Home/CommonData.mqh"
 
 void FinishedJobFunc();
 void detectMouseDraging(const string &sparam);
