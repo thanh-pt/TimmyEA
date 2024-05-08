@@ -117,10 +117,6 @@ void Point::activateItem(const string& itemId)
 void Point::updateItemAfterChangeType(){}
 void Point::refreshData()
 {
-    int shift = iBarShift(ChartSymbol(), ChartPeriod(), time);
-    bool isUp = (price >= High[shift]);
-    // ObjectSet(cPoint, OBJPROP_COLOR, mColor[mIndexType]);
-    // ObjectSetInteger(ChartID(), cPoint, OBJPROP_ANCHOR, isUp ? ANCHOR_LOWER : ANCHOR_UPPER);
     ObjectSetInteger(ChartID(), cPoint, OBJPROP_ANCHOR, ANCHOR_CENTER);
     ObjectSetString(ChartID(), cPoint, OBJPROP_TOOLTIP, DoubleToString(price, 5));
     setItemPos(cPoint, time, price);

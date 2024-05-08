@@ -11,6 +11,8 @@ color gColorMousePoint = clrSlateGray;
 #include "InfoItem/ContextMenu.mqh"
 #include "InfoItem/MouseInfo.mqh"
 
+#define EA
+
 void FinishedJobFunc();
 void detectMouseDraging(const string &sparam);
 
@@ -59,6 +61,27 @@ void OnTick()
 //---
     gController.handleOntick();
 }
+
+//// Function này được sử dụng trong Indi
+// Không thể sử dụng trong EA
+#ifndef EA
+int OnCalculate(const int rates_total,
+                const int prev_calculated,
+                const datetime &time[],
+                const double &open[],
+                const double &high[],
+                const double &low[],
+                const double &close[],
+                const long &tick_volume[],
+                const long &volume[],
+                const int &spread[])
+{
+//---
+
+//--- return value of prev_calculated for next call
+    return(rates_total);
+}
+#endif
 //+------------------------------------------------------------------+
 //| ChartEvent function                                              |
 //+------------------------------------------------------------------+
