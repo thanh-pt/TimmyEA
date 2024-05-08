@@ -798,7 +798,7 @@ int lowerTF()
     return retTF;
 }
 
-void restoreBacktestingTrade()
+void restoreBacktestingTrade() // TODO: Đẩy vào LongShort Class
 {
     long chartID = ChartID();
     string objEn = "";

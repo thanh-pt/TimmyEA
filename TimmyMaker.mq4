@@ -4,7 +4,6 @@
 //|                       https://www.youtube.com/@TimmyTraderHamHoc |
 //+------------------------------------------------------------------+
 #property strict
-input bool  gAlertActive = false; // Alert Active
 color gColorMousePoint = clrSlateGray;
 #include "InfoItem/CrossHair.mqh"
 #include "InfoItem/MouseInfo.mqh"
@@ -23,66 +22,8 @@ MouseInfo  gMouseInfo(&gCommonData);
 Templates  gTemplates();
 Controller gController(&gCommonData, &gMouseInfo);
 
-string gListAlert = "";
-string gAlertText = "";
-string gAlertArr[];
-int    gAlertTotal  = 0;
-bool   gAlertReach  = false;
-double gAlertPrice  = 0;
-string gAlertRemain = "";
 int    gSymbolDigits= 0;
 double gScaleRange = 0;
-
-void initAlarm()
-{
-    string alertLine = "";
-    for(int i=ObjectsTotal() - 1 ;  i >= 0 ;  i--)
-    {
-        alertLine = ObjectName(i);
-        if (StringFind(alertLine, "cAlert") == -1) continue;
-        // Add Alert to the list
-        if (gListAlert != "") gListAlert += ",";
-        gListAlert += alertLine;
-    }
-}
-
-void checkAlert()
-{
-    gAlertTotal  = StringSplit(gListAlert,',',gAlertArr);
-    gAlertRemain = "";
-    for (int i = 0; i < gAlertTotal; i++)
-    {
-        // Check valid Alert
-        if (ObjectFind(gAlertArr[i]) < 0) continue;
-        if (StringFind(gAlertArr[i], "cAlert") == -1) continue;
-
-        // Get Alert information
-        gAlertReach = false;
-        gAlertPrice = ObjectGet(gAlertArr[i], OBJPROP_PRICE1);
-        gAlertText  = ObjectGetString(ChartID(), gAlertArr[i], OBJPROP_TEXT);
-        // Check Alert Price
-        if (StringFind(gAlertText,"[H]") != -1)
-        {
-            gAlertReach = (Bid >= gAlertPrice);
-        }
-        else if (StringFind(gAlertText,"[L]") != -1)
-        {
-            gAlertReach = (Bid <= gAlertPrice);
-        }
-
-        // Send notification or save remain Alert
-        if (gAlertReach == true)
-        {
-            SendNotification(Symbol()+":   "+ DoubleToString(gAlertPrice, gSymbolDigits) + "\n" + gAlertText);
-            ObjectDelete(gAlertArr[i]);
-        }
-        else
-        {
-            gAlertRemain += gAlertArr[i] + ",";
-        }
-    }
-    gListAlert = gAlertRemain;
-}
 
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
@@ -99,27 +40,25 @@ int OnInit()
     gSymbolDigits = (int)SymbolInfoInteger(Symbol(), SYMBOL_DIGITS);
     if (gSymbolDigits == 0) gSymbolDigits = 5;
 
-    // Init function
-    initAlarm();
 //---
-   return(INIT_SUCCEEDED);
-  }
+    return(INIT_SUCCEEDED);
+}
 //+------------------------------------------------------------------+
 //| Expert deinitialization function                                 |
 //+------------------------------------------------------------------+
 void OnDeinit(const int reason)
-  {
+{
 //---
    gTemplates.clearTemplates();
-  }
+}
 //+------------------------------------------------------------------+
 //| Expert tick function                                             |
 //+------------------------------------------------------------------+
 void OnTick()
-  {
+{
 //---
-   if (gAlertActive) checkAlert();
-  }
+    gController.handleOntick();
+}
 //+------------------------------------------------------------------+
 //| ChartEvent function                                              |
 //+------------------------------------------------------------------+
@@ -168,6 +107,7 @@ void FinishedJobFunc()
     gController.finishedJob();
 }
 
+// Tạo biến globle cho đỡ tốn công tạo xoá biến
 string gTargetItem;
 bool gIsPress;
 int gPreviousOption;

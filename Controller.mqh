@@ -6,7 +6,7 @@
 #include "DrawingTool/CallOut.mqh"
 #include "DrawingTool/LongShort.mqh"
 #include "DrawingTool/Fibonacci.mqh"
-#include "DrawingTool/ChartUtil.mqh"
+#include "DrawingTool/Alert.mqh"
 #include "DrawingTool/Points.mqh"
 #include "DrawingTool/Label.mqh"
 
@@ -20,7 +20,7 @@
 #define IDX_FIBONACI    3
 #define IDX_CALLOUT     4
 #define IDX_LONGSHORT   5
-#define IDX_CHARTUTIL   6
+#define IDX_ALERT       6
 #define IDX_POINT       7
 #define IDX_LABEL       8
 
@@ -30,7 +30,7 @@
 #define ITEM_FIBONACI   ".Fibonacci"
 #define ITEM_CALLOUT    ".CallOut"
 #define ITEM_LONGSHORT  ".LongShort"
-#define ITEM_CHARTUTIL  ".ChartUtil"
+#define ITEM_ALERT      ".Alert"
 #define ITEM_POINT      ".Point"
 #define ITEM_LABEL      ".Label"
 
@@ -55,6 +55,7 @@ public:
     void handleKeyEvent(const long &key);
     void handleIdEventOnly(const int id);
     void handleSparamEvent(const int id, const string& sparam);
+    void handleOntick();
     void setFinishedJobCB(FinishedJob cb);
     void finishedJob();
 };
@@ -69,7 +70,7 @@ void Controller::Controller(CommonData* commonData, MouseInfo* mouseInfo)
     mListItem[IDX_FIBONACI  ]    = new Fibonacci ( ITEM_FIBONACI  , commonData, mouseInfo);
     mListItem[IDX_CALLOUT   ]    = new CallOut   ( ITEM_CALLOUT   , commonData, mouseInfo);
     mListItem[IDX_LONGSHORT ]    = new LongShort ( ITEM_LONGSHORT , commonData, mouseInfo);
-    mListItem[IDX_CHARTUTIL ]    = new ChartUtil ( ITEM_CHARTUTIL , commonData, mouseInfo);
+    mListItem[IDX_ALERT     ]    = new Alert     ( ITEM_ALERT     , commonData, mouseInfo);
     mListItem[IDX_POINT]         = new Point     ( ITEM_POINT     , commonData, mouseInfo);
     mListItem[IDX_LABEL]         = new LabelText ( ITEM_LABEL     , commonData, mouseInfo);
 
@@ -84,7 +85,7 @@ Controller::~Controller()
     delete mListItem[IDX_FIBONACI  ];
     delete mListItem[IDX_CALLOUT   ];
     delete mListItem[IDX_LONGSHORT ];
-    delete mListItem[IDX_CHARTUTIL ];
+    delete mListItem[IDX_ALERT     ];
     delete mListItem[IDX_POINT     ];
     delete mListItem[IDX_LABEL     ];
 }
@@ -110,7 +111,7 @@ int Controller::findItemIdByKey(const int key)
     if (key == 'F') return IDX_FIBONACI  ;
     if (key == 'G') return IDX_LABEL     ;
     if (key == 'Z') return IDX_ZIGZAG    ;
-    if (key == 'X') return IDX_CHARTUTIL ;
+    if (key == 'X') return IDX_ALERT     ;
     if (key == 'C') return IDX_CALLOUT   ;
     if (key == 'S') return IDX_POINT     ;
     return IDX_NONE;
@@ -124,7 +125,7 @@ int Controller::findItemIdByName(const string& name)
     if (name == ITEM_FIBONACI  ) return IDX_FIBONACI  ;
     if (name == ITEM_CALLOUT   ) return IDX_CALLOUT   ;
     if (name == ITEM_LONGSHORT ) return IDX_LONGSHORT ;
-    if (name == ITEM_CHARTUTIL ) return IDX_CHARTUTIL ;
+    if (name == ITEM_ALERT     ) return IDX_ALERT     ;
     if (name == ITEM_POINT     ) return IDX_POINT     ;
     if (name == ITEM_LABEL     ) return IDX_LABEL     ;
     return IDX_NONE;
@@ -290,4 +291,9 @@ void Controller::handleSparamEvent(const int id, const string& sparam)
         mListItem[receiverItem].onUserRequest(itemId, sparam);
         break;
     }
+}
+
+void Controller::handleOntick()
+{
+    ((Alert*)mListItem[IDX_ALERT]).checkAlert();
 }
