@@ -113,8 +113,8 @@ LongShort::LongShort(const string name, CommonData* commonData, MouseInfo* mouse
     mIndexType = 0;
     mTypeNum = 2;
 
-    mTemplateTypes  =  "Add Spread";
-    mTemplateTypes += ",Trade Ready!";
+    mContextType  =  "Add Spread";
+    mContextType += ",Trade Ready!";
 
     // Other initialize
     string strSymbol = Symbol();
@@ -421,7 +421,7 @@ void LongShort::onItemClick(const string &itemId, const string &objId)
     onItemDrag(itemId, objId);
     if (objId == cPointWD && selectState == true && LS_ShowPrice != HIDE && pCommonData.mShiftHold)
     {
-        gTemplates.openTemplates(objId, mTemplateTypes, -1);
+        gContextMenu.openContextMenu(objId, mContextType, -1);
     }
 }
 void LongShort::onItemChange(const string &itemId, const string &objId)
@@ -499,7 +499,7 @@ void LongShort::showHistory(bool isShow)
 
 void LongShort::onUserRequest(const string &itemId, const string &objId)
 {
-    if (gTemplates.mActivePos == 1)
+    if (gContextMenu.mActivePos == 1)
     {
     priceEN = NormalizeDouble(priceEN, gSymbolDigits);
     priceSL = NormalizeDouble(priceSL, gSymbolDigits);
@@ -527,7 +527,7 @@ void LongShort::onUserRequest(const string &itemId, const string &objId)
         GlobalVariableSet("GV_NewOrder", 1.0);
         */
     }
-    else if (gTemplates.mActivePos == 0)
+    else if (gContextMenu.mActivePos == 0)
     {
         onItemDrag(itemId, objId);
         double spread = (double)SymbolInfoInteger(Symbol(), SYMBOL_SPREAD);
@@ -545,7 +545,7 @@ void LongShort::onUserRequest(const string &itemId, const string &objId)
         }
         refreshData();
     }
-    gTemplates.clearTemplates();
+    gContextMenu.clearContextMenu();
 }
 
 void LongShort::createTrade(int id, datetime _time1, datetime _time2, double _priceEN, double _priceSL, double _priceTP, double _priceBE)

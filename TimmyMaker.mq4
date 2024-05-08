@@ -7,7 +7,7 @@
 color gColorMousePoint = clrSlateGray;
 #include "InfoItem/CrossHair.mqh"
 #include "InfoItem/MouseInfo.mqh"
-#include "InfoItem/Templates.mqh"
+#include "InfoItem/ContextMenu.mqh"
 #include "Controller.mqh"
 #include "CommonData.mqh"
 
@@ -17,10 +17,10 @@ void detectMouseDraging(const string &sparam);
 LongShort* gpLongShort;
 
 CommonData gCommonData;
-CrossHair  gCrossHair(&gCommonData);
-MouseInfo  gMouseInfo(&gCommonData);
-Templates  gTemplates();
-Controller gController(&gCommonData, &gMouseInfo);
+CrossHair   gCrossHair(&gCommonData);
+MouseInfo   gMouseInfo(&gCommonData);
+ContextMenu gContextMenu();
+Controller  gController(&gCommonData, &gMouseInfo);
 
 int    gSymbolDigits= 0;
 double gScaleRange = 0;
@@ -49,7 +49,7 @@ int OnInit()
 void OnDeinit(const int reason)
 {
 //---
-   gTemplates.clearTemplates();
+   gContextMenu.clearContextMenu();
 }
 //+------------------------------------------------------------------+
 //| Expert tick function                                             |
@@ -86,7 +86,7 @@ void OnChartEvent(const int id,
     // event need sparam
     case CHARTEVENT_OBJECT_CLICK:
     case CHARTEVENT_OBJECT_DELETE:
-        gTemplates.onItemClick(sparam);
+        gContextMenu.onItemClick(sparam);
         gCrossHair.onObjectDeleted(sparam);
         gMouseInfo.onObjectDeleted(sparam);
     case CHARTEVENT_OBJECT_DRAG:
@@ -94,7 +94,7 @@ void OnChartEvent(const int id,
         gController.handleSparamEvent(id, sparam);
     break;
     case CHARTEVENT_CHART_CHANGE:
-        gTemplates.clearTemplates();
+        gContextMenu.clearContextMenu();
     break;
     default:
         // PrintFormat("%d", id);

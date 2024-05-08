@@ -5,7 +5,7 @@
 #define MAX_TYPE 15
 #define MAX_SYNC_ITEMS 50
 
-#define CHART_EVENT_SELECT_TEMPLATES CHARTEVENT_CUSTOM+1
+#define CHART_EVENT_SELECT_CONTEXTMENU CHARTEVENT_CUSTOM+1
 
 #define MIN(a,b) ((a)<(b)?(a):(b))
 #define MAX(a,b) ((a)>(b)?(a):(b))
@@ -52,7 +52,7 @@ void unSelectAll()
         currentItemId = itemId;
         gController.handleSparamEvent(CHARTEVENT_OBJECT_DRAG, objName);
     }
-    gTemplates.clearTemplates();
+    gContextMenu.clearContextMenu();
 }
 
 void unSelectAllExcept(string objId)
@@ -78,7 +78,7 @@ void unSelectAllExcept(string objId)
         currentItemId = itemId;
         gController.handleSparamEvent(CHARTEVENT_OBJECT_DRAG, objName);
     }
-    gTemplates.clearTemplates();
+    gContextMenu.clearContextMenu();
 }
 
 string findItemUnderMouse(int posX, int posY)

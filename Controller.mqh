@@ -274,7 +274,7 @@ void Controller::handleSparamEvent(const int id, const string& sparam)
     case CHARTEVENT_OBJECT_DELETE:
         if (StringFind(sparam, "_c") == -1) return;
         mListItem[receiverItem].onItemDeleted(itemId, sparam);
-        gTemplates.clearTemplates();
+        gContextMenu.clearContextMenu();
         break;
     case CHARTEVENT_OBJECT_DRAG:
         if (StringFind(sparam, "_c") == -1) return;
@@ -287,7 +287,7 @@ void Controller::handleSparamEvent(const int id, const string& sparam)
     case CHARTEVENT_OBJECT_CLICK:
         mListItem[receiverItem].onItemClick(itemId, sparam);
         break;
-    case CHART_EVENT_SELECT_TEMPLATES:
+    case CHART_EVENT_SELECT_CONTEXTMENU:
         mListItem[receiverItem].onUserRequest(itemId, sparam);
         break;
     }

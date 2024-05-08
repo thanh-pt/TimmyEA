@@ -104,8 +104,8 @@ Rectangle::Rectangle(const string name, CommonData* commonData, MouseInfo* mouse
     mTypeNum = RECT_NUM;
     for (int i = 0; i < mTypeNum; i++)
     {
-        mTemplateTypes += mNameType[i];
-        if (i < mTypeNum-1) mTemplateTypes += ",";
+        mContextType += mNameType[i];
+        if (i < mTypeNum-1) mContextType += ",";
     }
 }
 
@@ -223,7 +223,7 @@ void Rectangle::onMouseClick()
 }
 void Rectangle::onItemDrag(const string &itemId, const string &objId)
 {
-    gTemplates.clearTemplates();
+    gContextMenu.clearContextMenu();
     if (pCommonData.mCtrlHold)
     {
         if (objId == cPointL1 || objId == cPointR2 || objId == cPointL2 || objId == cPointR1) ObjectSet(objId, OBJPROP_PRICE1, pCommonData.mMousePrice);
@@ -279,7 +279,7 @@ void Rectangle::onItemClick(const string &itemId, const string &objId)
     if (selected) {
         unSelectAllExcept(itemId);
         if (StringFind(objId, "_c") >= 0 && pCommonData.mShiftHold)
-            gTemplates.openTemplates(objId, mTemplateTypes, mIndexType);
+            gContextMenu.openContextMenu(objId, mContextType, mIndexType);
     }
 }
 void Rectangle::onItemChange(const string &itemId, const string &objId)

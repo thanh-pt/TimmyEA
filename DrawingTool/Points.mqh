@@ -85,8 +85,8 @@ Point::Point(const string name, CommonData* commonData, MouseInfo* mouseInfo)
     mTypeNum = POINT_NUM;
     for (int i = 0; i < mTypeNum; i++)
     {
-        mTemplateTypes += mNameType[i];
-        if (i < mTypeNum-1) mTemplateTypes += ",";
+        mContextType += mNameType[i];
+        if (i < mTypeNum-1) mContextType += ",";
     }
 }
 
@@ -141,7 +141,7 @@ void Point::onMouseClick()
 }
 void Point::onItemDrag(const string &itemId, const string &objId)
 {
-    gTemplates.clearTemplates();
+    gContextMenu.clearContextMenu();
     time  = (datetime)ObjectGet(cPoint, OBJPROP_TIME1);
     price =           ObjectGet(cPoint, OBJPROP_PRICE1);
 
@@ -156,7 +156,7 @@ void Point::onItemClick(const string &itemId, const string &objId)
     int selected = (int)ObjectGet(objId, OBJPROP_SELECTED);
     multiSetProp(OBJPROP_SELECTED   , selected, mAllItem);
     if (selected && pCommonData.mShiftHold){
-        gTemplates.openTemplates(objId, mTemplateTypes, mIndexType);
+        gContextMenu.openContextMenu(objId, mContextType, mIndexType);
     }
 }
 void Point::onItemChange(const string &itemId, const string &objId){}

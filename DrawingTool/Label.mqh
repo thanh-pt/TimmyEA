@@ -65,7 +65,7 @@ LabelText::LabelText(const string name, CommonData* commonData, MouseInfo* mouse
         12  | 19
     */
     spaceSize = 19;
-    mTemplateTypes = "Add";
+    mContextType = "Add";
 }
 
 // Internal Event
@@ -149,7 +149,7 @@ void LabelText::onItemClick(const string &itemId, const string &objId)
         idx++;
         additionalText = cLbText +"#"+ IntegerToString(idx);
     }
-    if (selected == true && objId == lastItem && pCommonData.mShiftHold) gTemplates.openTemplates(objId, mTemplateTypes, -1);
+    if (selected == true && objId == lastItem && pCommonData.mShiftHold) gContextMenu.openContextMenu(objId, mContextType, -1);
 }
 void LabelText::onItemChange(const string &itemId, const string &objId)
 {
@@ -218,5 +218,5 @@ void LabelText::onUserRequest(const string &itemId, const string &objId)
     ObjectSet(objName, OBJPROP_XDISTANCE, posX);
     ObjectSet(objName, OBJPROP_YDISTANCE, posY+(newIdx+1)*spaceSize);
 
-    gTemplates.clearTemplates();
+    gContextMenu.clearContextMenu();
 }

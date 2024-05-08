@@ -234,8 +234,8 @@ Trend::Trend(const string name, CommonData* commonData, MouseInfo* mouseInfo)
     mTypeNum = MathMin(Trend_amount, TREND_NUM);
     for (int i = 0; i < mTypeNum; i++)
     {
-        mTemplateTypes += mNameType[i];
-        if (i < mTypeNum-1) mTemplateTypes += ",";
+        mContextType += mNameType[i];
+        if (i < mTypeNum-1) mContextType += ",";
     }
 }
 
@@ -365,7 +365,7 @@ void Trend::updateItemAfterChangeType()
 //Chart Event
 void Trend::onItemDrag(const string &itemId, const string &objId)
 {
-    gTemplates.clearTemplates();
+    gContextMenu.clearContextMenu();
     time1 = (datetime)ObjectGet(cMTrend, OBJPROP_TIME1);
     time2 = (datetime)ObjectGet(cMTrend, OBJPROP_TIME2);
     price1 =          ObjectGet(cMTrend, OBJPROP_PRICE1);
@@ -415,7 +415,7 @@ void Trend::onItemClick(const string &itemId, const string &objId)
     int selected = (int)ObjectGet(targetobj, OBJPROP_SELECTED);
     multiSetProp(OBJPROP_SELECTED, selected, mAllItem);
     if (selected && StringFind(objId, "_c") >= 0 && pCommonData.mShiftHold){
-        gTemplates.openTemplates(objId, mTemplateTypes, mIndexType);
+        gContextMenu.openContextMenu(objId, mContextType, mIndexType);
     }
 }
 void Trend::onItemChange(const string &itemId, const string &objId)

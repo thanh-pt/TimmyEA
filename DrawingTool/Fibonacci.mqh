@@ -119,8 +119,8 @@ Fibonacci::Fibonacci(const string name, CommonData* commonData, MouseInfo* mouse
     mTypeNum = FIB_NUM;
     for (int i = 0; i < mTypeNum; i++)
     {
-        mTemplateTypes += mNameType[i];
-        if (i < mTypeNum-1) mTemplateTypes += ",";
+        mContextType += mNameType[i];
+        if (i < mTypeNum-1) mContextType += ",";
     }
 }
 
@@ -307,7 +307,7 @@ void Fibonacci::onMouseClick()
 }
 void Fibonacci::onItemDrag(const string &itemId, const string &objId)
 {
-    gTemplates.clearTemplates();
+    gContextMenu.clearContextMenu();
     if (objId == ckLne)
     {
         time0   = (datetime)ObjectGet(ckLne, OBJPROP_TIME1);
@@ -366,7 +366,7 @@ void Fibonacci::onItemClick(const string &itemId, const string &objId)
     {
         unSelectAllExcept(itemId);
         if (StringFind(objId, "_c") >= 0 && pCommonData.mShiftHold)
-           gTemplates.openTemplates(objId, mTemplateTypes, mIndexType);
+            gContextMenu.openContextMenu(objId, mContextType, mIndexType);
     }
 }
 void Fibonacci::onItemChange(const string &itemId, const string &objId){}

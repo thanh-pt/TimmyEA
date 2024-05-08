@@ -17,7 +17,7 @@ protected:
     int         mIndexType;
     int         mTypeNum;
     string      mNameType[MAX_TYPE];
-    string      mTemplateTypes;
+    string      mContextType;
     string      mTData;
     string      mAllItem;
 
@@ -144,7 +144,7 @@ void BaseItem::storeTData()
 void BaseItem::onUserRequest(const string &itemId, const string &objId)
 {
     touchItem(itemId);
-    mIndexType = gTemplates.mActivePos;
+    mIndexType = gContextMenu.mActivePos;
     storeTData();
     updateTypeProperty();
     onItemDrag(itemId, objId);
