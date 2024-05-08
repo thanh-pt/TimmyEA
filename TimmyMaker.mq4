@@ -5,22 +5,22 @@
 //+------------------------------------------------------------------+
 #property strict
 color gColorMousePoint = clrSlateGray;
-#include "InfoItem/CrossHair.mqh"
-#include "InfoItem/MouseInfo.mqh"
-#include "InfoItem/ContextMenu.mqh"
 #include "Home/Controller.mqh"
 #include "Home/CommonData.mqh"
+#include "InfoItem/CrossHair.mqh"
+#include "InfoItem/ContextMenu.mqh"
+#include "InfoItem/MouseInfo.mqh"
 
 void FinishedJobFunc();
 void detectMouseDraging(const string &sparam);
 
 Trade* gpTrade;
 
-CommonData gCommonData;
-CrossHair   gCrossHair(&gCommonData);
+CommonData  gCommonData;
 MouseInfo   gMouseInfo(&gCommonData);
-ContextMenu gContextMenu();
 Controller  gController(&gCommonData, &gMouseInfo);
+CrossHair   gCrossHair(&gCommonData);
+ContextMenu gContextMenu();
 
 int    gSymbolDigits= 0;
 double gScaleRange = 0;

@@ -39,6 +39,8 @@ string mNativeCurrency;
 double mNativeCost;
 double mSymbolCode;
 double mStlSpace;
+string mListLiveTradeStr;
+string mListLiveTradeArr[];
 
 // Component name
 private:
@@ -96,6 +98,7 @@ public:
 // Special functional
     void showHistory(bool isShow);
     void createTrade(int id, datetime _time1, datetime _time2, double _priceEN, double _priceSL, double _priceTP, double _priceBE);
+    void scanLiveTrade();
 
 // Alpha feature
     void initData();
@@ -106,6 +109,8 @@ Trade::Trade(const string name, CommonData* commonData, MouseInfo* mouseInfo)
     mItemName = name;
     pCommonData = commonData;
     pMouseInfo = mouseInfo;
+
+    mListLiveTradeStr = "";
 
     // Init variable type
     mNameType [0] = "Long";
@@ -330,6 +335,7 @@ void Trade::refreshData()
         ObjectSetText(iTpPrice, DoubleToString(priceTP, gSymbolDigits));
         ObjectSetText(iEnPrice, DoubleToString(priceEN, gSymbolDigits));
         ObjectSetText(iSlPrice, DoubleToString(priceSL, gSymbolDigits));
+        if (strEnInfo != "") strEnInfo += "-";
         strEnInfo += DoubleToString(mTradeLot,2) + "lot";
     }
     else
@@ -459,10 +465,8 @@ void Trade::showHistory(bool isShow)
             continue;
         }
         
-        if ((bool)ObjectGet(cPointWD, OBJPROP_SELECTED))
-        {
-            continue;
-        }
+        if ((bool)ObjectGet(cPointWD, OBJPROP_SELECTED)) continue;
+        if (ObjectDescription(cPointWD) != "") continue; // Don't hide live trade
         // Hide Item
         ObjectSet(iBgndSL , OBJPROP_PRICE1, 0);
         ObjectSet(iBgndTP , OBJPROP_PRICE1, 0);
@@ -513,7 +517,17 @@ void Trade::onUserRequest(const string &itemId, const string &objId)
         OrderNumber=OrderSend(Symbol(),Cmd,mTradeLot,priceEN,Slippage,priceSL,priceTP);
         if(OrderNumber>0){
             Print("Order ",OrderNumber," open");
-            // Create Live Trade Item & Remove old trade
+            // Lấy những thông tin từ trade cũ
+            priceBE = ObjectGet(cPointBE, OBJPROP_PRICE1);
+            time1 = (datetime)ObjectGet(cBoder  , OBJPROP_TIME1);
+            time2 = (datetime)ObjectGet(cPointWD, OBJPROP_TIME1);
+            // Xoá trade item
+            ObjectDelete(cPointWD);
+            // Tạo trade mới theo Order number
+            createTrade(OrderNumber, time1, time2, priceEN, priceSL, priceTP, priceBE);
+            ObjectSetText(cPointWD, "Live");
+            mListLiveTradeStr += IntegerToString(OrderNumber) + ",";
+            mFinishedJobCb();
         }
         else{
             Print("Order failed with error - ",GetLastError());
@@ -553,4 +567,65 @@ void Trade::createTrade(int id, datetime _time1, datetime _time2, double _priceE
     priceSL = _priceSL;
     priceBE = _priceBE;
     refreshData();
+}
+
+void Trade::scanLiveTrade()
+{
+    if (Trd_ShowPrice == HIDE) return;
+    if (mListLiveTradeStr == ""){
+        int openedTrade = 0;
+        int tradePos    = -1;
+        for( int i = 0 ; i < OrdersTotal() ; i++ ) { 
+            if (OrderSelect(i, SELECT_BY_POS, MODE_TRADES ) == false) continue;
+            if (OrderSymbol() != Symbol()) continue;
+            mListLiveTradeStr += IntegerToString(OrderTicket()) + ",";
+        }
+    }
+    else {
+        int k=StringSplit(mListLiveTradeStr,',',mListLiveTradeArr);
+        mListLiveTradeStr = "";
+        for (int i = 0; i < k-1; i++){
+            string itemId = mItemName + "_" +IntegerToString(ChartPeriod()) + "#" + mListLiveTradeArr[i];
+            activateItem(itemId);
+            if (OrderSelect(StrToInteger(mListLiveTradeArr[i]), SELECT_BY_TICKET, MODE_TRADES) == true) {
+                if (OrderCloseTime() == 0){ // Lệnh chưa đóng
+                    priceTP = OrderTakeProfit();
+                    priceEN = OrderOpenPrice();
+                    int orderType = OrderType();
+                    if (orderType == OP_BUY || orderType == OP_BUYLIMIT || orderType == OP_BUYSTOP){
+                        priceSL = NormalizeDouble(priceEN - mNativeCost / OrderLots() / 100000, 5);
+                    } else {
+                        priceSL = NormalizeDouble(priceEN + mNativeCost / OrderLots() / 100000, 5);
+                    }
+
+                    if (ObjectFind(ChartID(), cPointWD) != 0) {
+                        createItem();
+                        time1 = OrderOpenTime();
+                        time2 = time1 + ChartPeriod()*1800;
+                        priceBE = 2*priceEN - priceSL;
+                    } else {
+                        time1 = (datetime)ObjectGet(cBoder  , OBJPROP_TIME1);
+                        time2 = (datetime)ObjectGet(cPointWD, OBJPROP_TIME1);
+                        priceBE = ObjectGet(cPointBE, OBJPROP_PRICE1);
+                    }
+                    ObjectSetText(cPointWD, "Live");
+                    refreshData();
+                    if (fabs(OrderProfit()) > 0.001 && (ObjectDescription(cPointBE) == "be") && priceEN != OrderStopLoss()){
+                        bool res=OrderModify(OrderTicket(),OrderOpenPrice(),OrderOpenPrice(),OrderTakeProfit(),0,Blue);
+                        if(!res)
+                            Print("Error in OrderModify. Error code=",GetLastError());
+                        else
+                            Print("Order modified successfully.");
+                    }
+                    mListLiveTradeStr += mListLiveTradeArr[i] + ",";
+                } else {
+                    ObjectSetText(cPointWD, "");
+                    ObjectSetText(iEnText,"");
+                }
+            } else {
+                ObjectSetText(cPointWD, "");
+                ObjectSetText(iEnText,"");
+            }
+        }
+    }
 }

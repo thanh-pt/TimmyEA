@@ -1,14 +1,14 @@
 #include "../Base/BaseItem.mqh"
-#include "../InfoItem/MouseInfo.mqh"
-#include "../Tools/Trend.mqh"
-#include "../Tools/ZigZag.mqh"
-#include "../Tools/Rectangle.mqh"
-#include "../Tools/CallOut.mqh"
 #include "../Tools/Trade.mqh"
-#include "../Tools/Fibonacci.mqh"
 #include "../Tools/Alert.mqh"
+#include "../Tools/Trend.mqh"
+#include "../Tools/Rectangle.mqh"
+#include "../Tools/ZigZag.mqh"
+#include "../Tools/CallOut.mqh"
+#include "../Tools/Fibonacci.mqh"
 #include "../Tools/Points.mqh"
 #include "../Tools/Label.mqh"
+#include "../InfoItem/MouseInfo.mqh"
 
 #define CHECK_NOT_ACTIVE_RETURN if(mActive == IDX_NONE){return;}
 #define CHECK_ACTIVE_RETURN if(mActive != IDX_NONE){return;}
@@ -296,4 +296,5 @@ void Controller::handleSparamEvent(const int id, const string& sparam)
 void Controller::handleOntick()
 {
     ((Alert*)mListItem[IDX_ALERT]).checkAlert();
+    ((Trade*)mListItem[IDX_TRADE]).scanLiveTrade();
 }
