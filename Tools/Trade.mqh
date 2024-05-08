@@ -584,48 +584,57 @@ void Trade::scanLiveTrade()
     else {
         int k=StringSplit(mListLiveTradeStr,',',mListLiveTradeArr);
         mListLiveTradeStr = "";
+        bool isBuy = false;
+        int orderType = 0;
         for (int i = 0; i < k-1; i++){
             string itemId = mItemName + "_" +IntegerToString(ChartPeriod()) + "#" + mListLiveTradeArr[i];
             activateItem(itemId);
-            if (OrderSelect(StrToInteger(mListLiveTradeArr[i]), SELECT_BY_TICKET, MODE_TRADES) == true) {
-                if (OrderCloseTime() == 0){ // Lệnh chưa đóng
-                    priceTP = OrderTakeProfit();
-                    priceEN = OrderOpenPrice();
-                    int orderType = OrderType();
-                    if (orderType == OP_BUY || orderType == OP_BUYLIMIT || orderType == OP_BUYSTOP){
-                        priceSL = NormalizeDouble(priceEN - mNativeCost / OrderLots() / 100000, 5);
-                    } else {
-                        priceSL = NormalizeDouble(priceEN + mNativeCost / OrderLots() / 100000, 5);
-                    }
-
-                    if (ObjectFind(ChartID(), cPointWD) != 0) {
-                        createItem();
-                        time1 = OrderOpenTime();
-                        time2 = time1 + ChartPeriod()*1800;
-                        priceBE = 2*priceEN - priceSL;
-                    } else {
-                        time1 = (datetime)ObjectGet(cBoder  , OBJPROP_TIME1);
-                        time2 = (datetime)ObjectGet(cPointWD, OBJPROP_TIME1);
-                        priceBE = ObjectGet(cPointBE, OBJPROP_PRICE1);
-                    }
-                    ObjectSetText(cPointWD, "Live");
-                    refreshData();
-                    if (fabs(OrderProfit()) > 0.001 && (ObjectDescription(cPointBE) == "be") && priceEN != OrderStopLoss()){
-                        bool res=OrderModify(OrderTicket(),OrderOpenPrice(),OrderOpenPrice(),OrderTakeProfit(),0,Blue);
-                        if(!res)
-                            Print("Error in OrderModify. Error code=",GetLastError());
-                        else
-                            Print("Order modified successfully.");
-                    }
-                    mListLiveTradeStr += mListLiveTradeArr[i] + ",";
-                } else {
-                    ObjectSetText(cPointWD, "");
-                    ObjectSetText(iEnText,"");
-                }
-            } else {
+            if (OrderSelect(StrToInteger(mListLiveTradeArr[i]), SELECT_BY_TICKET, MODE_TRADES) == false) {
                 ObjectSetText(cPointWD, "");
                 ObjectSetText(iEnText,"");
+                continue;
             }
+            if (OrderCloseTime() != 0){ // Lệnh đã đóng
+                ObjectSetText(cPointWD, "");
+                ObjectSetText(iEnText,"");
+                continue;
+            }
+            // Lệnh đang mở cần được control
+            priceTP = OrderTakeProfit();
+            priceEN = OrderOpenPrice();
+            orderType = OrderType();
+            if (orderType == OP_BUY || orderType == OP_BUYLIMIT || orderType == OP_BUYSTOP){
+                isBuy = true;
+                priceSL = NormalizeDouble(priceEN - mNativeCost / OrderLots() / 100000, 5);
+            } else {
+                isBuy = false;
+                priceSL = NormalizeDouble(priceEN + mNativeCost / OrderLots() / 100000, 5);
+            }
+
+            if (ObjectFind(ChartID(), cPointWD) != 0) {
+                createItem();
+                time1 = OrderOpenTime();
+                time2 = time1 + ChartPeriod()*1800;
+                priceBE = 2*priceEN - priceSL;
+            } else {
+                time1 = (datetime)ObjectGet(cBoder  , OBJPROP_TIME1);
+                time2 = (datetime)ObjectGet(cPointWD, OBJPROP_TIME1);
+                priceBE = ObjectGet(cPointBE, OBJPROP_PRICE1);
+            }
+            ObjectSetText(cPointWD, "Live");
+            refreshData();
+            // Check Auto BE
+            if (fabs(OrderProfit()) > 0.001 && (ObjectDescription(cPointBE) == "be") && priceEN != OrderStopLoss()){
+                if ((isBuy==true && Bid >= priceBE) || (isBuy == false && Bid <= priceBE)){
+                    bool res=OrderModify(OrderTicket(),OrderOpenPrice(),OrderOpenPrice(),OrderTakeProfit(),0,Blue);
+                    if(!res)
+                        Print("Error in OrderModify. Error code=",GetLastError());
+                    else
+                        Print("Order modified successfully.");
+                }
+            }
+            // Add remain Item
+            mListLiveTradeStr += mListLiveTradeArr[i] + ",";
         }
     }
 }
