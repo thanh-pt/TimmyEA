@@ -6,7 +6,7 @@ typedef void(*FinishedJob)();
 class BaseItem
 {
 private:
-    string      mTempSparamItems[];
+    string      mContextItems[];
 protected:
     string      mItemName;
     CommonData* pCommonData;
@@ -90,10 +90,10 @@ void BaseItem::finishedDeactivate()
 
 void BaseItem::touchItem(const string& itemId)
 {
-    mTData = itemId + "_mTData";
-    mAllItem = mTData;
+    mTData      = itemId + "_mTData";
+    mAllItem    = mTData;
     activateItem(itemId);
-    mIndexType = StrToInteger(ObjectDescription(mTData));
+    mIndexType  = StrToInteger(ObjectDescription(mTData));
 }
 
 void BaseItem::changeActiveType(int type)
@@ -152,10 +152,10 @@ void BaseItem::onUserRequest(const string &itemId, const string &objId)
 
 void BaseItem::onItemDeleted(const string &itemId, const string &objId)
 {
-    int k=StringSplit(mAllItem,'.',mTempSparamItems);
+    int k=StringSplit(mAllItem,'.',mContextItems);
     for (int i = 0; i < k; i++)
     {
-        if (mTempSparamItems[i] == "") continue;
-        ObjectDelete("."+mTempSparamItems[i]);
+        if (mContextItems[i] == "") continue;
+        ObjectDelete("."+mContextItems[i]);
     }
 }
