@@ -18,6 +18,7 @@ private:
     bool   mIsOpen;
 public:
     int mActivePos;
+    string mActiveItemStr;
 
 public:
     ContextMenu()
@@ -40,6 +41,8 @@ public:
             itemBgnd = "ContextMenuBgnd_"+IntegerToString(i);
             if (i == mActivePos){
                 ObjectSet(itemBgnd, OBJPROP_COLOR, ContxtMenu_BgColor2);
+                string itemName = "ContextMenuName_"+IntegerToString(i);
+                mActiveItemStr = StringTrimLeft(ObjectDescription(itemName));
             }
             else {
                 ObjectSet(itemBgnd, OBJPROP_COLOR, ContxtMenu_BgColor1);

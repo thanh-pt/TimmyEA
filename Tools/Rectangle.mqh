@@ -40,6 +40,10 @@ private:
     string iLText;
     string iRText;
 
+    string iLine1;
+    string iLine2;
+    string iLine3;
+
     string cPointL1;
     string cPointL2;
     string cPointR1;
@@ -79,6 +83,7 @@ public:
     virtual void onItemClick(const string &itemId, const string &objId);
     virtual void onItemChange(const string &itemId, const string &objId);
     virtual void onItemDeleted(const string &itemId, const string &objId);
+    virtual void onUserRequest(const string &itemId, const string &objId);
 };
 
 Rectangle::Rectangle(const string name, CommonData* commonData, MouseInfo* mouseInfo)
@@ -107,6 +112,7 @@ Rectangle::Rectangle(const string name, CommonData* commonData, MouseInfo* mouse
         mContextType += mNameType[i];
         if (i < mTypeNum-1) mContextType += ",";
     }
+    mContextType += "," + "Range";
 }
 
 // Internal Event
@@ -159,6 +165,10 @@ void Rectangle::activateItem(const string& itemId)
     iLText = itemId + "_0iLText";
     iRText = itemId + "_0iRText";
 
+    iLine1 = itemId + "_0iLine1";
+    iLine2 = itemId + "_0iLine2";
+    iLine3 = itemId + "_0iLine3";
+
     cPointL1 = itemId + "_cPointL1";
     cPointL2 = itemId + "_cPointL2";
     cPointR1 = itemId + "_cPointR1";
@@ -166,7 +176,9 @@ void Rectangle::activateItem(const string& itemId)
     cPointC1 = itemId + "_cPointC1";
     cPointC2 = itemId + "_cPointC2";
 
-    mAllItem += cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2+cBkgnd+iCText+iLText+iRText;
+    mAllItem += cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2+cBkgnd
+                +iCText+iLText+iRText
+                +iLine1+iLine2+iLine3;
 }
 void Rectangle::updateItemAfterChangeType()
 {
@@ -187,6 +199,9 @@ void Rectangle::refreshData()
     setItemPos(cPointC2, time2, centerPrice);
 
     setItemPos(cBkgnd, time1, time2, price1, price2);
+    setItemPos(iLine1, time1, time2, price1, price1);
+    setItemPos(iLine2, time1, time2, centerPrice, centerPrice);
+    setItemPos(iLine3, time1, time2, price2, price2);
     //-------------------------------------------------
     setTextPos(iLText, time1 + ChartPeriod()*60, centerPrice);
     setTextPos(iRText, time2 - ChartPeriod()*60, centerPrice);
@@ -272,7 +287,7 @@ void Rectangle::onItemDrag(const string &itemId, const string &objId)
 }
 void Rectangle::onItemClick(const string &itemId, const string &objId)
 {
-    if (objId == iCText || objId == iLText || objId == iRText) return;
+    if (StringFind(objId, "_0i") >= 0) return;
     int selected = (int)ObjectGet(objId, OBJPROP_SELECTED);
     multiSetProp(OBJPROP_SELECTED, selected, mAllItem);
     multiSetProp(OBJPROP_COLOR   , selected ? gColorMousePoint : clrNONE, cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2);
@@ -301,4 +316,25 @@ void Rectangle::onItemDeleted(const string &itemId, const string &objId)
 {
     BaseItem::onItemDeleted(itemId, objId);
     removeBackgroundOverlap(cBkgnd);
+}
+void Rectangle::onUserRequest(const string &itemId, const string &objId)
+{
+    touchItem(itemId);
+    if (gContextMenu.mActivePos < RECT_NUM)
+    {
+        mIndexType = gContextMenu.mActivePos;
+        storeTData();
+        updateTypeProperty();
+        onItemDrag(itemId, objId);
+    } else if (gContextMenu.mActiveItemStr == "Range") {
+        ObjectCreate(iLine1, OBJ_TREND, 0, 0, 0);
+        ObjectCreate(iLine2, OBJ_TREND, 0, 0, 0);
+        ObjectCreate(iLine3, OBJ_TREND, 0, 0, 0);
+        
+        multiSetProp(OBJPROP_SELECTABLE, false, iLine1+iLine2+iLine3);
+        SetObjectStyle(iLine1, clrGray, 0, 0);
+        SetObjectStyle(iLine2, clrGray, 0, 0);
+        SetObjectStyle(iLine3, clrGray, 0, 0);
+        onItemDrag(itemId, objId);
+    }
 }
