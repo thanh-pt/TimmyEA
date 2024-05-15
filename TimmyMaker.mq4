@@ -79,6 +79,7 @@ int OnCalculate(const int rates_total,
 //---
 
 //--- return value of prev_calculated for next call
+    gController.handleOntick();
     return(rates_total);
 }
 #endif

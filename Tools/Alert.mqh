@@ -196,6 +196,7 @@ void Alert::checkAlert()
 
         // Get Alert information
         mIsAlertReached = false;
+        mIsAlertGoOver  = false;
         mCurrentAlertPrice = ObjectGet(mListAlertArr[i], OBJPROP_PRICE1);
         mCurrentAlertText  = ObjectGetString(ChartID(), mListAlertArr[i], OBJPROP_TEXT);
         // Check Alert Price
