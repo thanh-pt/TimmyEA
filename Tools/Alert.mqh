@@ -1,6 +1,9 @@
 #include "../Base/BaseItem.mqh"
 #include "../Home/Utility.mqh"
 
+#define ALERT_INDI_H "↑"
+#define ALERT_INDI_L "↓"
+
 enum EAlertType
 {
     CREATE_ALERT,
@@ -14,9 +17,11 @@ enum ENotiType
     ENotiPC,    // PC Notification
 };
 
-input string    _Alert;                     // ● Alert ●
-input bool      InpAlertActive = false;     // Alert Active
-input ENotiType InpNotiType = ENotiPhone;   // Notification Type
+input string        _Alert;                         // ● Alert ●
+input bool          InpAlertActive  = false;        // Alert Active
+input ENotiType     InpNotiType     = ENotiPhone;   // Notification Type
+input color         InpAlertColor   = clrGainsboro; // Color
+input LINE_STYLE    InpAlertStyle   = STYLE_DOT;    // Style
 
 class Alert : public BaseItem
 {
@@ -30,6 +35,7 @@ string mCurrentAlertText;
 string mListAlertArr[];
 int    mAlertNumber;
 bool   mIsAlertReached;
+bool   mIsAlertGoOver;
 double mCurrentAlertPrice;
 string mListAlertRemainStr;
 
@@ -106,15 +112,15 @@ void Alert::onMouseClick()
     if (mIndexType == CREATE_ALERT)
     {
         ObjectCreate(cAlert, OBJ_HLINE, 0, 0, pCommonData.mMousePrice);
-        SetObjectStyle(cAlert, clrGainsboro, STYLE_DASHDOT, 0);
+        SetObjectStyle(cAlert, InpAlertColor, InpAlertStyle, 0);
         ObjectSet(cAlert, OBJPROP_BACK , true);
-        mAlertIndi = (ObjectGet(cAlert, OBJPROP_PRICE1) > Bid ? "[H]" : "[L]");
+        mAlertIndi = (ObjectGet(cAlert, OBJPROP_PRICE1) > Bid ? ALERT_INDI_H : ALERT_INDI_L);
         ObjectSetText(cAlert, mAlertIndi + "Alert");
         // Add Alert to mListAlertStr
         mListAlertStr += cAlert + ",";
     }
     else if (mIndexType == TEST_ALERT){
-        sendNotification(Symbol()+":\n" + "Test Alert");
+        sendNotification("Alert OK!");
     }
     mFinishedJobCb();
 }
@@ -129,9 +135,9 @@ void Alert::onItemDrag(const string &itemId, const string &objId)
             ObjectSet(cAlert, OBJPROP_PRICE1, priceAlert);
         }
         mAlertText = ObjectGetString(ChartID(), cAlert, OBJPROP_TEXT);
-        mAlertIndi = (priceAlert > Bid ? "[H]" : "[L]");
+        mAlertIndi = (priceAlert > Bid ? ALERT_INDI_H : ALERT_INDI_L);
 
-        if (StringFind(mAlertText, "[H]") == -1 && StringFind(mAlertText, "[L]") == -1 )
+        if (StringFind(mAlertText, ALERT_INDI_H) == -1 && StringFind(mAlertText, ALERT_INDI_L) == -1 )
         {
             // Cannot found Indi => Add Indi
             mAlertText = mAlertIndi + " " + mAlertText;
@@ -140,8 +146,8 @@ void Alert::onItemDrag(const string &itemId, const string &objId)
         else if (StringFind(mAlertText, mAlertIndi) == -1)
         {
             // Indi not correct, remove old indi and replate new indi
-            StringSetCharacter(mAlertText, 1, 'x');
-            StringReplace(mAlertText, "[x]", mAlertIndi);
+            StringReplace(mAlertText, ALERT_INDI_H, mAlertIndi);
+            StringReplace(mAlertText, ALERT_INDI_L, mAlertIndi);
             ObjectSetText(cAlert, mAlertText);
         }
 
@@ -164,6 +170,7 @@ void Alert::initAlarm()
     mCurrentAlertText = "";
     mAlertNumber = 0;
     mIsAlertReached = false;
+    mIsAlertGoOver  = false;
     mCurrentAlertPrice = 0;
     mListAlertRemainStr = "";
     string alertLine = "";
@@ -192,25 +199,26 @@ void Alert::checkAlert()
         mCurrentAlertPrice = ObjectGet(mListAlertArr[i], OBJPROP_PRICE1);
         mCurrentAlertText  = ObjectGetString(ChartID(), mListAlertArr[i], OBJPROP_TEXT);
         // Check Alert Price
-        if (StringFind(mCurrentAlertText,"[H]") != -1)
+        if (StringFind(mCurrentAlertText,ALERT_INDI_H) != -1)
         {
             mIsAlertReached = (Bid >= mCurrentAlertPrice);
+            mIsAlertGoOver  = (Bid > mCurrentAlertPrice);
         }
-        else if (StringFind(mCurrentAlertText,"[L]") != -1)
+        else if (StringFind(mCurrentAlertText,ALERT_INDI_L) != -1)
         {
             mIsAlertReached = (Bid <= mCurrentAlertPrice);
+            mIsAlertGoOver  = (Bid < mCurrentAlertPrice);
         }
 
         // Send notification or save remain Alert
         if (mIsAlertReached == true)
         {
-            sendNotification(Symbol()+":   "+ DoubleToString(mCurrentAlertPrice, gSymbolDigits) + "\n" + mCurrentAlertText);
-            ObjectDelete(mListAlertArr[i]);
+            sendNotification("[" + Symbol() + "/" + getTFString() + "]\n" +
+                            mCurrentAlertText + "\n" +
+                            DoubleToString(mCurrentAlertPrice, gSymbolDigits));
         }
-        else
-        {
-            mListAlertRemainStr += mListAlertArr[i] + ",";
-        }
+        if (mIsAlertGoOver) ObjectDelete(mListAlertArr[i]);
+        else mListAlertRemainStr += mListAlertArr[i] + ",";
     }
     mListAlertStr = mListAlertRemainStr;
 }
