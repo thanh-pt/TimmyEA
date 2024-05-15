@@ -610,12 +610,15 @@ void Trade::scanLiveTrade()
                 isBuy = false;
                 priceSL = NormalizeDouble(priceEN + mNativeCost / OrderLots() / 100000, 5);
             }
+            if (priceTP <= 0.0){
+                priceTP = 4*priceEN - 3*priceSL;
+            }
 
             if (ObjectFind(ChartID(), cPointWD) != 0) {
-                createItem();
                 time1 = OrderOpenTime();
                 time2 = time1 + ChartPeriod()*1800;
                 priceBE = 2*priceEN - priceSL;
+                createTrade(OrderTicket(), time1, time2, priceEN, priceSL, priceTP, priceBE);
             } else {
                 time1 = (datetime)ObjectGet(cBoder  , OBJPROP_TIME1);
                 time2 = (datetime)ObjectGet(cPointWD, OBJPROP_TIME1);
@@ -631,6 +634,14 @@ void Trade::scanLiveTrade()
                         Print("Error in OrderModify. Error code=",GetLastError());
                     else
                         Print("Order modified successfully.");
+                }
+            } else if (OrderProfit() == 0 && (ObjectDescription(cPointBE) == "out")){
+                if ((isBuy==true && Bid >= priceBE) || (isBuy == false && Bid <= priceBE)){
+                    bool res=OrderDelete(OrderTicket());
+                    if(!res)
+                        Print("Error in OrderDelete. Error code=",GetLastError());
+                    else
+                        Print("OrderDelete successfully.");
                 }
             }
             // Add remain Item
