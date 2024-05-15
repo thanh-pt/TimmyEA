@@ -3,9 +3,12 @@
 
 #define LONG_IDX 0
 
-#define ADD_SPREAD "Add Spread"
-#define LIVE_TRADE "Live Trade"
-#define ADD_SLTP   "Add Sl/TP"
+#define CTX_SPREAD      "Spread"
+#define CTX_GOLIVE      "Go Live"
+#define CTX_ADDSLTP     "Sl/TP"
+#define CTX_AUTOBE      "Auto BE"
+
+#define LIVE_INDI       "ʟɪᴠᴇ"
 
 enum e_display
 {
@@ -45,6 +48,7 @@ double mSymbolCode;
 double mStlSpace;
 string mListLiveTradeStr;
 string mListLiveTradeArr[];
+string mLiveTradeCtx;
 
 // Component name
 private:
@@ -122,8 +126,11 @@ Trade::Trade(const string name, CommonData* commonData, MouseInfo* mouseInfo)
     mIndexType = 0;
     mTypeNum = 2;
 
-    mContextType  =  "Add Spread";
-    mContextType +=  ",Live Trade";
+    mContextType  =        CTX_SPREAD;
+    mContextType +=  "," + CTX_GOLIVE;
+
+    mLiveTradeCtx  =        CTX_ADDSLTP;
+    mLiveTradeCtx +=  "," + CTX_AUTOBE;
 
     // Other initialize
     string strSymbol = Symbol();
@@ -339,7 +346,7 @@ void Trade::refreshData()
         ObjectSetText(iTpPrice, DoubleToString(priceTP, gSymbolDigits));
         ObjectSetText(iEnPrice, DoubleToString(priceEN, gSymbolDigits));
         ObjectSetText(iSlPrice, DoubleToString(priceSL, gSymbolDigits));
-        if (strEnInfo != "") strEnInfo += "-";
+        if (strEnInfo != "") strEnInfo += " ";
         strEnInfo += DoubleToString(mTradeLot,2) + "lot";
     }
     else
@@ -431,7 +438,12 @@ void Trade::onItemClick(const string &itemId, const string &objId)
     onItemDrag(itemId, objId);
     if (objId == cPointWD && selectState == true && Trd_ShowPrice != HIDE && pCommonData.mShiftHold)
     {
-        gContextMenu.openContextMenu(objId, mContextType, -1);
+        if (ObjectDescription(cPointWD) == LIVE_INDI){
+            gContextMenu.openContextMenu(objId, mLiveTradeCtx, -1);
+        }
+        else{
+            gContextMenu.openContextMenu(objId, mContextType, -1);
+        }
     }
 }
 void Trade::onItemChange(const string &itemId, const string &objId)
@@ -508,7 +520,7 @@ void Trade::showHistory(bool isShow)
 void Trade::onUserRequest(const string &itemId, const string &objId)
 {
     // Add Live Trade
-    if (gContextMenu.mActivePos == 1)
+    if (gContextMenu.mActiveItemStr == CTX_GOLIVE)
     {
         priceEN   = NormalizeDouble(priceEN, gSymbolDigits);
         priceSL   = NormalizeDouble(priceSL, gSymbolDigits);
@@ -529,7 +541,7 @@ void Trade::onUserRequest(const string &itemId, const string &objId)
             ObjectDelete(cPointWD);
             // Tạo trade mới theo Order number
             createTrade(OrderNumber, time1, time2, priceEN, priceSL, priceTP, priceBE);
-            ObjectSetText(cPointWD, "Live");
+            ObjectSetText(cPointWD, LIVE_INDI);
             mListLiveTradeStr += IntegerToString(OrderNumber) + ",";
         }
         else{
@@ -538,7 +550,7 @@ void Trade::onUserRequest(const string &itemId, const string &objId)
         }
     }
     // Add Spread Feature
-    else if (gContextMenu.mActivePos == 0)
+    else if (gContextMenu.mActiveItemStr == CTX_SPREAD)
     {
         onItemDrag(itemId, objId);
         double spread = (double)SymbolInfoInteger(Symbol(), SYMBOL_SPREAD);
@@ -557,9 +569,22 @@ void Trade::onUserRequest(const string &itemId, const string &objId)
         refreshData();
     }
     // Add TP/SL if they don't have
-    else if (gContextMenu.mActivePos == 2)
+    else if (gContextMenu.mActiveItemStr == CTX_ADDSLTP)
     {
-        //
+        string sparamItems[];
+        int k=StringSplit(itemId,'#',sparamItems);
+        if (k == 2){
+            if(OrderModify(OrderTicket(),OrderOpenPrice(),priceSL,priceTP,0) == true){
+                Print("OrderModify successfully.");
+            }
+            else
+                Print("Error in OrderModify. Error code=",GetLastError());
+        }
+    }
+    else if (gContextMenu.mActiveItemStr == CTX_AUTOBE)
+    {
+        ObjectSetText(cPointBE, "be");
+        refreshData();
     }
     gContextMenu.clearContextMenu();
 }
@@ -675,7 +700,7 @@ void Trade::scanLiveTrade()
         }
 
         /// D. Reload & Others
-        ObjectSetText(cPointWD, "Live");
+        ObjectSetText(cPointWD, LIVE_INDI);
         refreshData();
         // Add remain Item
         mListLiveTradeStr += mListLiveTradeArr[i] + ",";
