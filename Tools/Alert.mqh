@@ -113,7 +113,7 @@ void Alert::onMouseClick()
     {
         ObjectCreate(cAlert, OBJ_HLINE, 0, 0, pCommonData.mMousePrice);
         SetObjectStyle(cAlert, InpAlertColor, InpAlertStyle, 0);
-        ObjectSet(cAlert, OBJPROP_BACK , true);
+        // ObjectSet(cAlert, OBJPROP_BACK , true);
         mAlertIndi = (ObjectGet(cAlert, OBJPROP_PRICE1) > Bid ? ALERT_INDI_H : ALERT_INDI_L);
         ObjectSetText(cAlert, mAlertIndi + "Alert");
         // Add Alert to mListAlertStr
@@ -136,20 +136,11 @@ void Alert::onItemDrag(const string &itemId, const string &objId)
         }
         mAlertText = ObjectGetString(ChartID(), cAlert, OBJPROP_TEXT);
         mAlertIndi = (priceAlert > Bid ? ALERT_INDI_H : ALERT_INDI_L);
+        StringReplace(mAlertText, ALERT_INDI_H, "");
+        StringReplace(mAlertText, ALERT_INDI_L, "");
 
-        if (StringFind(mAlertText, ALERT_INDI_H) == -1 && StringFind(mAlertText, ALERT_INDI_L) == -1 )
-        {
-            // Cannot found Indi => Add Indi
-            mAlertText = mAlertIndi + " " + mAlertText;
-            ObjectSetText(cAlert, mAlertText);
-        }
-        else if (StringFind(mAlertText, mAlertIndi) == -1)
-        {
-            // Indi not correct, remove old indi and replate new indi
-            StringReplace(mAlertText, ALERT_INDI_H, mAlertIndi);
-            StringReplace(mAlertText, ALERT_INDI_L, mAlertIndi);
-            ObjectSetText(cAlert, mAlertText);
-        }
+        mAlertText = mAlertIndi + " " + mAlertText;
+        ObjectSetText(cAlert, mAlertText);
 
         if (StringFind(mListAlertStr, cAlert) == -1)
         {

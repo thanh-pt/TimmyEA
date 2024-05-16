@@ -17,6 +17,9 @@ input color             Rect_Dz_Color      = C'209,225,237'; // Dz Color
 input color             Rect_DzLight_Color = C'232,240,247'; // Dz Light Color
 //-----------------------------------------------------------
 
+#define CTX_RANGE   "Range"
+#define CTX_NORANGE "No Range"
+
 enum RectangleType
 {
     SZ_POI_TYPE,
@@ -112,7 +115,8 @@ Rectangle::Rectangle(const string name, CommonData* commonData, MouseInfo* mouse
         mContextType += mNameType[i];
         if (i < mTypeNum-1) mContextType += ",";
     }
-    mContextType += "," + "Range";
+    mContextType += "," + CTX_RANGE;
+    mContextType += "," + CTX_NORANGE;
 }
 
 // Internal Event
@@ -326,7 +330,7 @@ void Rectangle::onUserRequest(const string &itemId, const string &objId)
         storeTData();
         updateTypeProperty();
         onItemDrag(itemId, objId);
-    } else if (gContextMenu.mActiveItemStr == "Range") {
+    } else if (gContextMenu.mActiveItemStr == CTX_RANGE) {
         ObjectCreate(iLine1, OBJ_TREND, 0, 0, 0);
         ObjectCreate(iLine2, OBJ_TREND, 0, 0, 0);
         ObjectCreate(iLine3, OBJ_TREND, 0, 0, 0);
@@ -336,5 +340,9 @@ void Rectangle::onUserRequest(const string &itemId, const string &objId)
         SetObjectStyle(iLine2, clrGray, 0, 0);
         SetObjectStyle(iLine3, clrGray, 0, 0);
         onItemDrag(itemId, objId);
+    } else if (gContextMenu.mActiveItemStr == CTX_NORANGE) {
+        SetObjectStyle(iLine1, clrNONE, 0, 0);
+        SetObjectStyle(iLine2, clrNONE, 0, 0);
+        SetObjectStyle(iLine3, clrNONE, 0, 0);
     }
 }

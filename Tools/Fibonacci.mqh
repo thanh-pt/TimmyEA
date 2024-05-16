@@ -194,8 +194,8 @@ void Fibonacci::updateTypeProperty()
         multiSetProp(OBJPROP_COLOR, clrNONE, iFib3+iFib4+iFib5 + iTxt3+iTxt4+iTxt5);
     }
     if (mIndexType == FIB_RANGE || mIndexType == FIB_RANGE_EXT){
-        ObjectSetText(iTxt2, "𝙀𝙦  ", 8);
-        multiSetProp(OBJPROP_COLOR, clrDarkOrange, iFib2+iTxt2);
+        ObjectSetText(iTxt2, "  ", 8);
+        multiSetProp(OBJPROP_COLOR, clrDarkOrange, iFib2);
     }
     if (mIndexType == FIB_RANGE_EXT) {
         multiSetProp(OBJPROP_RAY, true, iFib0+iFib1);

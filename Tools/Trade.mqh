@@ -368,7 +368,10 @@ void Trade::refreshData()
     //scanBackgroundOverlap(iBgndTP);
 
 }
-void Trade::finishedJobDone(){}
+void Trade::finishedJobDone()
+{
+    mFirstPoint = true;
+}
 
 // Chart Event
 void Trade::onMouseMove(){}
@@ -620,6 +623,7 @@ void Trade::scanLiveTrade()
     }
 
     // Manage Trade
+    if (mFirstPoint == false) return; // User are trying to draw new trade
     int k=StringSplit(mListLiveTradeStr,',',mListLiveTradeArr);
     mListLiveTradeStr = "";
     bool isBuy = false;
