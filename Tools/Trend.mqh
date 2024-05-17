@@ -8,80 +8,85 @@ enum TEXT_POS
     TXT_RIGHT,  // Right
 };
 
-input string Trend_; // ● Trend ●
+enum ETrendText{
+    ETrendTextLeft,     // Left
+    ETrendTextCenter,   // Center
+    ETrendTextRight,    // Right
+    ETrendTextLeftArr,  // Left + Arrow
+    ETrendTextCenterArr,// Center + Arrow
+    ETrendTextRightArr, // Right + Arrow
+};
+
+TEXT_POS getTextPos(ETrendText eTrendText){
+    switch (eTrendText){
+        case ETrendTextLeft     : return TXT_LEFT;
+        case ETrendTextCenter   : return TXT_CENTER;
+        case ETrendTextRight    : return TXT_RIGHT;
+        case ETrendTextLeftArr  : return TXT_LEFT;
+        case ETrendTextCenterArr: return TXT_CENTER;
+        case ETrendTextRightArr : return TXT_RIGHT;
+    }
+    return TXT_CENTER;
+}
+
+input string Trend_; // ●  T R E N D  ●
 input int        Trend_amount       = 7;            // Trend amount:
 //--------------------------------------------
-input string     Trend_1______Name  = "BOS";        // → Trend 1
-input color      Trend_1_Color      = clrNavy;      // Color
-input string     Trend_1_Text       = "";           // Text
-input TEXT_POS   Trend_1_TxtPos     = TXT_CENTER;   // Position
-input LINE_STYLE Trend_1_Style      = STYLE_SOLID;  // Style
-input int        Trend_1_Width      = 1;            // Width
-input bool       Trend_1_Arrow      = false;        // Arrow
+input string     Trend_1______Name  = "BOS";            // → Trend 1
+input string     Trend_1_Text       = "";               // Text
+input ETrendText Trend_1_TxtPos     = ETrendTextCenter; // Text Position
+input ELineStyle Trend_1_Style      = eLineSolid1;      // Style
+input color      Trend_1_Color      = clrNavy;          // Color
 //--------------------------------------------
-input string     Trend_2______Name  = "Break";      // → Trend 2
-input color      Trend_2_Color      = clrNavy;      // Color
-input string     Trend_2_Text       = "";           // Text
-input TEXT_POS   Trend_2_TxtPos     = TXT_CENTER;   // Position
-input LINE_STYLE Trend_2_Style      = STYLE_DOT;    // Style
-input int        Trend_2_Width      = 1;            // Width
-input bool       Trend_2_Arrow      = false;        // Arrow
+input string     Trend_2______Name  = "Break";          // → Trend 2
+input string     Trend_2_Text       = "";               // Text
+input ETrendText Trend_2_TxtPos     = ETrendTextCenter; // Text Position
+input ELineStyle Trend_2_Style      = eLineDot;         // Style
+input color      Trend_2_Color      = clrNavy;          // Color
 //--------------------------------------------
-input string     Trend_3______Name  = "Swept";      // → Trend 3
-input color      Trend_3_Color      = clrNavy;      // Color
-input string     Trend_3_Text       = "x";          // Text
-input TEXT_POS   Trend_3_TxtPos     = TXT_CENTER;   // Position
-input LINE_STYLE Trend_3_Style      = STYLE_SOLID;  // Style
-input int        Trend_3_Width      = 1;            // Width
-input bool       Trend_3_Arrow      = false;        // Arrow
+input string     Trend_3______Name  = "Swept";          // → Trend 3
+input string     Trend_3_Text       = "x";              // Text
+input ETrendText Trend_3_TxtPos     = ETrendTextCenter; // Text Position
+input ELineStyle Trend_3_Style      = eLineSolid1;      // Style
+input color      Trend_3_Color      = clrNavy;          // Color
 //--------------------------------------------
-input string     Trend_4______Name  = "Ch";         // → Trend 4
-input color      Trend_4_Color      = clrNavy;      // Color
-input string     Trend_4_Text       = "ch";         // Text
-input TEXT_POS   Trend_4_TxtPos     = TXT_CENTER;   // Position
-input LINE_STYLE Trend_4_Style      = STYLE_DOT;    // Style
-input int        Trend_4_Width      = 1;            // Width
-input bool       Trend_4_Arrow      = false;        // Arrow
+input string     Trend_4______Name  = "Ch";             // → Trend 4
+input string     Trend_4_Text       = "ch";             // Text
+input ETrendText Trend_4_TxtPos     = ETrendTextCenter; // Text Position
+input ELineStyle Trend_4_Style      = eLineDot;         // Style
+input color      Trend_4_Color      = clrNavy;          // Color
 //--------------------------------------------
-input string     Trend_5______Name  = "IRL";        // → Trend 5
-input color      Trend_5_Color      = clrGreen;     // Color
-input string     Trend_5_Text       = "$";          // Text
-input TEXT_POS   Trend_5_TxtPos     = TXT_CENTER;   // Position
-input LINE_STYLE Trend_5_Style      = STYLE_SOLID;  // Style
-input int        Trend_5_Width      = 1;            // Width
-input bool       Trend_5_Arrow      = false;        // Arrow
+input string     Trend_5______Name  = "IRL";            // → Trend 5
+input string     Trend_5_Text       = "$";              // Text
+input ETrendText Trend_5_TxtPos     = ETrendTextCenter; // Text Position
+input ELineStyle Trend_5_Style      = eLineSolid1;      // Style
+input color      Trend_5_Color      = clrGreen;         // Color
 //--------------------------------------------
-input string     Trend_6______Name  = "ERL";        // → Trend 6
-input color      Trend_6_Color      = clrGreen;     // Color
-input string     Trend_6_Text       = "  $$$";      // Text
-input TEXT_POS   Trend_6_TxtPos     = TXT_RIGHT;    // Position
-input LINE_STYLE Trend_6_Style      = STYLE_SOLID;  // Style
-input int        Trend_6_Width      = 2;            // Width
-input bool       Trend_6_Arrow      = false;        // Arrow
+input string     Trend_6______Name  = "ERL";            // → Trend 6
+input string     Trend_6_Text       = "  $$$";          // Text
+input ETrendText Trend_6_TxtPos     = ETrendTextRight;  // Text Position
+input ELineStyle Trend_6_Style      = eLineSolid2;      // Style
+input color      Trend_6_Color      = clrGreen;         // Color
 //--------------------------------------------
-input string     Trend_7______Name  = "Arw";        // → Trend 7
-input color      Trend_7_Color      = clrNavy;      // Color
-input string     Trend_7_Text       = "";           // Text
-input TEXT_POS   Trend_7_TxtPos     = TXT_CENTER;   // Position
-input LINE_STYLE Trend_7_Style      = STYLE_SOLID;  // Style
-input int        Trend_7_Width      = 1;            // Width
-input bool       Trend_7_Arrow      = true;         // Arrow
+input string     Trend_7______Name  = "Arw";            // → Trend 7
+input string     Trend_7_Text       = "";               // Text
+input ETrendText Trend_7_TxtPos     = ETrendTextCenterArr; // Text Position
+input ELineStyle Trend_7_Style      = eLineSolid1;      // Style
+input color      Trend_7_Color      = clrNavy;          // Color
 //--------------------------------------------
-input string     Trend_8______Name  = "---";        // → Trend 8
-input color      Trend_8_Color      = clrGreen;     // Color
-input string     Trend_8_Text       = "";           // Text
-input TEXT_POS   Trend_8_TxtPos     = TXT_CENTER;   // Position
-input LINE_STYLE Trend_8_Style      = STYLE_SOLID;  // Style
-input int        Trend_8_Width      = 1;            // Width
-input bool       Trend_8_Arrow      = false;        // Arrow
+
+// --- Reserved ---
+string     Trend_8______Name  = "---";            // → Trend 8
+string     Trend_8_Text       = "";               // Text
+ETrendText Trend_8_TxtPos     = ETrendTextCenter; // Text Position
+ELineStyle Trend_8_Style      = eLineSolid1;      // Style
+color      Trend_8_Color      = clrGreen;         // Color
 //--------------------------------------------
-input string     Trend_9______Name  = "---";        // → Trend 9
-input color      Trend_9_Color      = clrNavy;      // Color
-input string     Trend_9_Text       = "";           // Text
-input TEXT_POS   Trend_9_TxtPos     = TXT_CENTER;   // Position
-input LINE_STYLE Trend_9_Style      = STYLE_SOLID;  // Style
-input int        Trend_9_Width      = 1;            // Width
-input bool       Trend_9_Arrow      = false;        // Arrow
+string     Trend_9______Name  = "---";            // → Trend 9
+string     Trend_9_Text       = "";               // Text
+ETrendText Trend_9_TxtPos     = ETrendTextCenter; // Text Position
+ELineStyle Trend_9_Style      = eLineSolid1;      // Style
+color      Trend_9_Color      = clrNavy;          // Color
 
 enum TrendType
 {
@@ -160,75 +165,75 @@ Trend::Trend(const string name, CommonData* commonData, MouseInfo* mouseInfo)
     // Init variable type
     mNameType [TREND_1] = Trend_1______Name ;
     mDispText [TREND_1] = Trend_1_Text      ;
-    mTextPos  [TREND_1] = Trend_1_TxtPos    ;
+    mTextPos  [TREND_1] = getTextPos(Trend_1_TxtPos);
     mColorType[TREND_1] = Trend_1_Color     ;
-    mStyleType[TREND_1] = Trend_1_Style     ;
-    mWidthType[TREND_1] = Trend_1_Width     ;
-    mShowArrow[TREND_1] = Trend_1_Arrow     ;
+    mStyleType[TREND_1] = getLineStyle(Trend_1_Style);
+    mWidthType[TREND_1] = getLineWidth(Trend_1_Style);
+    mShowArrow[TREND_1] = (Trend_1_TxtPos>=ETrendTextLeftArr);     ;
     //--------------------------------------------
     mNameType [TREND_2] = Trend_2______Name ;
     mDispText [TREND_2] = Trend_2_Text      ;
-    mTextPos  [TREND_2] = Trend_2_TxtPos    ;
+    mTextPos  [TREND_2] = getTextPos(Trend_2_TxtPos);
     mColorType[TREND_2] = Trend_2_Color     ;
-    mStyleType[TREND_2] = Trend_2_Style     ;
-    mWidthType[TREND_2] = Trend_2_Width     ;
-    mShowArrow[TREND_2] = Trend_2_Arrow     ;
+    mStyleType[TREND_2] = getLineStyle(Trend_2_Style);
+    mWidthType[TREND_2] = getLineWidth(Trend_2_Style);
+    mShowArrow[TREND_2] = (Trend_2_TxtPos>=ETrendTextLeftArr);     ;
     //--------------------------------------------
     mNameType [TREND_3] = Trend_3______Name ;
     mDispText [TREND_3] = Trend_3_Text      ;
-    mTextPos  [TREND_3] = Trend_3_TxtPos    ;
+    mTextPos  [TREND_3] = getTextPos(Trend_3_TxtPos);
     mColorType[TREND_3] = Trend_3_Color     ;
-    mStyleType[TREND_3] = Trend_3_Style     ;
-    mWidthType[TREND_3] = Trend_3_Width     ;
-    mShowArrow[TREND_3] = Trend_3_Arrow     ;
+    mStyleType[TREND_3] = getLineStyle(Trend_3_Style);
+    mWidthType[TREND_3] = getLineWidth(Trend_3_Style);
+    mShowArrow[TREND_3] = (Trend_3_TxtPos>=ETrendTextLeftArr);     ;
     //--------------------------------------------
     mNameType [TREND_4] = Trend_4______Name ;
     mDispText [TREND_4] = Trend_4_Text      ;
-    mTextPos  [TREND_4] = Trend_4_TxtPos    ;
+    mTextPos  [TREND_4] = getTextPos(Trend_4_TxtPos);
     mColorType[TREND_4] = Trend_4_Color     ;
-    mStyleType[TREND_4] = Trend_4_Style     ;
-    mWidthType[TREND_4] = Trend_4_Width     ;
-    mShowArrow[TREND_4] = Trend_4_Arrow     ;
+    mStyleType[TREND_4] = getLineStyle(Trend_4_Style);
+    mWidthType[TREND_4] = getLineWidth(Trend_4_Style);
+    mShowArrow[TREND_4] = (Trend_4_TxtPos>=ETrendTextLeftArr);     ;
     //--------------------------------------------
     mNameType [TREND_5] = Trend_5______Name ;
     mDispText [TREND_5] = Trend_5_Text      ;
-    mTextPos  [TREND_5] = Trend_5_TxtPos    ;
+    mTextPos  [TREND_5] = getTextPos(Trend_5_TxtPos);
     mColorType[TREND_5] = Trend_5_Color     ;
-    mStyleType[TREND_5] = Trend_5_Style     ;
-    mWidthType[TREND_5] = Trend_5_Width     ;
-    mShowArrow[TREND_5] = Trend_5_Arrow     ;
+    mStyleType[TREND_5] = getLineStyle(Trend_5_Style);
+    mWidthType[TREND_5] = getLineWidth(Trend_5_Style);
+    mShowArrow[TREND_5] = (Trend_5_TxtPos>=ETrendTextLeftArr);     ;
     //--------------------------------------------
     mNameType [TREND_6] = Trend_6______Name ;
     mDispText [TREND_6] = Trend_6_Text      ;
-    mTextPos  [TREND_6] = Trend_6_TxtPos    ;
+    mTextPos  [TREND_6] = getTextPos(Trend_6_TxtPos);
     mColorType[TREND_6] = Trend_6_Color     ;
-    mStyleType[TREND_6] = Trend_6_Style     ;
-    mWidthType[TREND_6] = Trend_6_Width     ;
-    mShowArrow[TREND_6] = Trend_6_Arrow     ;
+    mStyleType[TREND_6] = getLineStyle(Trend_6_Style);
+    mWidthType[TREND_6] = getLineWidth(Trend_6_Style);
+    mShowArrow[TREND_6] = (Trend_6_TxtPos>=ETrendTextLeftArr);     ;
     //--------------------------------------------
     mNameType [TREND_7] = Trend_7______Name ;
     mDispText [TREND_7] = Trend_7_Text      ;
-    mTextPos  [TREND_7] = Trend_7_TxtPos    ;
+    mTextPos  [TREND_7] = getTextPos(Trend_7_TxtPos);
     mColorType[TREND_7] = Trend_7_Color     ;
-    mStyleType[TREND_7] = Trend_7_Style     ;
-    mWidthType[TREND_7] = Trend_7_Width     ;
-    mShowArrow[TREND_7] = Trend_7_Arrow     ;
+    mStyleType[TREND_7] = getLineStyle(Trend_7_Style);
+    mWidthType[TREND_7] = getLineWidth(Trend_7_Style);
+    mShowArrow[TREND_7] = (Trend_7_TxtPos>=ETrendTextLeftArr);     ;
     //--------------------------------------------
     mNameType [TREND_8] = Trend_8______Name ;
     mDispText [TREND_8] = Trend_8_Text      ;
-    mTextPos  [TREND_8] = Trend_8_TxtPos    ;
+    mTextPos  [TREND_8] = getTextPos(Trend_8_TxtPos);
     mColorType[TREND_8] = Trend_8_Color     ;
-    mStyleType[TREND_8] = Trend_8_Style     ;
-    mWidthType[TREND_8] = Trend_8_Width     ;
-    mShowArrow[TREND_8] = Trend_8_Arrow     ;
+    mStyleType[TREND_8] = getLineStyle(Trend_8_Style);
+    mWidthType[TREND_8] = getLineWidth(Trend_8_Style);
+    mShowArrow[TREND_8] = (Trend_8_TxtPos>=ETrendTextLeftArr);     ;
     //--------------------------------------------
     mNameType [TREND_9] = Trend_9______Name;
     mDispText [TREND_9] = Trend_9_Text     ;
-    mTextPos  [TREND_9] = Trend_9_TxtPos   ;
+    mTextPos  [TREND_9] = getTextPos(Trend_9_TxtPos);
     mColorType[TREND_9] = Trend_9_Color    ;
-    mStyleType[TREND_9] = Trend_9_Style    ;
-    mWidthType[TREND_9] = Trend_9_Width    ;
-    mShowArrow[TREND_9] = Trend_9_Arrow    ;
+    mStyleType[TREND_9] = getLineStyle(Trend_9_Style);
+    mWidthType[TREND_9] = getLineWidth(Trend_9_Style);
+    mShowArrow[TREND_9] = (Trend_9_TxtPos>=ETrendTextLeftArr);    ;
     //--------------------------------------------
     mIndexType = 0;
     mTypeNum = MathMin(Trend_amount, TREND_NUM);

@@ -1,8 +1,8 @@
 #include "../Home/CommonData.mqh"
 #include "../Home/Utility.mqh"
 
-input string CrossHair_; // ● Mouse Cross Hair ●
-input color  CrossHair_Color = clrSlateGray; // Cross Hair Color
+input string CrossHair_; // ●  C R O S S   H A I R  ●
+input color  CrossHair_Color = clrSlateGray; // Color
       int    CrossHair_LocalTimeZone = 7;
 input bool   CrossHair_DisplayDateInfo = false; // Date Info
 

@@ -1,7 +1,7 @@
 #include "../Base/BaseItem.mqh"
 #include "../Home/Utility.mqh"
 
-input string     Point_; //● Point ●
+input string     Point_; // ●  P O I N T  ●
 input string     Point_1______Name  = "Swing"; // → Point 1:
 input string     Point_1_Charecter  = "n";           // Charecter
 input string     Point_1_Font       = "webdings";    // Font

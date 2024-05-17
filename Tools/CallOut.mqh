@@ -1,7 +1,7 @@
 #include "../Base/BaseItem.mqh"
 #include "../Home/Utility.mqh"
 
-input string CallOut_;                              // ● Call-Out ●
+input string CallOut_;                              // ●  C A L L   O U T  ●
 input color  CallOut_Color    = clrMidnightBlue;    // Color
 input int    CallOut_FontSize = 10;                 // Font Size
 

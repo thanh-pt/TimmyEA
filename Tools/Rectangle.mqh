@@ -1,7 +1,7 @@
 #include "../Base/BaseItem.mqh"
 #include "../Home/Utility.mqh"
 
-input string            Rect_;                              //● Supply & Demand ●
+input string            Rect_;                              // ●  S U P P L Y   D E M A N D  ●
 input color             Rect_Text_Color  = clrMidnightBlue; //Text Color
 //-----------------------------------------------------------
       string            Rect_Sz_Name       = "Sz";
@@ -336,9 +336,9 @@ void Rectangle::onUserRequest(const string &itemId, const string &objId)
         ObjectCreate(iLine3, OBJ_TREND, 0, 0, 0);
         
         multiSetProp(OBJPROP_SELECTABLE, false, iLine1+iLine2+iLine3);
-        SetObjectStyle(iLine1, clrGray, 0, 0);
-        SetObjectStyle(iLine2, clrGray, 0, 0);
-        SetObjectStyle(iLine3, clrGray, 0, 0);
+        SetObjectStyle(iLine1, clrGray, 0, 0, true);
+        SetObjectStyle(iLine2, clrSilver, 0, 0, true);
+        SetObjectStyle(iLine3, clrGray, 0, 0, true);
         onItemDrag(itemId, objId);
     } else if (gContextMenu.mActiveItemStr == CTX_NORANGE) {
         SetObjectStyle(iLine1, clrNONE, 0, 0);

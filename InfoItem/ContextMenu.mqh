@@ -1,7 +1,6 @@
 #include "../Home/Utility.mqh"
 
-input string ContexMenu_; // ● Context Menu ●
-input color ContxtMenu_TextColor = clrBlack;     // Text Color
+input string ContexMenu_; // ●  C O N T E X T   M E N U  ●
 input color ContxtMenu_BgColor1  = clrGray;      // Bg Color
 input color ContxtMenu_BgColor2  = clrLightGray; // Selected Color
 
@@ -91,7 +90,7 @@ private:
         ObjectSet(itemBgnd, OBJPROP_SELECTABLE, false);
         ObjectSet(itemName, OBJPROP_SELECTABLE, false);
         ObjectSetText(itemBgnd, StringSubstr(TEXT_FULL_BLOCK, 0, mMaxLength), 10, "Consolas", ContxtMenu_BgColor1);
-        ObjectSetText(itemName,                                     " "+name, 10, "Consolas", ContxtMenu_TextColor);
+        ObjectSetText(itemName,                                     " "+name, 10, "Consolas", gForegroundColor);
         ObjectSetInteger(0, itemName, OBJPROP_ANCHOR, ANCHOR_LEFT_UPPER);
         ObjectSetInteger(0, itemBgnd, OBJPROP_ANCHOR, ANCHOR_LEFT_UPPER);
 

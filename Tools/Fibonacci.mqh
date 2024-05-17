@@ -1,11 +1,10 @@
 #include "../Base/BaseItem.mqh"
 #include "../Home/Utility.mqh"
 
-input string          Fib_;    //● Fibonacii ●
+input string          Fib_;    // ●  F I B O N A C I I  ●
 //--------------------------------------------
 input color           Fib_Bkgrd_Color = clrNONE;    // Bg Color
-input LINE_STYLE      Fib_Style     = STYLE_SOLID;  // Style
-input int             Fib_Width     = 1;            // Width
+input ELineStyle      Fib_Style     = eLineSolid1;  // Style
 //--------------------------------------------
 string          Fib_0;    //→ Fib 0
 double          Fib_0_Ratio = 0;              // Ratio
@@ -158,7 +157,7 @@ void Fibonacci::createItem()
 }
 void Fibonacci::updateDefaultProperty()
 {
-    multiSetProp(OBJPROP_STYLE        , Fib_Style , iFib0+iFib1+iFib2+iFib3+iFib4+iFib5);
+    multiSetProp(OBJPROP_STYLE        , getLineStyle(Fib_Style), iFib0+iFib1+iFib2+iFib3+iFib4+iFib5);
     multiSetProp(OBJPROP_BACK         , true      , iFib0+iFib1+iFib2+iFib3+iFib4+iFib5);
     multiSetProp(OBJPROP_SELECTABLE   , false     , iFib0+iFib1+iFib2+iFib3+iFib4+iFib5
                                                    +iTxt0+iTxt1+iTxt2+iTxt3+iTxt4+iTxt5);
@@ -181,7 +180,7 @@ void Fibonacci::updateTypeProperty()
     //------------------------------------------
     SetRectangleBackground(ckLne, Fib_Bkgrd_Color);
     multiSetProp(OBJPROP_RAY, false, iFib0+iFib1+iFib2+iFib3+iFib4+iFib5);
-    multiSetProp(OBJPROP_WIDTH     , Fib_Width , iFib0+iFib1+iFib2+iFib3+iFib4+iFib5);
+    multiSetProp(OBJPROP_WIDTH     , getLineWidth(Fib_Style), iFib0+iFib1+iFib2+iFib3+iFib4+iFib5);
     //------------------------------------------
     ObjectSet(iFib0, OBJPROP_COLOR, Fib_0_Color);
     ObjectSet(iFib1, OBJPROP_COLOR, Fib_1_Color);
@@ -205,7 +204,7 @@ void Fibonacci::updateTypeProperty()
         ObjectSetText(iTxt1, "   ");
         ObjectSetText(iTxt2, "   ");
         SetRectangleBackground(ckLne, clrOldLace);
-        multiSetProp(OBJPROP_WIDTH, Fib_Width+1, iFib0+iFib1+iFib2);
+        multiSetProp(OBJPROP_WIDTH, getLineWidth(Fib_Style)+1, iFib0+iFib1);
     }
 }
 void Fibonacci::activateItem(const string& itemId)

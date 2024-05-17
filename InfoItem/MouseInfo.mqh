@@ -1,8 +1,6 @@
 #include "../Home/CommonData.mqh"
 #include "../Home/Utility.mqh"
 
-input color MouseInfo_Color = clrBlack; // Mouse Color
-
 class MouseInfo
 {
 private:
@@ -20,7 +18,7 @@ public:
         ObjectCreate(mObjMouseInfo, OBJ_LABEL, 0, 0, 0);
         ObjectSetText(mObjMouseInfo, "", 10, "Consolas");
         ObjectSet(mObjMouseInfo, OBJPROP_SELECTABLE, false);
-        ObjectSet(mObjMouseInfo, OBJPROP_COLOR, MouseInfo_Color);
+        ObjectSet(mObjMouseInfo, OBJPROP_COLOR, gForegroundColor);
         ObjectSetString( 0, mObjMouseInfo, OBJPROP_TOOLTIP,"\n");
         ObjectSetInteger(0, mObjMouseInfo, OBJPROP_ANCHOR, ANCHOR_LEFT_LOWER);
     }

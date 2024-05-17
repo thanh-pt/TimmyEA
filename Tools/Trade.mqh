@@ -17,23 +17,23 @@ enum e_display
     OPTION, // Selected → Show
 };
 
-input string          Trd_; // ● Trade ●
-input string          Trd_apperence; //→ Giao diện:
-//-------------------------------------------------
-input color           Trd_TextColor     = clrMidnightBlue;   // Text Color
-input int             Trd_TextSize      = 8;                 // Text Size
-input color           Trd_TpColor       = clrSteelBlue;      // TP Color
-input color           Trd_SlColor       = clrChocolate;      // SL Color
-input color           Trd_EnColor       = clrChocolate;      // EN Color
-input int             Trd_LineWidth     = 1;                 // Line Width
-input color           Trd_SlBkgrdColor  = clrLavenderBlush;  // SlBg Color
-input color           Trd_TpBkgrdColor  = clrWhiteSmoke;     // TpBg Color
+input string          Trd_; // ●  T R A D E  ●
 //-------------------------------------------------
 input string          Trd_calc; //→ Tính toán:
 input double          Trd_Cost          = 5;     //Cost ($)
 input e_display       Trd_ShowStats     = SHOW;  //Show Stats
 input e_display       Trd_ShowPrice     = HIDE;  //Show Price
 input e_display       Trd_ShowDollar    = HIDE;  //Show Dollar
+//-------------------------------------------------
+input string          Trd_apperence; //→ Giao diện:
+input color           Trd_TextColor     = clrMidnightBlue;   // Text Color
+input int             Trd_TextSize      = 8;                 // Text Size
+input color           Trd_TpColor       = clrSteelBlue;      // TP Color
+input color           Trd_SlColor       = clrChocolate;      // SL Color
+input color           Trd_EnColor       = clrChocolate;      // EN Color
+      int             Trd_LineWidth     = 1;                 // Line Width
+input color           Trd_SlBkgrdColor  = clrLavenderBlush;  // SlBg Color
+input color           Trd_TpBkgrdColor  = clrWhiteSmoke;     // TpBg Color
 
 int Trd_StlSpace = 2;
 

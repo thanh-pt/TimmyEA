@@ -18,14 +18,15 @@ void detectMouseDraging(const string &sparam);
 
 Trade* gpTrade;
 
+int    gSymbolDigits= 0;
+double gScaleRange = 0;
+color  gForegroundColor = (color)ChartGetInteger(ChartID(),CHART_COLOR_FOREGROUND,0);
+
 CommonData  gCommonData;
 MouseInfo   gMouseInfo(&gCommonData);
 Controller  gController(&gCommonData, &gMouseInfo);
 CrossHair   gCrossHair(&gCommonData);
 ContextMenu gContextMenu();
-
-int    gSymbolDigits= 0;
-double gScaleRange = 0;
 
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |

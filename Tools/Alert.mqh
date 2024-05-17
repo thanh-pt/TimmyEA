@@ -13,13 +13,13 @@ enum EAlertType
 
 enum ENotiType
 {
-    ENotiPhone, // Phone Notification
-    ENotiPC,    // PC Notification
+    ENotiPhone, // Phone
+    ENotiPC,    // PC
+    ENotiNone,  // Silent
 };
 
-input string        _Alert;                         // ● Alert ●
-input bool          InpAlertActive  = false;        // Alert Active
-input ENotiType     InpNotiType     = ENotiPhone;   // Notification Type
+input string        _Alert;                         // ●  A L E R T  ●
+input ENotiType     InpNotiType     = ENotiPhone;   // Alert
 input color         InpAlertColor   = clrGainsboro; // Color
 input LINE_STYLE    InpAlertStyle   = STYLE_DOT;    // Style
 
@@ -217,7 +217,7 @@ void Alert::checkAlert()
 
 void Alert::sendNotification(string msg)
 {
-    if (InpAlertActive == false) return;
+    if (InpNotiType == ENotiNone) return;
     if (InpNotiType == ENotiPhone){
         SendNotification(msg);
     } else {
