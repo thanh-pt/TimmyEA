@@ -107,6 +107,7 @@ public:
     void showHistory(bool isShow);
     void createTrade(int id, datetime _time1, datetime _time2, double _priceEN, double _priceSL, double _priceTP, double _priceBE);
     void scanLiveTrade();
+    void restoreBacktestingTrade();
 
 // Alpha feature
     void initData();
@@ -734,5 +735,37 @@ void Trade::scanLiveTrade()
         refreshData();
         // Add remain Item
         mListLiveTradeStr += mListLiveTradeArr[i] + ",";
+    }
+}
+
+void Trade::restoreBacktestingTrade()
+{
+    long chartID = ChartID();
+    string objEn = "";
+    string enData = "";
+
+    string sparamItems[];
+    double size;
+    bool isBuy;
+
+    for (int idx = 0; idx < 1000; idx++) {
+        // Step 1: Find obj
+        objEn = "sim#3d_en#" + IntegerToString(idx);
+        if (ObjectFind(objEn) < 0) continue;
+
+        // Step 2: extract data
+        enData = ObjectGetString(chartID, objEn, OBJPROP_TOOLTIP);
+        StringSplit(enData,'\n',sparamItems);
+        size    = StrToDouble(StringSubstr(sparamItems[1], 6, 4));
+        time1   = (datetime)ObjectGet(objEn, OBJPROP_TIME1);
+        isBuy   = ((color)ObjectGet(objEn, OBJPROP_COLOR) == clrBlue);
+
+        priceEN = ObjectGet(objEn, OBJPROP_PRICE1);
+        priceSL = NormalizeDouble(priceEN - (isBuy ? 1 : -1) * 100 / size / 100000, 5);
+        priceTP = priceEN + 2 * (isBuy ? 1 : -1) * fabs(priceEN-priceSL);
+        priceBE = priceEN + (isBuy ? 1 : -1) * fabs(priceEN-priceSL);
+        time2   = time1 + ChartPeriod()*600; // = time1 + 10 candle = time1 + 10 * 60* period
+        // Step 3: Create Trade
+        createTrade(idx, time1, time2, priceEN, priceSL, priceTP, priceBE);
     }
 }

@@ -17,7 +17,7 @@ protected:
     bool        mFirstPoint;
     int         mIndexType;
     int         mTypeNum;
-    string      mNameType[MAX_TYPE];
+    string      mNameType[CTX_MAX];
     string      mContextType;
     string      mTData;
     string      mAllItem;

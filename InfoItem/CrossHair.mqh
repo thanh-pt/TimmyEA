@@ -125,9 +125,9 @@ public:
         {
             ObjectSetText(mWeekInfo,
                             TimeToStr(pCommonData.mMouseTime + CrossHair_LocalTimeZone*3600, TIME_MINUTES)
-                            + " · " + strDayOfWeek(pCommonData.mMouseTime));
+                            + " · " + getDayOfWeekStr(pCommonData.mMouseTime));
         }
-        else if (ChartPeriod() <= PERIOD_D1) ObjectSetText(mWeekInfo, strDayOfWeek(pCommonData.mMouseTime) + "  ·  " + "W"+IntegerToString(weekOfYear(pCommonData.mMouseTime),2,'0'));
+        else if (ChartPeriod() <= PERIOD_D1) ObjectSetText(mWeekInfo, getDayOfWeekStr(pCommonData.mMouseTime) + "  ·  " + "W"+IntegerToString(getWeekOfYear(pCommonData.mMouseTime),2,'0'));
         else ObjectSetText(mWeekInfo, "W"+IntegerToString(TimeDayOfYear(pCommonData.mMouseTime)/7,2,'0') + " · " +IntegerToString(TimeYear(pCommonData.mMouseTime)));
 
         //mPriceInfo

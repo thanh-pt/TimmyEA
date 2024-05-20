@@ -167,11 +167,11 @@ void Controller::handleKeyEvent(const long &key)
         deleteTimmyItem();
         break;
     case 'Q':
-        ChartSetSymbolPeriod(ChartID(), ChartSymbol(), lowerTF());
+        ChartSetSymbolPeriod(ChartID(), ChartSymbol(), getLowerTF());
         setChartFree(false);
         break;
     case 'P': // Using AHK to combine 'Shift+Q'='P'
-        ChartSetSymbolPeriod(ChartID(), ChartSymbol(), higherTF());
+        ChartSetSymbolPeriod(ChartID(), ChartSymbol(), getHigerTF());
         setChartFree(false);
         break;
     case 188: // ','
@@ -181,7 +181,7 @@ void Controller::handleKeyEvent(const long &key)
         setScaleChart(true);
         break;
     case 'L':
-        restoreBacktestingTrade();
+        ((Trade*)mListItem[eTRADE]).restoreBacktestingTrade();
         break;
     default:
         bFunctionKey = false;

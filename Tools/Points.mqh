@@ -25,10 +25,10 @@ class Point : public BaseItem
 {
 // Internal Value
 private:
-    color  mColor    [MAX_TYPE];
-    string mCharecter[MAX_TYPE];
-    int    mSize     [MAX_TYPE];
-    string mFont     [MAX_TYPE];
+    color  mColor    [CTX_MAX];
+    string mCharecter[CTX_MAX];
+    int    mSize     [CTX_MAX];
+    string mFont     [CTX_MAX];
 
 // Component name
 private:

@@ -33,7 +33,7 @@ class Rectangle : public BaseItem
 {
 // Internal Value
 private:
-    color mPropColor[MAX_TYPE];
+    color mPropColor[CTX_MAX];
 
 // Component name
 private:

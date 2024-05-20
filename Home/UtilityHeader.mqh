@@ -3,13 +3,12 @@
 
 #define STATIC_TAG          "%"
 #define BG_TAG              "BgOverlapFix"
-#define LINE_STYLE          ENUM_LINE_STYLE
 // #define TAG_CTRL "_zct" // TODO <- update to this
 #define TAG_CTRM "_cM"
 #define TAG_CTRL "_c"
-#define TAG_INFO "_0inf"
+#define TAG_INFO "_0i"
 
-#define MAX_TYPE 15
+#define CTX_MAX 10
 
 #define CHART_EVENT_SELECT_CONTEXTMENU CHARTEVENT_CUSTOM+1
 #define FULL_BLOCK "██████████████████████████████████████████████████████████████████"
@@ -20,6 +19,7 @@
 #include "UtilityStore/SyncItem.mqh"
 #include "UtilityStore/GetAction.mqh"
 #include "UtilityStore/SetAction.mqh"
+#include "UtilityStore/StyleDef.mqh"
 
 string gStrRand[] = {
     "TẬP TRUNG vào nguyên tắc.",
@@ -273,7 +273,7 @@ void scanBackgroundOverlap(string target)
         if (ObjectGet (objName, OBJPROP_BACK) == false) continue;
         if (ObjectGet (objName, OBJPROP_COLOR) == clrNONE) continue;
         if (StringFind(objName, BG_TAG) != -1) continue;
-        if (StringFind(objName, "Rectangle") == -1) continue;
+        if (StringFind(objName, Rectangle::Tag) == -1) continue;
         if (objName == target) continue;
 
         double cprice1  = ObjectGet(objName, OBJPROP_PRICE1);
@@ -328,148 +328,6 @@ void scanBackgroundOverlap(string target)
         if (ctime2 > time2) ctime2 = time2;
         setItemPos(bgItem, ctime1, ctime2, cprice1, cprice2);
     }
-}
-
-int weekOfYear(datetime date)
-{
-    return (TimeDayOfYear(date)+TimeDayOfWeek(StrToTime(IntegerToString(TimeYear(date))+".01.01"))-2)/7;
-}
-
-string strDayOfWeek(datetime date)
-{
-    int dayOfWeek = TimeDayOfWeek(date);
-    string retDayOfW = "";
-    switch (dayOfWeek)
-    {
-        case 0: retDayOfW = "CN"; break;
-        case 1: retDayOfW = "T2"; break;
-        case 2: retDayOfW = "T3"; break;
-        case 3: retDayOfW = "T4"; break;
-        case 4: retDayOfW = "T5"; break;
-        case 5: retDayOfW = "T6"; break;
-        case 6: retDayOfW = "T7"; break;
-        // case 0: retDayOfW = "Su"; break;
-        // case 1: retDayOfW = "Mo"; break;
-        // case 2: retDayOfW = "Tu"; break;
-        // case 3: retDayOfW = "We"; break;
-        // case 4: retDayOfW = "Th"; break;
-        // case 5: retDayOfW = "Fr"; break;
-        // case 6: retDayOfW = "Sa"; break;
-    }
-    return retDayOfW;
-}
-
-int higherTF()
-{
-    int currentTf = ChartPeriod();
-    int retTF = PERIOD_M15;
-    switch (currentTf)
-    {
-        case PERIOD_D1:  retTF = PERIOD_D1; break;
-        case PERIOD_H4:  retTF = PERIOD_D1; break;
-        case PERIOD_M15: retTF = PERIOD_H4; break;
-        case PERIOD_M5: retTF = PERIOD_M15; break;
-        case PERIOD_M1: retTF = PERIOD_M5; break;
-    }
-    return retTF;
-}
-
-int lowerTF()
-{
-    int currentTf = ChartPeriod();
-    int retTF = PERIOD_M15;
-    switch (currentTf)
-    {
-        case PERIOD_D1:  retTF = PERIOD_H4; break;
-        case PERIOD_H4:  retTF = PERIOD_M15; break;
-        case PERIOD_M15: retTF = PERIOD_M5; break;
-        case PERIOD_M5:  retTF = PERIOD_M1; break;
-        case PERIOD_M1:  retTF = PERIOD_M1; break;
-    }
-    return retTF;
-}
-
-void restoreBacktestingTrade() // TODO: Đẩy vào Trade Class
-{
-    long chartID = ChartID();
-    string objEn = "";
-    string enData = "";
-
-    string sparamItems[];
-    double size;
-
-    double priceTP;
-    double priceEN;
-    double priceSL;
-    double priceBE;
-    datetime time1;
-    datetime time2; // = time1 + 10 candle
-    bool isBuy;
-
-    for (int idx = 0; idx < 1000; idx++) {
-        // Step 1: Find obj
-        objEn = "sim#3d_en#" + IntegerToString(idx);
-        if (ObjectFind(objEn) < 0) continue;
-
-        // Step 2: extract data
-        enData = ObjectGetString(chartID, objEn, OBJPROP_TOOLTIP);
-        StringSplit(enData,'\n',sparamItems);
-        size    = StrToDouble(StringSubstr(sparamItems[1], 6, 4));
-        time1   = (datetime)ObjectGet(objEn, OBJPROP_TIME1);
-        isBuy   = ((color)ObjectGet(objEn, OBJPROP_COLOR) == clrBlue);
-
-        priceEN = ObjectGet(objEn, OBJPROP_PRICE1);
-        priceSL = NormalizeDouble(priceEN - (isBuy ? 1 : -1) * 100 / size / 100000, 5);
-        priceTP = priceEN + 2 * (isBuy ? 1 : -1) * fabs(priceEN-priceSL);
-        priceBE = priceEN + (isBuy ? 1 : -1) * fabs(priceEN-priceSL);
-        time2   = time1 + ChartPeriod()*600;
-        // Step 3: Create Trade
-        gpTrade.createTrade(idx, time1, time2, priceEN, priceSL, priceTP, priceBE);
-    }
-}
-
-
-//---------------------
-enum ELineStyle {
-    eLineDot        ,   //Dot
-    eLineSolid1     ,   //Solid
-    eLineDash       ,   //Dash
-    eLineDashDot    ,   //DashDot
-    eLineDashDotDot ,   //DashDotDot
-    eLineSolid2     ,   //Solid Bold
-    eLineSolid3     ,   //Solid Extra Bold
-    eLineSolid4     ,   //Solid Ultra Bold
-    eLineSolid5     ,   //Solid Extreme Bold
-};
-
-int getLineWidth(ELineStyle eLineStyle){
-    switch (eLineStyle) {
-        case eLineDot       : return 1;
-        case eLineSolid1    : return 1;
-        case eLineDash      : return 1;
-        case eLineDashDot   : return 1;
-        case eLineDashDotDot: return 1;
-        case eLineSolid2    : return 2;
-        case eLineSolid3    : return 3;
-        case eLineSolid4    : return 4;
-        case eLineSolid5    : return 5;
-    }
-    return 0;
-}
-
-int getLineStyle(ELineStyle eLineStyle){
-    switch (eLineStyle) {
-        case eLineDot       : return STYLE_DOT  ;
-        case eLineSolid1    : return STYLE_SOLID;
-        case eLineDash      : return STYLE_DASH ;
-        case eLineDashDot   : return STYLE_DASHDOT;
-        case eLineDashDotDot: return STYLE_DASHDOTDOT;
-        case eLineSolid2    : return STYLE_SOLID;
-        case eLineSolid3    : return STYLE_SOLID;
-        case eLineSolid4    : return STYLE_SOLID;
-        case eLineSolid5    : return STYLE_SOLID;
-    }
-    return STYLE_SOLID;
 }
 
 #endif

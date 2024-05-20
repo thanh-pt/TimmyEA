@@ -159,7 +159,7 @@ void setUnselectAllExcept(string objId)
         if (ObjectGet(objName, OBJPROP_SELECTED) == false) continue;
         ObjectSet(objName, OBJPROP_SELECTED, 0);
 
-        if (StringFind(objName, "_c0") == -1) continue;
+        if (StringFind(objName, TAG_CTRM) == -1) continue;
         k=StringSplit(objName,'_',sparamItems);
         
         if (k != 3) continue;

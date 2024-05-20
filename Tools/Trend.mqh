@@ -105,12 +105,12 @@ class Trend : public BaseItem
 {
 // Internal Value
 private:
-    string   mDispText [MAX_TYPE];
-    TEXT_POS mTextPos  [MAX_TYPE];
-    color    mColorType[MAX_TYPE];
-    int      mStyleType[MAX_TYPE];
-    int      mWidthType[MAX_TYPE];
-    bool     mShowArrow[MAX_TYPE];
+    string   mDispText [CTX_MAX];
+    TEXT_POS mTextPos  [CTX_MAX];
+    color    mColorType[CTX_MAX];
+    int      mStyleType[CTX_MAX];
+    int      mWidthType[CTX_MAX];
+    bool     mShowArrow[CTX_MAX];
 
 // Component name
 private:

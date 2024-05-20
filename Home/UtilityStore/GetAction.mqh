@@ -28,6 +28,36 @@ string getTFString()
     return result;
 }
 
+int getHigerTF()
+{
+    int currentTf = ChartPeriod();
+    int retTF = PERIOD_M15;
+    switch (currentTf)
+    {
+        case PERIOD_D1:  retTF = PERIOD_D1; break;
+        case PERIOD_H4:  retTF = PERIOD_D1; break;
+        case PERIOD_M15: retTF = PERIOD_H4; break;
+        case PERIOD_M5: retTF = PERIOD_M15; break;
+        case PERIOD_M1: retTF = PERIOD_M5; break;
+    }
+    return retTF;
+}
+
+int getLowerTF()
+{
+    int currentTf = ChartPeriod();
+    int retTF = PERIOD_M15;
+    switch (currentTf)
+    {
+        case PERIOD_D1:  retTF = PERIOD_H4; break;
+        case PERIOD_H4:  retTF = PERIOD_M15; break;
+        case PERIOD_M15: retTF = PERIOD_M5; break;
+        case PERIOD_M5:  retTF = PERIOD_M1; break;
+        case PERIOD_M1:  retTF = PERIOD_M1; break;
+    }
+    return retTF;
+}
+
 void getCenterPos(const datetime& time1, const datetime& time2, double price1, double price2, datetime& outTime, double& outPrice)
 {
     int x1,y1,x2,y2;
@@ -125,7 +155,7 @@ string getItemUnderMouse(int posX, int posY)
     return "";
 }
 
-
+// This function using for overlaping feature
 int getObjectTimeId(string objId)
 {
     int startP = StringFind(objId, "#");
@@ -142,4 +172,33 @@ string getRandStr(){
 
 string getFullBlock(int size){
     return StringSubstr(FULL_BLOCK, 0, size);
+}
+
+int getWeekOfYear(datetime date)
+{
+    return (TimeDayOfYear(date)+TimeDayOfWeek(StrToTime(IntegerToString(TimeYear(date))+".01.01"))-2)/7;
+}
+
+string getDayOfWeekStr(datetime date)
+{
+    int dayOfWeek = TimeDayOfWeek(date);
+    string retDayOfW = "";
+    switch (dayOfWeek)
+    {
+        case 0: retDayOfW = "CN"; break;
+        case 1: retDayOfW = "T2"; break;
+        case 2: retDayOfW = "T3"; break;
+        case 3: retDayOfW = "T4"; break;
+        case 4: retDayOfW = "T5"; break;
+        case 5: retDayOfW = "T6"; break;
+        case 6: retDayOfW = "T7"; break;
+        // case 0: retDayOfW = "Su"; break;
+        // case 1: retDayOfW = "Mo"; break;
+        // case 2: retDayOfW = "Tu"; break;
+        // case 3: retDayOfW = "We"; break;
+        // case 4: retDayOfW = "Th"; break;
+        // case 5: retDayOfW = "Fr"; break;
+        // case 6: retDayOfW = "Sa"; break;
+    }
+    return retDayOfW;
 }
