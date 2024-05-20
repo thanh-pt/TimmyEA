@@ -1,5 +1,4 @@
 #include "../Base/BaseItem.mqh"
-#include "../Home/Utility.mqh"
 
 enum TEXT_POS
 {
@@ -335,13 +334,13 @@ void Trend::createItem()
 }
 void Trend::updateDefaultProperty()
 {
-    multiSetProp(OBJPROP_ARROWCODE , 4      , cPoint1+cPoint2);
-    multiSetProp(OBJPROP_WIDTH     , 5      , cPoint1+cPoint2);
-    multiSetProp(OBJPROP_SELECTABLE, false  , iArrowT+iAngle0+iLbText+iRtText+iLtText);
-    multiSetProp(OBJPROP_COLOR     , clrNONE, cPoint1+cPoint2+iAngle0);
-    multiSetStrs(OBJPROP_TOOLTIP   , "\n"   , mAllItem);
+    setMultiProp(OBJPROP_ARROWCODE , 4      , cPoint1+cPoint2);
+    setMultiProp(OBJPROP_WIDTH     , 5      , cPoint1+cPoint2);
+    setMultiProp(OBJPROP_SELECTABLE, false  , iArrowT+iAngle0+iLbText+iRtText+iLtText);
+    setMultiProp(OBJPROP_COLOR     , clrNONE, cPoint1+cPoint2+iAngle0);
+    setMultiStrs(OBJPROP_TOOLTIP   , "\n"   , mAllItem);
 
-    multiSetProp(OBJPROP_RAY     , false, cMTrend+iAngle0);
+    setMultiProp(OBJPROP_RAY     , false, cMTrend+iAngle0);
     ObjectSetInteger(ChartID(), iArrowT, OBJPROP_ANCHOR, ANCHOR_CENTER);
 }
 void Trend::updateTypeProperty()
@@ -355,8 +354,8 @@ void Trend::updateTypeProperty()
     else                                         ObjectSetText (iLtText,  mDispText[mIndexType]);
 
     ObjectSetText (iArrowT,  mShowArrow[mIndexType] ? "▲" : "", 9, "Consolas", mShowArrow[mIndexType] ? mColorType[mIndexType] : clrNONE);
-    SetObjectStyle(cMTrend,  mColorType[mIndexType],          mStyleType[mIndexType],  mWidthType[mIndexType]);
-    multiSetProp  (OBJPROP_BACK , true, cMTrend+iAngle0);
+    setObjectStyle(cMTrend,  mColorType[mIndexType],          mStyleType[mIndexType],  mWidthType[mIndexType]);
+    setMultiProp  (OBJPROP_BACK , true, cMTrend+iAngle0);
 }
 void Trend::updateItemAfterChangeType()
 {
@@ -418,14 +417,14 @@ void Trend::onItemClick(const string &itemId, const string &objId)
         targetobj = cMTrend;
     }
     int selected = (int)ObjectGet(targetobj, OBJPROP_SELECTED);
-    multiSetProp(OBJPROP_SELECTED, selected, mAllItem);
+    setMultiProp(OBJPROP_SELECTED, selected, mAllItem);
     if (selected && StringFind(objId, "_c") >= 0 && pCommonData.mShiftHold){
         gContextMenu.openContextMenu(objId, mContextType, mIndexType);
     }
 }
 void Trend::onItemChange(const string &itemId, const string &objId)
 {
-    if (objId == cMTrend) multiSetProp(OBJPROP_COLOR, (color)ObjectGet(cMTrend, OBJPROP_COLOR), iLbText+iRtText+iLtText+iArrowT);
+    if (objId == cMTrend) setMultiProp(OBJPROP_COLOR, (color)ObjectGet(cMTrend, OBJPROP_COLOR), iLbText+iRtText+iLtText+iArrowT);
     if (objId == cPoint1 || objId == cPoint2 || objId == cMTrend){
         string strLbText = ObjectDescription(cMTrend);
         string strRtText = ObjectDescription(cPoint2);

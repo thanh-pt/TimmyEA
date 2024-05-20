@@ -1,5 +1,4 @@
 #include "../Base/BaseItem.mqh"
-#include "../Home/Utility.mqh"
 
 input string          Fib_;    // ●  F I B O N A C I I  ●
 //--------------------------------------------
@@ -157,16 +156,18 @@ void Fibonacci::createItem()
 }
 void Fibonacci::updateDefaultProperty()
 {
-    multiSetProp(OBJPROP_STYLE        , getLineStyle(Fib_Style), iFib0+iFib1+iFib2+iFib3+iFib4+iFib5);
-    multiSetProp(OBJPROP_BACK         , true      , iFib0+iFib1+iFib2+iFib3+iFib4+iFib5);
-    multiSetProp(OBJPROP_SELECTABLE   , false     , iFib0+iFib1+iFib2+iFib3+iFib4+iFib5
+    setMultiProp(OBJPROP_STYLE        , getLineStyle(Fib_Style), iFib0+iFib1+iFib2+iFib3+iFib4+iFib5);
+    setMultiProp(OBJPROP_BACK         , true      , iFib0+iFib1+iFib2+iFib3+iFib4+iFib5);
+    setMultiProp(OBJPROP_SELECTABLE   , false     , iFib0+iFib1+iFib2+iFib3+iFib4+iFib5
                                                    +iTxt0+iTxt1+iTxt2+iTxt3+iTxt4+iTxt5);
-    multiSetInts(OBJPROP_ANCHOR, ANCHOR_RIGHT     , iTxt0+iTxt1+iTxt2+iTxt3+iTxt4+iTxt5);
+    setMultiInts(OBJPROP_ANCHOR, ANCHOR_RIGHT     , iTxt0+iTxt1+iTxt2+iTxt3+iTxt4+iTxt5);
+    setMultiInts(OBJPROP_HIDDEN, true, iFib0+iFib1+iFib2+iFib3+iFib4+iFib5
+                                      +iTxt0+iTxt1+iTxt2+iTxt3+iTxt4+iTxt5);
 
-    multiSetProp(OBJPROP_ARROWCODE,       4, cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2);
-    multiSetProp(OBJPROP_COLOR    , clrNONE, cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2);
+    setMultiProp(OBJPROP_ARROWCODE,       4, cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2);
+    setMultiProp(OBJPROP_COLOR    , clrNONE, cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2);
     
-    multiSetStrs(OBJPROP_TOOLTIP, "\n", mAllItem);
+    setMultiStrs(OBJPROP_TOOLTIP, "\n", mAllItem);
 }
 void Fibonacci::updateTypeProperty()
 {
@@ -178,9 +179,9 @@ void Fibonacci::updateTypeProperty()
     ObjectSetText(iTxt4, Fib_4_Text + "  ", 7, NULL, Fib_4_Color);
     ObjectSetText(iTxt5, Fib_5_Text + "  ", 7, NULL, Fib_5_Color);
     //------------------------------------------
-    SetRectangleBackground(ckLne, Fib_Bkgrd_Color);
-    multiSetProp(OBJPROP_RAY, false, iFib0+iFib1+iFib2+iFib3+iFib4+iFib5);
-    multiSetProp(OBJPROP_WIDTH     , getLineWidth(Fib_Style), iFib0+iFib1+iFib2+iFib3+iFib4+iFib5);
+    setRectangleBackground(ckLne, Fib_Bkgrd_Color);
+    setMultiProp(OBJPROP_RAY, false, iFib0+iFib1+iFib2+iFib3+iFib4+iFib5);
+    setMultiProp(OBJPROP_WIDTH     , getLineWidth(Fib_Style), iFib0+iFib1+iFib2+iFib3+iFib4+iFib5);
     //------------------------------------------
     ObjectSet(iFib0, OBJPROP_COLOR, Fib_0_Color);
     ObjectSet(iFib1, OBJPROP_COLOR, Fib_1_Color);
@@ -190,38 +191,38 @@ void Fibonacci::updateTypeProperty()
     ObjectSet(iFib5, OBJPROP_COLOR, Fib_5_Color);
 
     if (mIndexType != FIB_FULL) {
-        multiSetProp(OBJPROP_COLOR, clrNONE, iFib3+iFib4+iFib5 + iTxt3+iTxt4+iTxt5);
+        setMultiProp(OBJPROP_COLOR, clrNONE, iFib3+iFib4+iFib5 + iTxt3+iTxt4+iTxt5);
     }
     if (mIndexType == FIB_RANGE || mIndexType == FIB_RANGE_EXT){
         ObjectSetText(iTxt2, "  ", 8);
-        multiSetProp(OBJPROP_COLOR, clrDarkOrange, iFib2);
+        setMultiProp(OBJPROP_COLOR, clrDarkOrange, iFib2);
     }
     if (mIndexType == FIB_RANGE_EXT) {
-        multiSetProp(OBJPROP_RAY, true, iFib0+iFib1);
+        setMultiProp(OBJPROP_RAY, true, iFib0+iFib1);
     }
     if (mIndexType == FIB_RANGE2){
         ObjectSetText(iTxt0, "   ");
         ObjectSetText(iTxt1, "   ");
         ObjectSetText(iTxt2, "   ");
-        SetRectangleBackground(ckLne, clrOldLace);
-        multiSetProp(OBJPROP_WIDTH, getLineWidth(Fib_Style)+1, iFib0+iFib1);
+        setRectangleBackground(ckLne, clrOldLace);
+        setMultiProp(OBJPROP_WIDTH, getLineWidth(Fib_Style)+1, iFib0+iFib1);
     }
 }
 void Fibonacci::activateItem(const string& itemId)
 {
     ckLne = itemId + "_c0Lne";
-    iFib0 = itemId + "_iFib0";
-    iFib1 = itemId + "_iFib1";
-    iFib2 = itemId + "_iFib2";
-    iFib3 = itemId + "_iFib3";
-    iFib4 = itemId + "_iFib4";
-    iFib5 = itemId + "_iFib5";
-    iTxt0 = itemId + "_iTxt0";
-    iTxt1 = itemId + "_iTxt1";
-    iTxt2 = itemId + "_iTxt2";
-    iTxt3 = itemId + "_iTxt3";
-    iTxt4 = itemId + "_iTxt4";
-    iTxt5 = itemId + "_iTxt5";
+    iFib0 = itemId + "_0iFib0";
+    iFib1 = itemId + "_0iFib1";
+    iFib2 = itemId + "_0iFib2";
+    iFib3 = itemId + "_0iFib3";
+    iFib4 = itemId + "_0iFib4";
+    iFib5 = itemId + "_0iFib5";
+    iTxt0 = itemId + "_0iTxt0";
+    iTxt1 = itemId + "_0iTxt1";
+    iTxt2 = itemId + "_0iTxt2";
+    iTxt3 = itemId + "_0iTxt3";
+    iTxt4 = itemId + "_0iTxt4";
+    iTxt5 = itemId + "_0iTxt5";
 
     cPointL1 = itemId + "_cPointL1";
     cPointL2 = itemId + "_cPointL2";
@@ -269,15 +270,15 @@ void Fibonacci::refreshData()
     setItemPos(cPointC2, time1, centerPrice);
     //-------------------------------------------------
     int selected = (int)ObjectGet(ckLne, OBJPROP_SELECTED);
-    multiSetProp(OBJPROP_COLOR   , selected ? gColorMousePoint : clrNONE, cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2);
-    multiSetProp(OBJPROP_SELECTED, selected, cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2+ckLne);
+    setMultiProp(OBJPROP_COLOR   , selected ? gColorMousePoint : clrNONE, cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2);
+    setMultiProp(OBJPROP_SELECTED, selected, cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2+ckLne);
     //-------------------------------------------------
     if (mIndexType == FIB_RANGE || mIndexType == FIB_RANGE_EXT){
         bool isUp = (price1 > price0);
         ObjectSetText(iTxt0, isUp ? "𝙇𝙤  " : "𝙃𝙞  ", 8);
         ObjectSetText(iTxt1, isUp ? "𝙃𝙞  " : "𝙇𝙤  ", 8);
-        multiSetProp(OBJPROP_COLOR, isUp ? clrGreen : clrRed  , iFib0+iTxt0);
-        multiSetProp(OBJPROP_COLOR, isUp ? clrRed   : clrGreen, iFib1+iTxt1);
+        setMultiProp(OBJPROP_COLOR, isUp ? clrGreen : clrRed  , iFib0+iTxt0);
+        setMultiProp(OBJPROP_COLOR, isUp ? clrRed   : clrGreen, iFib1+iTxt1);
     }
 
 }
@@ -359,11 +360,11 @@ void Fibonacci::onItemClick(const string &itemId, const string &objId)
     if (StringFind(objId, "_c") == -1) return;
 
     int selected = (int)ObjectGet(objId, OBJPROP_SELECTED);
-    multiSetProp(OBJPROP_COLOR   , selected ? gColorMousePoint : clrNONE, cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2);
-    multiSetProp(OBJPROP_SELECTED, selected, cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2+ckLne);
+    setMultiProp(OBJPROP_COLOR   , selected ? gColorMousePoint : clrNONE, cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2);
+    setMultiProp(OBJPROP_SELECTED, selected, mAllItem);
     if (selected)
     {
-        unSelectAllExcept(itemId);
+        setUnselectAllExcept(itemId);
         if (StringFind(objId, "_c") >= 0 && pCommonData.mShiftHold)
             gContextMenu.openContextMenu(objId, mContextType, mIndexType);
     }

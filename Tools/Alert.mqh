@@ -1,5 +1,4 @@
 #include "../Base/BaseItem.mqh"
-#include "../Home/Utility.mqh"
 
 #define ALERT_INDI_H "↑"
 #define ALERT_INDI_L "↓"
@@ -112,7 +111,7 @@ void Alert::onMouseClick()
     if (mIndexType == CREATE_ALERT)
     {
         ObjectCreate(cAlert, OBJ_HLINE, 0, 0, pCommonData.mMousePrice);
-        SetObjectStyle(cAlert, InpAlertColor, InpAlertStyle, 0);
+        setObjectStyle(cAlert, InpAlertColor, InpAlertStyle, 0);
         // ObjectSet(cAlert, OBJPROP_BACK , true);
         mAlertIndi = (ObjectGet(cAlert, OBJPROP_PRICE1) > Bid ? ALERT_INDI_H : ALERT_INDI_L);
         ObjectSetText(cAlert, mAlertIndi + "Alert");

@@ -1,5 +1,4 @@
 #include "../Base/BaseItem.mqh"
-#include "../Home/Utility.mqh"
 
 input string            Rect_;                              // ●  S U P P L Y   D E M A N D  ●
 input color             Rect_Text_Color  = clrMidnightBlue; //Text Color
@@ -143,8 +142,8 @@ void Rectangle::createItem()
 }
 void Rectangle::updateDefaultProperty()
 {
-    multiSetProp(OBJPROP_ARROWCODE,       4, cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2);
-    multiSetProp(OBJPROP_COLOR    , clrNONE, cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2);
+    setMultiProp(OBJPROP_ARROWCODE,       4, cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2);
+    setMultiProp(OBJPROP_COLOR    , clrNONE, cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2);
 
     ObjectSetText(iCText, "");
     ObjectSetText(iLText, "");
@@ -154,13 +153,13 @@ void Rectangle::updateDefaultProperty()
     ObjectSetInteger(ChartID(), iLText, OBJPROP_ANCHOR, ANCHOR_LEFT);
     ObjectSetInteger(ChartID(), iRText, OBJPROP_ANCHOR, ANCHOR_RIGHT);
 
-    multiSetProp(OBJPROP_COLOR     , Rect_Text_Color, iCText+iLText+iRText);
-    multiSetProp(OBJPROP_SELECTABLE, false         , iCText+iLText+iRText);
-    multiSetStrs(OBJPROP_TOOLTIP   , "\n"          , cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2+cBkgnd+iCText+iLText+iRText);
+    setMultiProp(OBJPROP_COLOR     , Rect_Text_Color, iCText+iLText+iRText);
+    setMultiProp(OBJPROP_SELECTABLE, false         , iCText+iLText+iRText);
+    setMultiStrs(OBJPROP_TOOLTIP   , "\n"          , cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2+cBkgnd+iCText+iLText+iRText);
 }
 void Rectangle::updateTypeProperty()
 {
-    SetRectangleBackground(cBkgnd, mPropColor[mIndexType]);
+    setRectangleBackground(cBkgnd, mPropColor[mIndexType]);
 }
 void Rectangle::activateItem(const string& itemId)
 {
@@ -214,8 +213,8 @@ void Rectangle::refreshData()
     scanBackgroundOverlap(cBkgnd);
     //-------------------------------------------------
     int selected = (int)ObjectGet(cBkgnd, OBJPROP_SELECTED);
-    multiSetProp(OBJPROP_SELECTED, selected, cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2+cBkgnd+iCText+iLText+iRText);
-    multiSetProp(OBJPROP_COLOR   , selected ? gColorMousePoint : clrNONE, cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2);
+    setMultiProp(OBJPROP_SELECTED, selected, cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2+cBkgnd+iCText+iLText+iRText);
+    setMultiProp(OBJPROP_COLOR   , selected ? gColorMousePoint : clrNONE, cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2);
 }
 void Rectangle::finishedJobDone(){}
 
@@ -293,10 +292,10 @@ void Rectangle::onItemClick(const string &itemId, const string &objId)
 {
     if (StringFind(objId, "_0i") >= 0) return;
     int selected = (int)ObjectGet(objId, OBJPROP_SELECTED);
-    multiSetProp(OBJPROP_SELECTED, selected, mAllItem);
-    multiSetProp(OBJPROP_COLOR   , selected ? gColorMousePoint : clrNONE, cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2);
+    setMultiProp(OBJPROP_SELECTED, selected, mAllItem);
+    setMultiProp(OBJPROP_COLOR   , selected ? gColorMousePoint : clrNONE, cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2);
     if (selected) {
-        unSelectAllExcept(itemId);
+        setUnselectAllExcept(itemId);
         if (StringFind(objId, "_c") >= 0 && pCommonData.mShiftHold)
             gContextMenu.openContextMenu(objId, mContextType, mIndexType);
     }
@@ -335,14 +334,14 @@ void Rectangle::onUserRequest(const string &itemId, const string &objId)
         ObjectCreate(iLine2, OBJ_TREND, 0, 0, 0);
         ObjectCreate(iLine3, OBJ_TREND, 0, 0, 0);
         
-        multiSetProp(OBJPROP_SELECTABLE, false, iLine1+iLine2+iLine3);
-        SetObjectStyle(iLine1, clrGray, 0, 0, true);
-        SetObjectStyle(iLine2, clrSilver, 0, 0, true);
-        SetObjectStyle(iLine3, clrGray, 0, 0, true);
+        setMultiProp(OBJPROP_SELECTABLE, false, iLine1+iLine2+iLine3);
+        setObjectStyle(iLine1, clrGray, 0, 0, true);
+        setObjectStyle(iLine2, clrSilver, 0, 0, true);
+        setObjectStyle(iLine3, clrGray, 0, 0, true);
         onItemDrag(itemId, objId);
     } else if (gContextMenu.mActiveItemStr == CTX_NORANGE) {
-        SetObjectStyle(iLine1, clrNONE, 0, 0);
-        SetObjectStyle(iLine2, clrNONE, 0, 0);
-        SetObjectStyle(iLine3, clrNONE, 0, 0);
+        setObjectStyle(iLine1, clrNONE, 0, 0);
+        setObjectStyle(iLine2, clrNONE, 0, 0);
+        setObjectStyle(iLine3, clrNONE, 0, 0);
     }
 }

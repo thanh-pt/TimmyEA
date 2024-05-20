@@ -1,5 +1,4 @@
 #include "../Base/BaseItem.mqh"
-#include "../Home/Utility.mqh"
 
 input string Label_; // ●  L A B E L  ●
 input color  Label_Color = clrMidnightBlue; // Color

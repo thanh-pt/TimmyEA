@@ -1,5 +1,4 @@
 #include "../Base/BaseItem.mqh"
-#include "../Home/Utility.mqh"
 
 input string CallOut_;                              // ●  C A L L   O U T  ●
 input color  CallOut_Color    = clrMidnightBlue;    // Color
@@ -77,11 +76,11 @@ void CallOut::createItem()
 void CallOut::updateDefaultProperty()
 {
     ObjectSet(iUdLine, OBJPROP_SELECTABLE, false);
-    multiSetStrs(OBJPROP_TOOLTIP, "\n", mAllItem);
+    setMultiStrs(OBJPROP_TOOLTIP, "\n", mAllItem);
 }
 void CallOut::updateTypeProperty()
 {
-    SetObjectStyle(cPtLine, CallOut_Color, 0, 1);
+    setObjectStyle(cPtLine, CallOut_Color, 0, 1);
     //-------------------------------------------------------------
     ObjectSetText(cLbText, DoubleToString(pCommonData.mMousePrice, 5), CallOut_FontSize, "Consolas", CallOut_Color);
     ObjectSetText(iUdLine,                                    "_____", CallOut_FontSize, "Consolas", CallOut_Color);
@@ -180,7 +179,7 @@ void CallOut::onItemDrag(const string &itemId, const string &objId)
 void CallOut::onItemClick(const string &itemId, const string &objId){}
 void CallOut::onItemChange(const string &itemId, const string &objId)
 {
-    multiSetProp(OBJPROP_COLOR, (color)ObjectGet(objId, OBJPROP_COLOR), cLbText+cPtLine+iUdLine);
+    setMultiProp(OBJPROP_COLOR, (color)ObjectGet(objId, OBJPROP_COLOR), cLbText+cPtLine+iUdLine);
     onItemDrag(itemId, objId);
 }
 void CallOut::onItemDeleted(const string &itemId, const string &objId)

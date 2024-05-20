@@ -1,5 +1,4 @@
 #include "../Base/BaseItem.mqh"
-#include "../Home/Utility.mqh"
 
 input string     Point_; // ●  P O I N T  ●
 input string     Point_1______Name  = "Swing"; // → Point 1:
@@ -150,7 +149,7 @@ void Point::onItemDrag(const string &itemId, const string &objId)
 void Point::onItemClick(const string &itemId, const string &objId)
 {
     int selected = (int)ObjectGet(objId, OBJPROP_SELECTED);
-    multiSetProp(OBJPROP_SELECTED   , selected, mAllItem);
+    setMultiProp(OBJPROP_SELECTED   , selected, mAllItem);
     if (selected && pCommonData.mShiftHold){
         gContextMenu.openContextMenu(objId, mContextType, mIndexType);
     }

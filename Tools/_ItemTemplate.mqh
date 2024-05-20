@@ -1,5 +1,4 @@
 #include "../Base/BaseItem.mqh"
-#include "../Home/Utility.mqh"
 
 // input string          ItemTemplate_ = "ItemTemplate Config";
 

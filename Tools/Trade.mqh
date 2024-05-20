@@ -1,5 +1,4 @@
 #include "../Base/BaseItem.mqh"
-#include "../Home/Utility.mqh"
 
 #define LONG_IDX 0
 
@@ -201,15 +200,15 @@ void Trade::updateDefaultProperty()
     ObjectSet(cBoder, OBJPROP_BACK, false);
     ObjectSet(cBoder, OBJPROP_COLOR, clrNONE);
     //-------------------------------------------------
-    multiSetProp(OBJPROP_ARROWCODE , 4    , cPointWD+cPointBE);
-    multiSetProp(OBJPROP_ARROWCODE , 4    , cPointTP+cPointSL);
+    setMultiProp(OBJPROP_ARROWCODE , 4    , cPointWD+cPointBE);
+    setMultiProp(OBJPROP_ARROWCODE , 4    , cPointTP+cPointSL);
     ObjectSet(cPointEN, OBJPROP_ARROWCODE, 4);
     
-    multiSetProp(OBJPROP_SELECTED  , true , cPointTP+cPointSL+cPointEN+cPointWD+cPointBE);
-    multiSetProp(OBJPROP_RAY       , false, iTpLine+iBeLine+iEnLine+iSlLine);
-    multiSetProp(OBJPROP_SELECTABLE, false, iBgndSL+iBgndTP+iTpLine+iBeLine+iEnLine+iSlLine+iTpPrice+iEnPrice+iSlPrice+iTpText+iEnText+iSlText+iBeText);
+    setMultiProp(OBJPROP_SELECTED  , true , cPointTP+cPointSL+cPointEN+cPointWD+cPointBE);
+    setMultiProp(OBJPROP_RAY       , false, iTpLine+iBeLine+iEnLine+iSlLine);
+    setMultiProp(OBJPROP_SELECTABLE, false, iBgndSL+iBgndTP+iTpLine+iBeLine+iEnLine+iSlLine+iTpPrice+iEnPrice+iSlPrice+iTpText+iEnText+iSlText+iBeText);
     //-------------------------------------------------
-    multiSetStrs(OBJPROP_TOOLTIP, "\n", iBgndSL+iBgndTP+iTpLine+iBeLine+iEnLine+iSlLine+iTpPrice+iEnPrice+iSlPrice+iTpText+iEnText+iSlText+iBeText+cBoder+cPointTP+cPointSL+cPointEN+cPointWD+cPointBE);
+    setMultiStrs(OBJPROP_TOOLTIP, "\n", iBgndSL+iBgndTP+iTpLine+iBeLine+iEnLine+iSlLine+iTpPrice+iEnPrice+iSlPrice+iTpText+iEnText+iSlText+iBeText+cBoder+cPointTP+cPointSL+cPointEN+cPointWD+cPointBE);
 }
 void Trade::updateTypeProperty()
 {
@@ -218,13 +217,13 @@ void Trade::updateTypeProperty()
     ObjectSet(iBeLine, OBJPROP_WIDTH, 1);
     ObjectSet(iBeLine, OBJPROP_STYLE, 2);
     //-------------------------------------------------
-    multiSetProp(OBJPROP_COLOR, Trd_TpColor  , iTpLine+iBeLine+cPointTP+cPointBE);
-    multiSetProp(OBJPROP_COLOR, Trd_EnColor  , iEnLine+cPointEN+cPointWD);
-    multiSetProp(OBJPROP_COLOR, Trd_SlColor  , iSlLine+cPointSL);
-    multiSetProp(OBJPROP_COLOR, Trd_TextColor, iTpText+iEnText+iSlText+iBeText+iTpPrice+iEnPrice+iSlPrice);
+    setMultiProp(OBJPROP_COLOR, Trd_TpColor  , iTpLine+iBeLine+cPointTP+cPointBE);
+    setMultiProp(OBJPROP_COLOR, Trd_EnColor  , iEnLine+cPointEN+cPointWD);
+    setMultiProp(OBJPROP_COLOR, Trd_SlColor  , iSlLine+cPointSL);
+    setMultiProp(OBJPROP_COLOR, Trd_TextColor, iTpText+iEnText+iSlText+iBeText+iTpPrice+iEnPrice+iSlPrice);
     //-------------------------------------------------
-    multiSetProp(OBJPROP_WIDTH   , Trd_LineWidth, iTpLine+iEnLine+iSlLine);
-    multiSetProp(OBJPROP_FONTSIZE, Trd_TextSize , iTpPrice+iEnPrice+iSlPrice+iTpText+iEnText+iSlText+iBeText+iTpPrice+iEnPrice+iSlPrice);
+    setMultiProp(OBJPROP_WIDTH   , Trd_LineWidth, iTpLine+iEnLine+iSlLine);
+    setMultiProp(OBJPROP_FONTSIZE, Trd_TextSize , iTpPrice+iEnPrice+iSlPrice+iTpText+iEnText+iSlText+iBeText+iTpPrice+iEnPrice+iSlPrice);
 }
 void Trade::activateItem(const string& itemId)
 {

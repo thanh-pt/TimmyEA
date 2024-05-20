@@ -1,5 +1,4 @@
 #include "../Base/BaseItem.mqh"
-#include "../Home/Utility.mqh"
 
 input string          Zz_;                          // ●  Z I G Z A G  ●
 input color           Zz_Color = clrMidnightBlue;   // Color
@@ -69,7 +68,7 @@ void ZigZag::createItem()
 }
 void ZigZag::updateDefaultProperty()
 {
-    SetObjectStyle(mTempLine, Zz_Color, getLineStyle(Zz_Style), getLineWidth(Zz_Style));
+    setObjectStyle(mTempLine, Zz_Color, getLineStyle(Zz_Style), getLineWidth(Zz_Style));
     ObjectSet(mTempLine, OBJPROP_BACK , true);
     ObjectSetString(ChartID(), mTempLine ,OBJPROP_TOOLTIP,"\n");
 }
@@ -160,7 +159,7 @@ void ZigZag::onItemChange(const string &itemId, const string &objId)
     do
     {
         objName = cline + "#" + IntegerToString(i);
-        SetObjectStyle(objName, propColor, propStyle, propWidth);
+        setObjectStyle(objName, propColor, propStyle, propWidth);
         ObjectSet(objName, OBJPROP_BACK,  propBkgrd);
         i++;
     }

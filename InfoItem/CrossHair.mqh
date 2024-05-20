@@ -1,6 +1,4 @@
 #include "../Home/CommonData.mqh"
-#include "../Home/Utility.mqh"
-
 input string CrossHair_; // ●  C R O S S   H A I R  ●
 input color  CrossHair_Color = clrSlateGray; // Color
       int    CrossHair_LocalTimeZone = 7;
@@ -38,8 +36,8 @@ public:
     {
         ObjectCreate(mVCrossHair, OBJ_RECTANGLE, 0, 0, 0);
         ObjectCreate(mHCrossHair, OBJ_RECTANGLE, 0, 0, 0);
-        SetObjectStyle(mVCrossHair, CrossHair_Color, STYLE_DOT, 0);
-        SetObjectStyle(mHCrossHair, CrossHair_Color, STYLE_DOT, 0);
+        setObjectStyle(mVCrossHair, CrossHair_Color, STYLE_DOT, 0);
+        setObjectStyle(mHCrossHair, CrossHair_Color, STYLE_DOT, 0);
         ObjectSet(mVCrossHair, OBJPROP_SELECTABLE, false);
         ObjectSet(mHCrossHair, OBJPROP_SELECTABLE, false);
 

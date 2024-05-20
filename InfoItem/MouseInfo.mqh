@@ -1,5 +1,4 @@
 #include "../Home/CommonData.mqh"
-#include "../Home/Utility.mqh"
 
 class MouseInfo
 {

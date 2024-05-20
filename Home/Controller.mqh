@@ -140,7 +140,7 @@ void Controller::handleKeyEvent(const long &key)
     {
     case 27: // Esc
         finishedJob();
-        unSelectAll();
+        setUnselectAll();
         break;
     // Number Line
     case '1':
@@ -163,10 +163,10 @@ void Controller::handleKeyEvent(const long &key)
         ((Trade*)mListItem[IDX_TRADE]).showHistory(false);
         break;
     case 'H':
-        SetChartFree(true);
+        setChartFree(true);
         break;
     case 'J':
-        SetChartFree(false);
+        setChartFree(false);
         break;
     case 'V':
         syncSelectedItem();
@@ -176,17 +176,17 @@ void Controller::handleKeyEvent(const long &key)
         break;
     case 'Q':
         ChartSetSymbolPeriod(ChartID(), ChartSymbol(), lowerTF());
-        SetChartFree(false);
+        setChartFree(false);
         break;
     case 'P': // Using AHK to combine 'Shift+Q'='P'
         ChartSetSymbolPeriod(ChartID(), ChartSymbol(), higherTF());
-        SetChartFree(false);
+        setChartFree(false);
         break;
     case 188: // ','
-        scaleChart(false);
+        setScaleChart(false);
         break;
     case 190: // '.'
-        scaleChart(true);
+        setScaleChart(true);
         break;
     case 'L':
         restoreBacktestingTrade();
@@ -230,7 +230,7 @@ void Controller::handleKeyEvent(const long &key)
         return;
     }
     CHECK_ACTIVE_RETURN
-    unSelectAll();
+    setUnselectAll();
     mActive = activeTarget;
     mListItem[mActive].startActivate(mFinishedJobCb);
 }
