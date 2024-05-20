@@ -1,15 +1,7 @@
 
 void setChartFree(bool bFree)
 {
-    // PrintFormat("bFree : %d", bFix);
-    //--- reset the error value
-    ResetLastError();
-    //--- set property value
-    if(!ChartSetInteger(ChartID(),CHART_SCALEFIX,0,bFree))
-    {
-        //--- display the error message in Experts journal
-        Print(__FUNCTION__+", Error Code = ",GetLastError());
-    }
+    ChartSetInteger(ChartID(),CHART_SCALEFIX,0,bFree);
 }
 
 void setScaleChart(bool isUp)

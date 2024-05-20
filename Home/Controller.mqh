@@ -260,6 +260,11 @@ void Controller::handleSparamEvent(const int id, const string& sparam)
     }
 
     string itemId = sparamItems[0] + "_" + sparamItems[1];
+    // Feature: Trong một thời điểm chỉ có 1 tool được active
+    if (id == CHARTEVENT_OBJECT_CLICK && (int)ObjectGet(sparam, OBJPROP_SELECTED) == 1 && StringFind(sparam, TAG_CTRL) != -1){
+        setUnselectAllExcept(itemId);
+    }
+
     mListItem[receiverItem].touchItem(itemId);
     switch (id)
     {
@@ -278,7 +283,6 @@ void Controller::handleSparamEvent(const int id, const string& sparam)
         break;
     case CHARTEVENT_OBJECT_CLICK:
         if (StringFind(sparam, TAG_CTRL) == -1) return;
-        if ((int)ObjectGet(sparam, OBJPROP_SELECTED) == 1) setUnselectAllExcept(itemId);
         mListItem[receiverItem].onItemClick(itemId, sparam);
         break;
     case CHART_EVENT_SELECT_CONTEXTMENU:

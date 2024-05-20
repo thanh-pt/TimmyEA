@@ -73,8 +73,8 @@ void CallOut::prepareActive(){}
 void CallOut::createItem()
 {
     ObjectCreate(cLn01, OBJ_TREND, 0, 0, 0);
-    ObjectCreate(iTxtU, OBJ_TEXT , 0, 0, 0);
     ObjectCreate(iTxBg, OBJ_TEXT , 0, 0, 0);
+    ObjectCreate(iTxtU, OBJ_TEXT , 0, 0, 0);
     ObjectCreate(cTxtM, OBJ_TEXT , 0, 0, 0);
     updateTypeProperty();
     updateDefaultProperty();
