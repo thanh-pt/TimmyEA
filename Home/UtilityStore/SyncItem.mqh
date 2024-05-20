@@ -2,159 +2,224 @@
 
 struct ObjectProperty
 {
-    string      objName        ;
-    ENUM_OBJECT objType        ;
-    datetime    objTime1       ;
-    datetime    objTime2       ;
-    double      objPrice1      ;
-    double      objPrice2      ;
-    color       objColor       ;
-    int         objStyle       ;
-    int         objWidth       ;
-    int         objBack        ;
-    int         objSelectable  ;
-    int         objFontSize    ;
-    int         objRay         ;
-    int         objArrowCode   ;
-    int         objAnchorPoint ;
-    int         objCornerPoint ;
-    string      objText        ;
-    string      objFontName    ;
-    string      objTooltip     ;
+    // Common Property
+    string      Name        ;
+    ENUM_OBJECT Type        ;
+    datetime    Time1       ;
+    double      Price1      ;
+    int         Style       ;
+    int         Width       ;
+    int         Back        ;
+    int         Selectable  ;
+    int         Hidden      ;
+    color       Color       ;
+    string      Text        ;
+    string      Tooltip     ;
+    // Property for 2 point item
+    datetime    Time2       ;
+    double      Price2      ;
+    // Property for text item
+    string      FontName    ;
+    int         FontSize    ;
+    int         Anchor      ;
+    int         Corner      ;
+    // Property for label
+    int         XDistance   ;
+    int         YDistance   ;
+    // Others
+    int         Ray         ;
+    int         ArrowCode   ;
 };
 
-void syncItem(ObjectProperty &objProperty, long currChart, bool objectExit)
-{
-    ENUM_OBJECT objType = objProperty.objType;
-    if(objectExit == false) {
-        ObjectCreate(currChart,
-                    objProperty.objName,
-                    objProperty.objType,
-                    0,
-                    objProperty.objTime1,
-                    objProperty.objPrice1,
-                    objProperty.objTime2,
-                    objProperty.objPrice2);
-    }
-    else {
-        ObjectSetInteger(currChart, objProperty.objName, OBJPROP_TIME1, objProperty.objTime1);
-        ObjectSetInteger(currChart, objProperty.objName, OBJPROP_TIME2, objProperty.objTime2);
-        ObjectSetDouble (currChart, objProperty.objName, OBJPROP_PRICE1, objProperty.objPrice1);
-        ObjectSetDouble (currChart, objProperty.objName, OBJPROP_PRICE2, objProperty.objPrice2);
-    }
-    ObjectSetInteger(currChart, objProperty.objName, OBJPROP_COLOR      , objProperty.objColor      );
-    ObjectSetInteger(currChart, objProperty.objName, OBJPROP_STYLE      , objProperty.objStyle      );
-    ObjectSetInteger(currChart, objProperty.objName, OBJPROP_WIDTH      , objProperty.objWidth      );
-    ObjectSetInteger(currChart, objProperty.objName, OBJPROP_BACK       , objProperty.objBack       );
-    ObjectSetInteger(currChart, objProperty.objName, OBJPROP_SELECTABLE , objProperty.objSelectable );
-    ObjectSetString(currChart , objProperty.objName, OBJPROP_TEXT       , objProperty.objText       );
-    ObjectSetString(currChart , objProperty.objName, OBJPROP_TOOLTIP    , getTFString());
-    if (objType == OBJ_TEXT || objType == OBJ_LABEL) {
-        ObjectSetInteger(currChart, objProperty.objName, OBJPROP_FONTSIZE   , objProperty.objFontSize   );
-        ObjectSetInteger(currChart, objProperty.objName, OBJPROP_ANCHOR     , objProperty.objAnchorPoint);
-        ObjectSetInteger(currChart, objProperty.objName, OBJPROP_CORNER     , objProperty.objCornerPoint);
-        ObjectSetString(currChart , objProperty.objName, OBJPROP_FONT       , objProperty.objFontName   );
-    }
-    if (objType == OBJ_LABEL) {
-        ObjectSetInteger(currChart, objProperty.objName, OBJPROP_XDISTANCE, (int)objProperty.objPrice1);
-        ObjectSetInteger(currChart, objProperty.objName, OBJPROP_YDISTANCE, (int)objProperty.objPrice2);
-    }
-    if (objType == OBJ_TREND || objType == OBJ_TRENDBYANGLE) {
-        ObjectSetInteger(currChart, objProperty.objName, OBJPROP_RAY        , objProperty.objRay        );
-    }
-    if (objType == OBJ_ARROW) {
-        ObjectSetInteger(currChart, objProperty.objName, OBJPROP_ARROWCODE  , objProperty.objArrowCode  );
-    }
-}
-
-ObjectProperty gListSelectedObjProp[MAX_SYNC_ITEMS+1];
-
-void syncSelectedItem()
+ObjectProperty gListSyncProp[MAX_SYNC_ITEMS+1];
+void syncTimmyItem()
 {
     // Find selected item
     long chartID = ChartID();
-    int selectedItemNum = 0;
+    int itemNum = 0;
     string objName      = "";
+    string syncItemToTargetChartsStr = "";
+    string splitItems[];
+    int splitNum;
+    string mainObj = "";
     for(int i=ObjectsTotal() - 1 ;  i >= 0 ;  i--)
     {
         objName = ObjectName(i);
-        if (ObjectGet(objName, OBJPROP_SELECTED) != 0) {
-            gListSelectedObjProp[selectedItemNum].objName       = objName;
-            ENUM_OBJECT objType = (ENUM_OBJECT)ObjectGetInteger(chartID, objName, OBJPROP_TYPE);
-            gListSelectedObjProp[selectedItemNum].objType       = objType;
-            gListSelectedObjProp[selectedItemNum].objTime1      = (datetime)ObjectGetInteger(chartID, objName, OBJPROP_TIME1);
-            gListSelectedObjProp[selectedItemNum].objTime2      = (datetime)ObjectGetInteger(chartID, objName, OBJPROP_TIME2);
-            gListSelectedObjProp[selectedItemNum].objPrice1     = ObjectGetDouble(chartID, objName, OBJPROP_PRICE1);
-            gListSelectedObjProp[selectedItemNum].objPrice2     = ObjectGetDouble(chartID, objName, OBJPROP_PRICE2);
-            if (StringFind(objName, "_cPoint") != -1) {
-                gListSelectedObjProp[selectedItemNum].objColor = clrNONE;
-            }
-            else {
-                gListSelectedObjProp[selectedItemNum].objColor  = (color)ObjectGet(objName, OBJPROP_COLOR);
-            }
-            gListSelectedObjProp[selectedItemNum].objStyle      = (int)ObjectGet(objName, OBJPROP_STYLE     );
-            gListSelectedObjProp[selectedItemNum].objWidth      = (int)ObjectGet(objName, OBJPROP_WIDTH     );
-            gListSelectedObjProp[selectedItemNum].objBack       = (int)ObjectGet(objName, OBJPROP_BACK      );
-            gListSelectedObjProp[selectedItemNum].objSelectable = (int)ObjectGet(objName, OBJPROP_SELECTABLE);
-            gListSelectedObjProp[selectedItemNum].objText       = ObjectDescription(objName);
-            gListSelectedObjProp[selectedItemNum].objTooltip    = ObjectGetString(chartID, objName, OBJPROP_TOOLTIP);
-            if (objType == OBJ_TEXT || objType == OBJ_LABEL) {
-                gListSelectedObjProp[selectedItemNum].objFontName   = ObjectGetString(chartID, objName, OBJPROP_FONT);
-                gListSelectedObjProp[selectedItemNum].objFontSize   = (int)ObjectGet(objName, OBJPROP_FONTSIZE  );
-                gListSelectedObjProp[selectedItemNum].objAnchorPoint= (int)ObjectGet(objName, OBJPROP_ANCHOR    );
-                gListSelectedObjProp[selectedItemNum].objCornerPoint= (int)ObjectGet(objName, OBJPROP_CORNER    );
-            }
-            if (objType == OBJ_LABEL) {
-                gListSelectedObjProp[selectedItemNum].objPrice1     = ObjectGet(objName, OBJPROP_XDISTANCE);
-                gListSelectedObjProp[selectedItemNum].objPrice2     = ObjectGet(objName, OBJPROP_YDISTANCE);
-            }
-            if (objType == OBJ_TREND || objType == OBJ_TRENDBYANGLE) {
-                gListSelectedObjProp[selectedItemNum].objRay        = (int)ObjectGet(objName, OBJPROP_RAY       );
-            }
-            if (objType == OBJ_ARROW) {
-                gListSelectedObjProp[selectedItemNum].objArrowCode  = (int)ObjectGet(objName, OBJPROP_ARROWCODE );
-            }
-
-            selectedItemNum++;
-            if (selectedItemNum >= MAX_SYNC_ITEMS) return;
+        if (ObjectGet(objName, OBJPROP_SELECTED) == false) continue;
+        if (StringFind(objName, TAG_CTRM) < 0) continue;
+        splitNum = StringSplit(objName,'_',splitItems);
+        if (splitNum != 3) continue;
+        if (splitItems[0] == Rectangle::Tag){
+            mainObj = objName;
+            syncItemToTargetChartsStr = Rectangle::getAllItem(splitItems[0] + "_" + splitItems[1]);
+            break;
+        }
+        else if (splitItems[0] == Fibonacci::Tag){
+            mainObj = objName;
+            syncItemToTargetChartsStr = Fibonacci::getAllItem(splitItems[0] + "_" + splitItems[1]);
+            break;
+        }
+        else if (splitItems[0] == Trend::Tag){
+            mainObj = objName;
+            syncItemToTargetChartsStr = Trend::getAllItem(splitItems[0] + "_" + splitItems[1]);
+            break;
+        }
+        else if (splitItems[0] == Alert::Tag){
+            mainObj = objName;
+            syncItemToTargetChartsStr = Alert::getAllItem(splitItems[0] + "_" + splitItems[1]);
+            break;
+        }
+        else if (splitItems[0] == CallOut::Tag){
+            mainObj = objName;
+            syncItemToTargetChartsStr = CallOut::getAllItem(splitItems[0] + "_" + splitItems[1]);
+            break;
+        }
+        else if (splitItems[0] == Point::Tag){
+            mainObj = objName;
+            syncItemToTargetChartsStr = Point::getAllItem(splitItems[0] + "_" + splitItems[1]);
+            break;
+        }
+        else if (splitItems[0] == Trade::Tag){
+            mainObj = objName;
+            syncItemToTargetChartsStr = Trade::getAllItem(splitItems[0] + "_" + splitItems[1]);
+            break;
+        }
+        else if (splitItems[0] == ZigZag::Tag){
+            mainObj = objName;
+            syncItemToTargetChartsStr = ZigZag::getAllItem(splitItems[0] + "_" + splitItems[1]);
+            break;
+        }
+        else if (splitItems[0] == LabelText::Tag){
+            mainObj = objName;
+            syncItemToTargetChartsStr = LabelText::getAllItem(splitItems[0] + "_" + splitItems[1]);
+            break;
         }
     }
 
-    long currChart = ChartFirst();
-    string chartSymbol = ChartSymbol();
-    while(currChart > 0)
+    splitNum=StringSplit(syncItemToTargetChartsStr,'.',splitItems);
+    for (int i = 0; i < splitNum; i++)
     {
-        if (ChartSymbol(currChart) == chartSymbol && currChart != chartID) {
-            bool objectExit = (ObjectFind(currChart, gListSelectedObjProp[0].objName) >= 0);
-            for (int i = 0; i < selectedItemNum; i++) {
-                syncItem(gListSelectedObjProp[i], currChart, objectExit);
+        if (splitItems[i] == "") continue;
+        objName = "."+splitItems[i];
+        ENUM_OBJECT objType = (ENUM_OBJECT)ObjectType(objName);
+        if (objType == -1) continue; // Object chưa được tạo
+        gListSyncProp[itemNum].Name         = objName;
+        gListSyncProp[itemNum].Type         = objType;
+        gListSyncProp[itemNum].Time1        = (datetime)ObjectGet(objName, OBJPROP_TIME1);
+        gListSyncProp[itemNum].Price1       = ObjectGet(objName, OBJPROP_PRICE1);
+
+        gListSyncProp[itemNum].Style        = (int)ObjectGet(objName, OBJPROP_STYLE);
+        gListSyncProp[itemNum].Width        = (int)ObjectGet(objName, OBJPROP_WIDTH);
+        gListSyncProp[itemNum].Back         = (int)ObjectGet(objName, OBJPROP_BACK);
+        gListSyncProp[itemNum].Selectable   = (int)ObjectGet(objName, OBJPROP_SELECTABLE);
+        gListSyncProp[itemNum].Hidden       = (int)ObjectGetInteger(chartID, objName, OBJPROP_HIDDEN);
+        gListSyncProp[itemNum].Color        = (color)ObjectGet(objName, OBJPROP_COLOR);
+        gListSyncProp[itemNum].Text         = ObjectDescription(objName);
+        gListSyncProp[itemNum].Tooltip      = ObjectGetString(chartID, objName, OBJPROP_TOOLTIP);
+
+        if (objType == OBJ_TREND || objType == OBJ_TRENDBYANGLE || objType == OBJ_RECTANGLE) {
+            gListSyncProp[itemNum].Time2    = (datetime)ObjectGet(objName, OBJPROP_TIME2);
+            gListSyncProp[itemNum].Price2   = ObjectGet(objName, OBJPROP_PRICE2);
+        }
+        if (objType == OBJ_TEXT || objType == OBJ_LABEL) {
+            gListSyncProp[itemNum].FontName = ObjectGetString(chartID, objName, OBJPROP_FONT);
+            gListSyncProp[itemNum].FontSize = (int)ObjectGet(objName, OBJPROP_FONTSIZE);
+            gListSyncProp[itemNum].Anchor   = (int)ObjectGet(objName, OBJPROP_ANCHOR);
+            gListSyncProp[itemNum].Corner   = (int)ObjectGet(objName, OBJPROP_CORNER);
+        }
+        if (objType == OBJ_LABEL) {
+            gListSyncProp[itemNum].XDistance= (int)ObjectGet(objName, OBJPROP_XDISTANCE);
+            gListSyncProp[itemNum].YDistance= (int)ObjectGet(objName, OBJPROP_YDISTANCE);
+        }
+        if (objType == OBJ_TREND || objType == OBJ_TRENDBYANGLE) {
+            gListSyncProp[itemNum].Ray        = (int)ObjectGet(objName, OBJPROP_RAY);
+        }
+        if (objType == OBJ_ARROW) {
+            gListSyncProp[itemNum].ArrowCode  = (int)ObjectGet(objName, OBJPROP_ARROWCODE);
+        }
+
+        itemNum++;
+        if (itemNum >= MAX_SYNC_ITEMS) return;
+    }
+
+    long curChart = ChartFirst();
+    string chartSymbol = ChartSymbol();
+    while(curChart > 0)
+    {
+        if (ChartSymbol(curChart) == chartSymbol && curChart != chartID) {
+            bool objectExit = (ObjectFind(curChart, mainObj) >= 0);
+            for (int i = 0; i < itemNum; i++) {
+                syncItemToTargetChart(gListSyncProp[i], curChart, objectExit);
             }
         }
-        currChart = ChartNext(currChart);
+        curChart = ChartNext(curChart);
     }
 }
 
-void syncDeleteSelectedItem()
+void syncItemToTargetChart(ObjectProperty &objProp, long chartId, bool objectExit)
+{
+    ENUM_OBJECT objType = objProp.Type;
+    if(objectExit == false) {
+        ObjectCreate(chartId,
+                    objProp.Name,
+                    objProp.Type,
+                    0,
+                    objProp.Time1,
+                    objProp.Price1);
+    }
+    else {
+        ObjectSetInteger(chartId, objProp.Name, OBJPROP_TIME1, objProp.Time1);
+        ObjectSetDouble (chartId, objProp.Name, OBJPROP_PRICE1, objProp.Price1);
+    }
+    ObjectSetInteger(chartId, objProp.Name, OBJPROP_STYLE      , objProp.Style      );
+    ObjectSetInteger(chartId, objProp.Name, OBJPROP_WIDTH      , objProp.Width      );
+    ObjectSetInteger(chartId, objProp.Name, OBJPROP_BACK       , objProp.Back       );
+    ObjectSetInteger(chartId, objProp.Name, OBJPROP_SELECTABLE , objProp.Selectable );
+    ObjectSetInteger(chartId, objProp.Name, OBJPROP_HIDDEN     , objProp.Hidden     );
+    ObjectSetInteger(chartId, objProp.Name, OBJPROP_COLOR      , objProp.Color      );
+    ObjectSetString(chartId , objProp.Name, OBJPROP_TEXT       , objProp.Text       );
+    ObjectSetString(chartId , objProp.Name, OBJPROP_TOOLTIP    , getTFString());
+
+    if (objType == OBJ_TREND || objType == OBJ_TRENDBYANGLE || objType == OBJ_RECTANGLE) {
+        ObjectSetInteger(chartId, objProp.Name, OBJPROP_TIME2, objProp.Time2);
+        ObjectSetDouble (chartId, objProp.Name, OBJPROP_PRICE2, objProp.Price2);
+    }
+    if (objType == OBJ_TEXT || objType == OBJ_LABEL) {
+        ObjectSetString(chartId , objProp.Name, OBJPROP_FONT       , objProp.FontName);
+        ObjectSetInteger(chartId, objProp.Name, OBJPROP_FONTSIZE   , objProp.FontSize);
+        ObjectSetInteger(chartId, objProp.Name, OBJPROP_ANCHOR     , objProp.Anchor);
+        ObjectSetInteger(chartId, objProp.Name, OBJPROP_CORNER     , objProp.Corner);
+    }
+    if (objType == OBJ_LABEL) {
+        ObjectSetInteger(chartId, objProp.Name, OBJPROP_XDISTANCE, objProp.XDistance);
+        ObjectSetInteger(chartId, objProp.Name, OBJPROP_YDISTANCE, objProp.YDistance);
+    }
+    if (objType == OBJ_TREND || objType == OBJ_TRENDBYANGLE) {
+        ObjectSetInteger(chartId, objProp.Name, OBJPROP_RAY        , objProp.Ray        );
+    }
+    if (objType == OBJ_ARROW) {
+        ObjectSetInteger(chartId, objProp.Name, OBJPROP_ARROWCODE  , objProp.ArrowCode  );
+    }
+}
+
+void deleteTimmyItem()
 {
     // Find selected item
-    string listSelectedItem[20];
-    int selectedItemNum = 0;
+    string objName = "";
+    string mainObj = ""; 
     for(int i=ObjectsTotal() - 1 ;  i >= 0 ;  i--) {
-        string objName = ObjectName(i);
-        if (ObjectGet(objName, OBJPROP_SELECTED) != 0) {
-            listSelectedItem[selectedItemNum] = objName;
-
-            selectedItemNum++;
-            if (selectedItemNum >= MAX_SYNC_ITEMS) return;
-        }
+        objName = ObjectName(i);
+        if (ObjectGet(objName, OBJPROP_SELECTED) == false) continue;
+        if (StringFind(objName, TAG_CTRM) < 0) continue;
+        mainObj = objName;
+        break;
     }
+    if (mainObj == "") return;
 
-    long currChart = ChartFirst();
-    while(currChart > 0)
+    long curChart = ChartFirst();
+    while(curChart > 0)
     {
-        for (int i = 0; i < selectedItemNum; i++) {
-            ObjectDelete(currChart, listSelectedItem[i]);
-        }
-        currChart = ChartNext(currChart);
+        ObjectDelete(curChart, mainObj);
+        curChart = ChartNext(curChart);
     }
 }

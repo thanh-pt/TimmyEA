@@ -40,12 +40,12 @@ string mListAlertRemainStr;
 
 // Component name
 private:
-    string cAlert;
+    string cLnM0;
 // Value define for Item
 private:
 
 public:
-    Alert(const string name, CommonData* commonData, MouseInfo* mouseInfo);
+    Alert(CommonData* commonData, MouseInfo* mouseInfo);
 
 // Internal Event
 public:
@@ -72,11 +72,17 @@ public:
     virtual void onItemDrag(const string &itemId, const string &objId);
     virtual void onItemClick(const string &itemId, const string &objId);
     virtual void onItemChange(const string &itemId, const string &objId);
+
+public:
+    static string getAllItem(string itemId);
+    static string Tag;
 };
 
-Alert::Alert(const string name, CommonData* commonData, MouseInfo* mouseInfo)
+static string Alert::Tag = ".TMAlert";
+
+Alert::Alert(CommonData* commonData, MouseInfo* mouseInfo)
 {
-    mItemName = name;
+    mItemName = Alert::Tag;
     pCommonData = commonData;
     pMouseInfo = mouseInfo;
 
@@ -96,7 +102,13 @@ void Alert::updateDefaultProperty(){}
 void Alert::updateTypeProperty(){}
 void Alert::activateItem(const string& itemId)
 {
-    cAlert = itemId + "_cAlert";
+    cLnM0 = itemId + TAG_CTRM + "cLnM0";
+}
+string Alert::getAllItem(string itemId)
+{
+    string allItem = itemId + "_mTData";
+    allItem += itemId + TAG_CTRM + "cLnM0";
+    return allItem;
 }
 void Alert::updateItemAfterChangeType(){}
 void Alert::refreshData(){}
@@ -110,13 +122,13 @@ void Alert::onMouseClick()
 {
     if (mIndexType == CREATE_ALERT)
     {
-        ObjectCreate(cAlert, OBJ_HLINE, 0, 0, pCommonData.mMousePrice);
-        setObjectStyle(cAlert, InpAlertColor, InpAlertStyle, 0);
-        // ObjectSet(cAlert, OBJPROP_BACK , true);
-        mAlertIndi = (ObjectGet(cAlert, OBJPROP_PRICE1) > Bid ? ALERT_INDI_H : ALERT_INDI_L);
-        ObjectSetText(cAlert, mAlertIndi + "Alert");
+        ObjectCreate(cLnM0, OBJ_HLINE, 0, 0, pCommonData.mMousePrice);
+        setObjectStyle(cLnM0, InpAlertColor, InpAlertStyle, 0);
+        // ObjectSet(cLnM0, OBJPROP_BACK , true);
+        mAlertIndi = (ObjectGet(cLnM0, OBJPROP_PRICE1) > Bid ? ALERT_INDI_H : ALERT_INDI_L);
+        ObjectSetText(cLnM0, mAlertIndi + "Alert");
         // Add Alert to mListAlertStr
-        mListAlertStr += cAlert + ",";
+        mListAlertStr += cLnM0 + ",";
     }
     else if (mIndexType == TEST_ALERT){
         sendNotification("Alert OK!");
@@ -125,32 +137,32 @@ void Alert::onMouseClick()
 }
 void Alert::onItemDrag(const string &itemId, const string &objId)
 {
-    if (objId == cAlert)
+    if (objId == cLnM0)
     {
-        double priceAlert = ObjectGet(cAlert, OBJPROP_PRICE1);
+        double priceAlert = ObjectGet(cLnM0, OBJPROP_PRICE1);
         if (pCommonData.mCtrlHold == true)
         {
             priceAlert = pCommonData.mMousePrice;
-            ObjectSet(cAlert, OBJPROP_PRICE1, priceAlert);
+            ObjectSet(cLnM0, OBJPROP_PRICE1, priceAlert);
         }
-        mAlertText = ObjectGetString(ChartID(), cAlert, OBJPROP_TEXT);
+        mAlertText = ObjectGetString(ChartID(), cLnM0, OBJPROP_TEXT);
         mAlertIndi = (priceAlert > Bid ? ALERT_INDI_H : ALERT_INDI_L);
         StringReplace(mAlertText, ALERT_INDI_H, "");
         StringReplace(mAlertText, ALERT_INDI_L, "");
 
         mAlertText = mAlertIndi + " " + mAlertText;
-        ObjectSetText(cAlert, mAlertText);
+        ObjectSetText(cLnM0, mAlertText);
 
-        if (StringFind(mListAlertStr, cAlert) == -1)
+        if (StringFind(mListAlertStr, cLnM0) == -1)
         {
-            mListAlertStr += cAlert + ",";
+            mListAlertStr += cLnM0 + ",";
         }
     }
 }
 void Alert::onItemClick(const string &itemId, const string &objId){}
 void Alert::onItemChange(const string &itemId, const string &objId)
 {
-    if (objId == cAlert) onItemDrag(itemId, objId);
+    if (objId == cLnM0) onItemDrag(itemId, objId);
 }
 // Internal Function
 
@@ -167,7 +179,8 @@ void Alert::initAlarm()
     for(int i=ObjectsTotal() - 1 ;  i >= 0 ;  i--)
     {
         alertLine = ObjectName(i);
-        if (StringFind(alertLine, "cAlert") == -1) continue;
+        if (StringFind(alertLine, Alert::Tag) == -1) continue;
+        if (StringFind(alertLine, TAG_CTRM) == -1) continue;
         // Add Alert to the list
         if (mListAlertStr != "") mListAlertStr += ",";
         mListAlertStr += alertLine;
@@ -182,7 +195,7 @@ void Alert::checkAlert()
     {
         // Check valid Alert
         if (ObjectFind(mListAlertArr[i]) < 0) continue;
-        if (StringFind(mListAlertArr[i], "cAlert") == -1) continue;
+        // if (StringFind(mListAlertArr[i], TAG_CTRM) == -1) continue;
 
         // Get Alert information
         mIsAlertReached = false;

@@ -52,7 +52,7 @@ int OnInit()
 void OnDeinit(const int reason)
 {
 //---
-   gContextMenu.clearContextMenu();
+    gContextMenu.clearContextMenu();
 }
 //+------------------------------------------------------------------+
 //| Expert tick function                                             |
@@ -138,12 +138,13 @@ bool gIsPress;
 int gPreviousOption;
 void detectMouseDraging(const string &sparam)
 {
+    if (gContextMenu.mIsOpen == true) return;
     int option = StrToInteger(sparam);
     // Press event
     if ((option & 0x01) != 0 && (gPreviousOption & 0x01) == 0)
     {
         gIsPress = true;
-        gTargetItem = findItemUnderMouse(gCommonData.mMouseX, gCommonData.mMouseY);
+        gTargetItem = getItemUnderMouse(gCommonData.mMouseX, gCommonData.mMouseY);
     }
     else
         // Release event

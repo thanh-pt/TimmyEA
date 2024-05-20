@@ -14,9 +14,10 @@ private:
 
 // Component name
 private:
-    string cLbText;
-    string cPtLine;
-    string iUdLine;
+    string cTxtM;
+    string cLn01;
+    string iTxtU;
+    string iTxBg;
 
 // Value define for Item
 private:
@@ -26,7 +27,7 @@ private:
     double price2;
 
 public:
-    CallOut(const string name, CommonData* commonData, MouseInfo* mouseInfo);
+    CallOut(CommonData* commonData, MouseInfo* mouseInfo);
 
 // Internal Event
 public:
@@ -47,11 +48,17 @@ public:
     virtual void onItemClick(const string &itemId, const string &objId);
     virtual void onItemChange(const string &itemId, const string &objId);
     virtual void onItemDeleted(const string &itemId, const string &objId);
+
+public:
+    static string getAllItem(string itemId);
+    static string Tag;
 };
 
-CallOut::CallOut(const string name, CommonData* commonData, MouseInfo* mouseInfo)
+static string CallOut::Tag = ".TMCallOut";
+
+CallOut::CallOut(CommonData* commonData, MouseInfo* mouseInfo)
 {
-    mItemName = name;
+    mItemName = CallOut::Tag;
     pCommonData = commonData;
     pMouseInfo = mouseInfo;
 
@@ -65,9 +72,10 @@ CallOut::CallOut(const string name, CommonData* commonData, MouseInfo* mouseInfo
 void CallOut::prepareActive(){}
 void CallOut::createItem()
 {
-    ObjectCreate(cPtLine, OBJ_TREND, 0, 0, 0);
-    ObjectCreate(iUdLine, OBJ_TEXT , 0, 0, 0);
-    ObjectCreate(cLbText, OBJ_TEXT , 0, 0, 0);
+    ObjectCreate(cLn01, OBJ_TREND, 0, 0, 0);
+    ObjectCreate(iTxtU, OBJ_TEXT , 0, 0, 0);
+    ObjectCreate(iTxBg, OBJ_TEXT , 0, 0, 0);
+    ObjectCreate(cTxtM, OBJ_TEXT , 0, 0, 0);
     updateTypeProperty();
     updateDefaultProperty();
     time1  = pCommonData.mMouseTime;
@@ -75,58 +83,66 @@ void CallOut::createItem()
 }
 void CallOut::updateDefaultProperty()
 {
-    ObjectSet(iUdLine, OBJPROP_SELECTABLE, false);
+    ObjectSet(iTxtU, OBJPROP_SELECTABLE, false);
+    ObjectSet(iTxBg, OBJPROP_SELECTABLE, false);
     setMultiStrs(OBJPROP_TOOLTIP, "\n", mAllItem);
 }
 void CallOut::updateTypeProperty()
 {
-    setObjectStyle(cPtLine, CallOut_Color, 0, 1);
+    setObjectStyle(cLn01, CallOut_Color, 0, 1);
     //-------------------------------------------------------------
-    ObjectSetText(cLbText, DoubleToString(pCommonData.mMousePrice, 5), CallOut_FontSize, "Consolas", CallOut_Color);
-    ObjectSetText(iUdLine,                                    "_____", CallOut_FontSize, "Consolas", CallOut_Color);
-    ObjectSet(cLbText, OBJPROP_SELECTED, true);
+    ObjectSetText(cTxtM, DoubleToString(pCommonData.mMousePrice, 5), CallOut_FontSize, "Consolas", CallOut_Color);
+    ObjectSetText(iTxtU,                                    "_____", CallOut_FontSize, "Consolas", CallOut_Color);
+    ObjectSetText(iTxBg,                            getFullBlock(5), CallOut_FontSize, "Consolas", clrLightGray);
+    setCtrlItemSelectState(mAllItem, true);
 }
 void CallOut::activateItem(const string& itemId)
 {
-    cLbText = itemId + "_cLbText";
-    cPtLine = itemId + "_cPtLine";
-    iUdLine = itemId + "_iUdLine";
+    cTxtM = itemId + TAG_CTRM + "cTxtM";
+    cLn01 = itemId + TAG_CTRL + "cLn01";
+    iTxtU = itemId + TAG_INFO + "iTxtU";
+    iTxBg = itemId + TAG_INFO + "iTxBg";
 
-    mAllItem += cLbText+cPtLine+iUdLine;
+    mAllItem += cTxtM+cLn01+iTxtU+iTxBg;
+}
+string CallOut::getAllItem(string itemId)
+{
+    string allItem = itemId + "_mTData";
+    allItem += itemId + TAG_INFO + "iTxBg";
+    allItem += itemId + TAG_INFO + "iTxtU";
+    allItem += itemId + TAG_CTRM + "cTxtM";
+    allItem += itemId + TAG_CTRL + "cLn01";
+
+    return allItem;
 }
 void CallOut::updateItemAfterChangeType(){}
 void CallOut::refreshData()
 {
-    setItemPos(cPtLine, time1, time2, price1, price2);
-    setItemPos(cLbText, time2, price2);
-    setItemPos(iUdLine, time2, price2);
+    setItemPos(cLn01, time1, time2, price1, price2);
+    setItemPos(cTxtM, time2, price2);
+    setItemPos(iTxtU, time2, price2);
+    setItemPos(iTxBg, time2, price2);
     //-------------------------------------------------------------
-    if (time1 > time2)
-    {
-        ObjectSetInteger(ChartID(), cLbText, OBJPROP_ANCHOR, ANCHOR_RIGHT_LOWER);
-        ObjectSetInteger(ChartID(), iUdLine, OBJPROP_ANCHOR, ANCHOR_RIGHT_LOWER);
-    }
-    else
-    {
-        ObjectSetInteger(ChartID(), cLbText, OBJPROP_ANCHOR, ANCHOR_LEFT_LOWER);
-        ObjectSetInteger(ChartID(), iUdLine, OBJPROP_ANCHOR, ANCHOR_LEFT_LOWER);
-    }
-    string callOutValue = ObjectDescription(cLbText);
+    if (time1 > time2) setMultiInts(OBJPROP_ANCHOR, ANCHOR_RIGHT_LOWER, cTxtM+iTxtU+iTxBg);
+    else setMultiInts(OBJPROP_ANCHOR, ANCHOR_LEFT_LOWER, cTxtM+iTxtU+iTxBg);
+
+    string callOutValue = ObjectDescription(cTxtM);
     int calloutLen = StringLen(callOutValue);
-    ObjectSetText(iUdLine, StringSubstr(UNDER_LINE, 0, calloutLen));
+    ObjectSetText(iTxtU, StringSubstr(UNDER_LINE, 0, calloutLen));
+    ObjectSetText(iTxBg, getFullBlock(calloutLen));
     if (calloutLen == 7 && StrToDouble(callOutValue) != 0.0)
     {
-        ObjectSetText(cLbText, DoubleToString(price1,5));
+        ObjectSetText(cTxtM, DoubleToString(price1,5));
     }
     // additional leg
     int idx = 0;
-    string additionalLeg = cPtLine + IntegerToString(idx);
+    string additionalLeg = cLn01 + IntegerToString(idx);
     while (ObjectFind(additionalLeg) >= 0)
     {
         ObjectSet(additionalLeg, OBJPROP_TIME2 , time2);
         ObjectSet(additionalLeg, OBJPROP_PRICE2, price2);
         idx++;
-        additionalLeg = cPtLine + IntegerToString(idx);
+        additionalLeg = cLn01 + IntegerToString(idx);
     }
 }
 void CallOut::finishedJobDone(){}
@@ -155,19 +171,19 @@ void CallOut::onMouseClick()
 }
 void CallOut::onItemDrag(const string &itemId, const string &objId)
 {
-    time1   = (datetime)ObjectGet(cPtLine, OBJPROP_TIME1);
-    time2   = (datetime)ObjectGet(cPtLine, OBJPROP_TIME2);
-    price1  =           ObjectGet(cPtLine, OBJPROP_PRICE1);
-    price2  =           ObjectGet(cPtLine, OBJPROP_PRICE2);
+    time1   = (datetime)ObjectGet(cLn01, OBJPROP_TIME1);
+    time2   = (datetime)ObjectGet(cLn01, OBJPROP_TIME2);
+    price1  =           ObjectGet(cLn01, OBJPROP_PRICE1);
+    price2  =           ObjectGet(cLn01, OBJPROP_PRICE2);
 
-    if (objId == cLbText)
+    if (objId == cTxtM)
     {
-        time2   = (datetime)ObjectGet(cLbText, OBJPROP_TIME1);
-        price2  =           ObjectGet(cLbText, OBJPROP_PRICE1);
+        time2   = (datetime)ObjectGet(cTxtM, OBJPROP_TIME1);
+        price2  =           ObjectGet(cTxtM, OBJPROP_PRICE1);
     }
     else if (pCommonData.mCtrlHold == true)
     {
-        double textPrice = ObjectGet(cLbText, OBJPROP_PRICE1);
+        double textPrice = ObjectGet(cTxtM, OBJPROP_PRICE1);
         if (price2 == textPrice)
         {
             price1 = pCommonData.mMousePrice;
@@ -176,15 +192,20 @@ void CallOut::onItemDrag(const string &itemId, const string &objId)
 
     refreshData();
 }
-void CallOut::onItemClick(const string &itemId, const string &objId){}
+void CallOut::onItemClick(const string &itemId, const string &objId)
+{
+    if (StringFind(objId, TAG_CTRL) < 0) return;
+    int selected = (int)ObjectGet(objId, OBJPROP_SELECTED);
+    setCtrlItemSelectState(mAllItem, selected);
+}
 void CallOut::onItemChange(const string &itemId, const string &objId)
 {
-    setMultiProp(OBJPROP_COLOR, (color)ObjectGet(objId, OBJPROP_COLOR), cLbText+cPtLine+iUdLine);
+    setMultiProp(OBJPROP_COLOR, (color)ObjectGet(objId, OBJPROP_COLOR), cTxtM+cLn01+iTxtU);
     onItemDrag(itemId, objId);
 }
 void CallOut::onItemDeleted(const string &itemId, const string &objId)
 {
-    if (objId == cLbText || objId == cPtLine || objId == iUdLine)
+    if (objId == cTxtM || objId == cLn01 || objId == iTxtU)
     {
         BaseItem::onItemDeleted(itemId, objId);
     }
@@ -193,7 +214,7 @@ void CallOut::onItemDeleted(const string &itemId, const string &objId)
     string objName = "";
     do
     {
-        objName = cPtLine + IntegerToString(idx);
+        objName = cLn01 + IntegerToString(idx);
         idx++;
     }
     while (ObjectDelete(objName) == true);

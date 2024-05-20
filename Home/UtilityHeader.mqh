@@ -4,18 +4,59 @@
 #define STATIC_TAG          "%"
 #define BG_TAG              "BgOverlapFix"
 #define LINE_STYLE          ENUM_LINE_STYLE
+// #define TAG_CTRL "_zct" // TODO <- update to this
+#define TAG_CTRM "_cM"
+#define TAG_CTRL "_c"
+#define TAG_INFO "_0inf"
 
 #define MAX_TYPE 15
 
 #define CHART_EVENT_SELECT_CONTEXTMENU CHARTEVENT_CUSTOM+1
+#define FULL_BLOCK "██████████████████████████████████████████████████████████████████"
 
 #define MIN(a,b) ((a)<(b)?(a):(b))
 #define MAX(a,b) ((a)>(b)?(a):(b))
 
-
 #include "UtilityStore/SyncItem.mqh"
 #include "UtilityStore/GetAction.mqh"
 #include "UtilityStore/SetAction.mqh"
+
+string gStrRand[] = {
+    "TẬP TRUNG vào nguyên tắc.",
+    "BÁM SÁT kế hoạch.",
+    "SỢ mất tiền.",
+    "GIAO DỊCH theo kế hoạch.",
+    "Kỳ vọng thực tế.",
+    "SỢ THẤT BẠI, PHẠM SAI LẦM.",
+    "ĐÚC KẾT bài học.",
+    "CẮT GIẢM rủi ro.",
+    "Tự tin nội tại.",
+    "TĂNG áp lực.",
+    "VÔ KỶ LUẬT, PHẢN ỨNG BỐC ĐỒNG.",
+    "TỰ khiến bản thân.",
+    "GIẢI QUYẾT vấn đề.",
+    "Kết quả ngẫu nhiên.",
+    "TƯ DUY dài hạn.",
+    "KHÔNG GIAO DỊCH.",
+    "Khiêm tốn.",
+    "HỌC CÁCH thua cuộc.",
+    "GIỎI duy nhất.",
+    "TẬP TRUNG vào quá trình.",
+    "LẬP KẾ HOẠCH.",
+    "TẠO quy trình.",
+    "Ngủ đủ giấc.",
+    "KHÔNG VỚI giao dịch.",
+    "KỶ LUẬT ĐÁNH BẠI.",
+    "CHÚ TRỌNG chất lượng.",
+    "THỰC HIỆN giao dịch.",
+    "Thời điểm thoát lệnh.",
+    "Kẻ thù lớn nhất.",
+    "LUÔN là học sinh.",
+    "KIỂM SOÁT rủi ro.",
+    "HỌC TẬP từ người thành công.",
+    "So sánh bản thân.",
+    "TUÂN THỦ nguyên tắc, QUẢN LÝ rủi ro.",
+};
 
 void EraseAll()
 {

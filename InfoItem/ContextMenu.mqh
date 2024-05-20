@@ -4,7 +4,6 @@ input string ContexMenu_; // ●  C O N T E X T   M E N U  ●
 input color ContxtMenu_BgColor1  = clrGray;      // Bg Color
 input color ContxtMenu_BgColor2  = clrLightGray; // Selected Color
 
-#define TEXT_FULL_BLOCK "██████████████████████████████████████████████████████████████████"
 #define MAX_ROW 4
 
 class ContextMenu
@@ -14,10 +13,10 @@ private:
     string mContextMenu[];
     int    mSize;
     int    mMaxLength;
-    bool   mIsOpen;
 public:
     int mActivePos;
     string mActiveItemStr;
+    bool   mIsOpen;
 
 public:
     ContextMenu()
@@ -89,7 +88,7 @@ private:
         ObjectCreate(itemName, OBJ_LABEL, 0, 0, 0);
         ObjectSet(itemBgnd, OBJPROP_SELECTABLE, false);
         ObjectSet(itemName, OBJPROP_SELECTABLE, false);
-        ObjectSetText(itemBgnd, StringSubstr(TEXT_FULL_BLOCK, 0, mMaxLength), 10, "Consolas", ContxtMenu_BgColor1);
+        ObjectSetText(itemBgnd, getFullBlock(mMaxLength), 10, "Consolas", ContxtMenu_BgColor1);
         ObjectSetText(itemName,                                     " "+name, 10, "Consolas", gForegroundColor);
         ObjectSetInteger(0, itemName, OBJPROP_ANCHOR, ANCHOR_LEFT_UPPER);
         ObjectSetInteger(0, itemBgnd, OBJPROP_ANCHOR, ANCHOR_LEFT_UPPER);

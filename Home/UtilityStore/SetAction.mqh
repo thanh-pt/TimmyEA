@@ -122,7 +122,6 @@ void setObjectStyle(string obj, color c, int style, int width, bool isBack)
     ObjectSet(obj, OBJPROP_WIDTH, width);
 }
 
-
 void setUnselectAll()
 {
     string currentItemId;
@@ -134,7 +133,7 @@ void setUnselectAll()
         if (ObjectGet(objName, OBJPROP_SELECTED) == false) continue;
         ObjectSet(objName, OBJPROP_SELECTED, 0);
 
-        if (StringFind(objName, "_c0") == -1) continue;
+        if (StringFind(objName, TAG_CTRM) == -1) continue;
         k=StringSplit(objName,'_',sparamItems);
         
         if (k != 3) continue;
@@ -171,4 +170,16 @@ void setUnselectAllExcept(string objId)
         gController.handleSparamEvent(CHARTEVENT_OBJECT_DRAG, objName);
     }
     gContextMenu.clearContextMenu();
+}
+
+void setCtrlItemSelectState(string lstItem, int selecteState)
+{
+    string sparamItems[];
+    int k=StringSplit(lstItem,'.',sparamItems);
+    for (int i = 0; i < k; i++)
+    {
+        if (sparamItems[i] == "") continue;
+        if (StringFind(sparamItems[i], TAG_CTRL) < 0) continue;
+        ObjectSet("."+sparamItems[i], OBJPROP_SELECTED, selecteState);
+    }
 }

@@ -13,7 +13,7 @@ private:
     
 // Component name
 private:
-    string cline;
+    string cLnXX;
 // Value define for Item
 private:
     datetime time1;
@@ -22,7 +22,7 @@ private:
     double price2;
 
 public:
-    ZigZag(const string name, CommonData* commonData, MouseInfo* mouseInfo);
+    ZigZag(CommonData* commonData, MouseInfo* mouseInfo);
 
 // Internal Event
 public:
@@ -42,11 +42,17 @@ public:
     virtual void onItemDrag(const string &itemId, const string &objId);
     virtual void onItemClick(const string &itemId, const string &objId);
     virtual void onItemChange(const string &itemId, const string &objId);
+
+public:
+    static string getAllItem(string itemId);
+    static string Tag;
 };
 
-ZigZag::ZigZag(const string name, CommonData* commonData, MouseInfo* mouseInfo)
+static string ZigZag::Tag = ".TMZigZ";
+
+ZigZag::ZigZag(CommonData* commonData, MouseInfo* mouseInfo)
 {
-    mItemName = name;
+    mItemName = ZigZag::Tag;
     pCommonData = commonData;
     pMouseInfo = mouseInfo;
 
@@ -62,7 +68,7 @@ void ZigZag::prepareActive()
 }
 void ZigZag::createItem()
 {
-    mTempLine = cline + "#" + IntegerToString(mLineIndex++);
+    mTempLine = cLnXX + "#" + IntegerToString(mLineIndex++);
     ObjectCreate(mTempLine, OBJ_TREND, 0, pCommonData.mMouseTime, pCommonData.mMousePrice);
     updateDefaultProperty();
 }
@@ -75,7 +81,20 @@ void ZigZag::updateDefaultProperty()
 void ZigZag::updateTypeProperty(){}
 void ZigZag::activateItem(const string& itemId)
 {
-    cline = itemId + "_cline";
+    cLnXX = itemId + TAG_CTRM + "cLnXX";
+}
+string ZigZag::getAllItem(string itemId)
+{
+    string allItem = itemId + "_mTData";
+    string cLnTag  = itemId + TAG_CTRM + "cLnXX";
+    int i = 0;
+    string objName = cLnTag + "#" + IntegerToString(i++);
+    while (ObjectFind(objName) >= 0){
+        allItem += objName;
+        objName = cLnTag + "#" + IntegerToString(i++);
+    }
+
+    return allItem;
 }
 void ZigZag::updateItemAfterChangeType(){}
 void ZigZag::refreshData(){}
@@ -104,7 +123,7 @@ void ZigZag::onItemDrag(const string &itemId, const string &objId)
     string objName;
     do
     {
-        objName = cline + "#" + IntegerToString(i);
+        objName = cLnXX + "#" + IntegerToString(i);
         if (objName == objId)
         {
             break;
@@ -127,8 +146,8 @@ void ZigZag::onItemDrag(const string &itemId, const string &objId)
         }
     }
 
-    string nextObj = cline + "#" + IntegerToString(i+1);
-    string prevObj = cline + "#" + IntegerToString(i-1);
+    string nextObj = cLnXX + "#" + IntegerToString(i+1);
+    string prevObj = cLnXX + "#" + IntegerToString(i-1);
     ObjectSet(nextObj, OBJPROP_TIME1,  time2 );
     ObjectSet(nextObj, OBJPROP_PRICE1, price2);
     ObjectSet(prevObj, OBJPROP_TIME2,  time1 );
@@ -136,14 +155,13 @@ void ZigZag::onItemDrag(const string &itemId, const string &objId)
 }
 void ZigZag::onItemClick(const string &itemId, const string &objId)
 {
-    int objSelected = (int)ObjectGet(objId, OBJPROP_SELECTED);
-
+    int selected = (int)ObjectGet(objId, OBJPROP_SELECTED);
     int i = 0;
     string objName;
     do
     {
-        objName = cline + "#" + IntegerToString(i);
-        ObjectSet(objName, OBJPROP_SELECTED, objSelected);
+        objName = cLnXX + "#" + IntegerToString(i);
+        ObjectSet(objName, OBJPROP_SELECTED, selected);
         i++;
     }
     while (ObjectFind(objName) >= 0);
@@ -158,7 +176,7 @@ void ZigZag::onItemChange(const string &itemId, const string &objId)
     string objName;
     do
     {
-        objName = cline + "#" + IntegerToString(i);
+        objName = cLnXX + "#" + IntegerToString(i);
         setObjectStyle(objName, propColor, propStyle, propWidth);
         ObjectSet(objName, OBJPROP_BACK,  propBkgrd);
         i++;

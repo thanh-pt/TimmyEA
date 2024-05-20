@@ -114,14 +114,14 @@ private:
 
 // Component name
 private:
-    string cPoint1;
-    string cPoint2;
-    string cMTrend;
-    string iAngle0;
-    string iLbText;
-    string iRtText;
-    string iLtText;
-    string iArrowT;
+    string cLnM0;
+    string cPt01;
+    string cPt02;
+    string iAng0;
+    string iTxtC;
+    string iTxtR;
+    string iTxtL;
+    string iTxtA;
 
 // Value define for Item
 private:
@@ -133,7 +133,7 @@ private:
     double price3;
 
 public:
-    Trend(const string name, CommonData* commonData, MouseInfo* mouseInfo);
+    Trend(CommonData* commonData, MouseInfo* mouseInfo);
 
 // Internal Event
 public:
@@ -153,11 +153,17 @@ public:
     virtual void onItemDrag(const string &itemId, const string &objId);
     virtual void onItemClick(const string &itemId, const string &objId);
     virtual void onItemChange(const string &itemId, const string &objId);
+
+public:
+    static string getAllItem(string itemId);
+    static string Tag;
 };
 
-Trend::Trend(const string name, CommonData* commonData, MouseInfo* mouseInfo)
+static string Trend::Tag = ".TMTrend";
+
+Trend::Trend(CommonData* commonData, MouseInfo* mouseInfo)
 {
-    mItemName = name;
+    mItemName = Trend::Tag;
     pCommonData = commonData;
     pMouseInfo = mouseInfo;
 
@@ -248,33 +254,47 @@ void Trend::prepareActive(){}
 
 void Trend::activateItem(const string& itemId)
 {
-    cPoint1 = itemId + "_c2Point1";
-    cPoint2 = itemId + "_c2Point2";
-    cMTrend = itemId + "_c1MTrend";
-    iLbText = itemId + "_0iLbText";
-    iRtText = itemId + "_0iRtText";
-    iLtText = itemId + "_0iLtText";
-    iAngle0 = itemId + "_0iAngle0";
-    iArrowT = itemId + "_0iArrowT";
+    cLnM0 = itemId + TAG_CTRM + "cLnM0";
+    cPt01 = itemId + TAG_CTRL + "cPt01";
+    cPt02 = itemId + TAG_CTRL + "cPt02";
+    iAng0 = itemId + TAG_INFO + "iAng0";
+    iTxtC = itemId + TAG_INFO + "iTxtC";
+    iTxtR = itemId + TAG_INFO + "iTxtR";
+    iTxtL = itemId + TAG_INFO + "iTxtL";
+    iTxtA = itemId + TAG_INFO + "iTxtA";
 
-    mAllItem += cPoint1+cPoint2+cMTrend+iLbText+iRtText+iLtText+iAngle0+iArrowT;
+    mAllItem += cLnM0+cPt01+cPt02+iTxtC+iTxtR+iTxtL+iAng0+iTxtA;
+}
+string Trend::getAllItem(string itemId)
+{
+    string allItem = itemId + "_mTData";
+    allItem += itemId + TAG_CTRM + "cLnM0";
+    allItem += itemId + TAG_CTRL + "cPt01";
+    allItem += itemId + TAG_CTRL + "cPt02";
+    allItem += itemId + TAG_INFO + "iAng0";
+    allItem += itemId + TAG_INFO + "iTxtC";
+    allItem += itemId + TAG_INFO + "iTxtR";
+    allItem += itemId + TAG_INFO + "iTxtL";
+    allItem += itemId + TAG_INFO + "iTxtA";
+
+    return allItem;
 }
 
 void Trend::refreshData()
 {
     // Update Main Compoment
-    setItemPos(cMTrend, time1, time2, price1, price2);
-    setItemPos(cPoint1, time1, price1);
-    setItemPos(cPoint2, time2, price2);
-    setItemPos(iAngle0, time1, time2, price1, price2);
-    setTextPos(iArrowT, time2, price2);
-    double angle=ObjectGet(iAngle0, OBJPROP_ANGLE);
-    ObjectSet(iArrowT, OBJPROP_ANGLE,  angle-90.0);
+    setItemPos(cLnM0, time1, time2, price1, price2);
+    setItemPos(cPt01, time1, price1);
+    setItemPos(cPt02, time2, price2);
+    setItemPos(iAng0, time1, time2, price1-price1, price2-price1);
+    setTextPos(iTxtA, time2, price2);
+    double angle=ObjectGet(iAng0, OBJPROP_ANGLE);
+    ObjectSet(iTxtA, OBJPROP_ANGLE,  angle-90.0);
 
     // Update Text
-    setTextPos(iLbText, time3, price3);
-    setTextPos(iRtText, time2, price2);
-    setTextPos(iLtText, time1, price1);
+    setTextPos(iTxtC, time3, price3);
+    setTextPos(iTxtR, time2, price2);
+    setTextPos(iTxtL, time1, price1);
 
     bool isUp = false;
     int barT1 = iBarShift(ChartSymbol(), ChartPeriod(), time1);
@@ -286,46 +306,49 @@ void Trend::refreshData()
     // isUp = (price3 >= High[barT3]);
 
     if (angle > 000 && angle <=  90) {
-        ObjectSetInteger(0, iLbText, OBJPROP_ANCHOR, isUp ? ANCHOR_RIGHT_LOWER : ANCHOR_LEFT_UPPER);
-        ObjectSetInteger(0, iRtText, OBJPROP_ANCHOR, ANCHOR_LEFT_LOWER);
-        ObjectSetInteger(0, iLtText, OBJPROP_ANCHOR, ANCHOR_RIGHT_UPPER);
+        ObjectSetInteger(0, iTxtC, OBJPROP_ANCHOR, isUp ? ANCHOR_RIGHT_LOWER : ANCHOR_LEFT_UPPER);
+        ObjectSetInteger(0, iTxtR, OBJPROP_ANCHOR, ANCHOR_LEFT_LOWER);
+        ObjectSetInteger(0, iTxtL, OBJPROP_ANCHOR, ANCHOR_RIGHT_UPPER);
     }
     else if (angle > 090 && angle <  180) {
-        ObjectSetInteger(0, iLbText, OBJPROP_ANCHOR, isUp ? ANCHOR_LEFT_LOWER  : ANCHOR_RIGHT_UPPER);
-        ObjectSetInteger(0, iRtText, OBJPROP_ANCHOR, ANCHOR_RIGHT_LOWER);
-        ObjectSetInteger(0, iLtText, OBJPROP_ANCHOR, ANCHOR_LEFT_UPPER);
+        ObjectSetInteger(0, iTxtC, OBJPROP_ANCHOR, isUp ? ANCHOR_LEFT_LOWER  : ANCHOR_RIGHT_UPPER);
+        ObjectSetInteger(0, iTxtR, OBJPROP_ANCHOR, ANCHOR_RIGHT_LOWER);
+        ObjectSetInteger(0, iTxtL, OBJPROP_ANCHOR, ANCHOR_LEFT_UPPER);
     }
     else if (angle > 180 && angle <= 270) {
-        ObjectSetInteger(0, iLbText, OBJPROP_ANCHOR, isUp ? ANCHOR_RIGHT_LOWER : ANCHOR_LEFT_UPPER);
-        ObjectSetInteger(0, iRtText, OBJPROP_ANCHOR, ANCHOR_RIGHT_UPPER);
-        ObjectSetInteger(0, iLtText, OBJPROP_ANCHOR, ANCHOR_LEFT_LOWER);
+        ObjectSetInteger(0, iTxtC, OBJPROP_ANCHOR, isUp ? ANCHOR_RIGHT_LOWER : ANCHOR_LEFT_UPPER);
+        ObjectSetInteger(0, iTxtR, OBJPROP_ANCHOR, ANCHOR_RIGHT_UPPER);
+        ObjectSetInteger(0, iTxtL, OBJPROP_ANCHOR, ANCHOR_LEFT_LOWER);
     }
     else if (angle > 270 && angle <  360) {
-        ObjectSetInteger(0, iLbText, OBJPROP_ANCHOR, isUp ? ANCHOR_LEFT_LOWER  : ANCHOR_RIGHT_UPPER);
-        ObjectSetInteger(0, iRtText, OBJPROP_ANCHOR, ANCHOR_LEFT_UPPER);
-        ObjectSetInteger(0, iLtText, OBJPROP_ANCHOR, ANCHOR_RIGHT_LOWER);
+        ObjectSetInteger(0, iTxtC, OBJPROP_ANCHOR, isUp ? ANCHOR_LEFT_LOWER  : ANCHOR_RIGHT_UPPER);
+        ObjectSetInteger(0, iTxtR, OBJPROP_ANCHOR, ANCHOR_LEFT_UPPER);
+        ObjectSetInteger(0, iTxtL, OBJPROP_ANCHOR, ANCHOR_RIGHT_LOWER);
     }
     else if (angle == 0) 
     {
-        ObjectSetInteger(0, iLbText, OBJPROP_ANCHOR, isUp ? ANCHOR_LOWER : ANCHOR_UPPER);
-        ObjectSetInteger(0, iRtText, OBJPROP_ANCHOR, barT1 > barT2 ? ANCHOR_LEFT : ANCHOR_RIGHT);
-        ObjectSetInteger(0, iLtText, OBJPROP_ANCHOR, barT1 > barT2 ? ANCHOR_RIGHT: ANCHOR_LEFT);
+        ObjectSetInteger(0, iTxtC, OBJPROP_ANCHOR, isUp ? ANCHOR_LOWER : ANCHOR_UPPER);
+        ObjectSetInteger(0, iTxtR, OBJPROP_ANCHOR, barT1 > barT2 ? ANCHOR_LEFT : ANCHOR_RIGHT);
+        ObjectSetInteger(0, iTxtL, OBJPROP_ANCHOR, barT1 > barT2 ? ANCHOR_RIGHT: ANCHOR_LEFT);
 
-        if (barT1 < barT2) ObjectSet(iArrowT, OBJPROP_ANGLE,  90.0); // case 180*
+        if (barT1 < barT2) ObjectSet(iTxtA, OBJPROP_ANGLE,  90.0); // case 180*
     }
     // Customization
+
+    int selected = (int)ObjectGet(cLnM0, OBJPROP_SELECTED);
+    setMultiProp(OBJPROP_COLOR   , selected ? gColorMousePoint : clrNONE, cPt01+cPt02);
 }
 
 void Trend::createItem()
 {
-    ObjectCreate(iAngle0, OBJ_TRENDBYANGLE, 0, 0, 0);
-    ObjectCreate(iArrowT, OBJ_TEXT        , 0, 0, 0);
-    ObjectCreate(cMTrend, OBJ_TREND       , 0, 0, 0);
-    ObjectCreate(iLbText, OBJ_TEXT        , 0, 0, 0);
-    ObjectCreate(iRtText, OBJ_TEXT        , 0, 0, 0);
-    ObjectCreate(iLtText, OBJ_TEXT        , 0, 0, 0);
-    ObjectCreate(cPoint1, OBJ_ARROW       , 0, 0, 0);
-    ObjectCreate(cPoint2, OBJ_ARROW       , 0, 0, 0);
+    ObjectCreate(iAng0, OBJ_TRENDBYANGLE, 0, 0, 0);
+    ObjectCreate(iTxtA, OBJ_TEXT        , 0, 0, 0);
+    ObjectCreate(cLnM0, OBJ_TREND       , 0, 0, 0);
+    ObjectCreate(iTxtC, OBJ_TEXT        , 0, 0, 0);
+    ObjectCreate(iTxtR, OBJ_TEXT        , 0, 0, 0);
+    ObjectCreate(iTxtL, OBJ_TEXT        , 0, 0, 0);
+    ObjectCreate(cPt01, OBJ_ARROW       , 0, 0, 0);
+    ObjectCreate(cPt02, OBJ_ARROW       , 0, 0, 0);
 
     updateTypeProperty();
     updateDefaultProperty();
@@ -334,28 +357,28 @@ void Trend::createItem()
 }
 void Trend::updateDefaultProperty()
 {
-    setMultiProp(OBJPROP_ARROWCODE , 4      , cPoint1+cPoint2);
-    setMultiProp(OBJPROP_WIDTH     , 5      , cPoint1+cPoint2);
-    setMultiProp(OBJPROP_SELECTABLE, false  , iArrowT+iAngle0+iLbText+iRtText+iLtText);
-    setMultiProp(OBJPROP_COLOR     , clrNONE, cPoint1+cPoint2+iAngle0);
+    setMultiProp(OBJPROP_ARROWCODE , 4      , cPt01+cPt02);
+    setMultiProp(OBJPROP_WIDTH     , 5      , cPt01+cPt02);
+    setMultiProp(OBJPROP_SELECTABLE, false  , iTxtA+iAng0+iTxtC+iTxtR+iTxtL);
+    setMultiProp(OBJPROP_COLOR     , clrNONE, cPt01+cPt02+iAng0);
     setMultiStrs(OBJPROP_TOOLTIP   , "\n"   , mAllItem);
 
-    setMultiProp(OBJPROP_RAY     , false, cMTrend+iAngle0);
-    ObjectSetInteger(ChartID(), iArrowT, OBJPROP_ANCHOR, ANCHOR_CENTER);
+    setMultiProp(OBJPROP_RAY     , false, cLnM0+iAng0);
+    ObjectSetInteger(ChartID(), iTxtA, OBJPROP_ANCHOR, ANCHOR_CENTER);
 }
 void Trend::updateTypeProperty()
 {
-    ObjectSetText(iLbText, "", 8, "Consolas", mColorType[mIndexType]);
-    ObjectSetText(iRtText, "", 8, "Consolas", mColorType[mIndexType]);
-    ObjectSetText(iLtText, "", 8, "Consolas", mColorType[mIndexType]);
+    ObjectSetText(iTxtC, "", 8, "Consolas", mColorType[mIndexType]);
+    ObjectSetText(iTxtR, "", 8, "Consolas", mColorType[mIndexType]);
+    ObjectSetText(iTxtL, "", 8, "Consolas", mColorType[mIndexType]);
 
-    if      (mTextPos[mIndexType] == TXT_CENTER) ObjectSetText (iLbText,  mDispText[mIndexType]);
-    else if (mTextPos[mIndexType] == TXT_RIGHT)  ObjectSetText (iRtText,  mDispText[mIndexType]);
-    else                                         ObjectSetText (iLtText,  mDispText[mIndexType]);
+    if      (mTextPos[mIndexType] == TXT_CENTER) ObjectSetText (iTxtC,  mDispText[mIndexType]);
+    else if (mTextPos[mIndexType] == TXT_RIGHT)  ObjectSetText (iTxtR,  mDispText[mIndexType]);
+    else                                         ObjectSetText (iTxtL,  mDispText[mIndexType]);
 
-    ObjectSetText (iArrowT,  mShowArrow[mIndexType] ? "▲" : "", 9, "Consolas", mShowArrow[mIndexType] ? mColorType[mIndexType] : clrNONE);
-    setObjectStyle(cMTrend,  mColorType[mIndexType],          mStyleType[mIndexType],  mWidthType[mIndexType]);
-    setMultiProp  (OBJPROP_BACK , true, cMTrend+iAngle0);
+    ObjectSetText (iTxtA,  mShowArrow[mIndexType] ? "▲" : "", 9, "Consolas", mShowArrow[mIndexType] ? mColorType[mIndexType] : clrNONE);
+    setObjectStyle(cLnM0,  mColorType[mIndexType],          mStyleType[mIndexType],  mWidthType[mIndexType]);
+    setMultiProp  (OBJPROP_BACK , true, cLnM0+iAng0);
 }
 void Trend::updateItemAfterChangeType()
 {
@@ -370,12 +393,22 @@ void Trend::updateItemAfterChangeType()
 void Trend::onItemDrag(const string &itemId, const string &objId)
 {
     gContextMenu.clearContextMenu();
-    time1 = (datetime)ObjectGet(cMTrend, OBJPROP_TIME1);
-    time2 = (datetime)ObjectGet(cMTrend, OBJPROP_TIME2);
-    price1 =          ObjectGet(cMTrend, OBJPROP_PRICE1);
-    price2 =          ObjectGet(cMTrend, OBJPROP_PRICE2);
-    
-    if (objId == cPoint1) {
+
+    if (objId == cLnM0){
+        time1 = (datetime)ObjectGet(objId, OBJPROP_TIME1);
+        time2 = (datetime)ObjectGet(objId, OBJPROP_TIME2);
+        price1 =          ObjectGet(objId, OBJPROP_PRICE1);
+        price2 =          ObjectGet(objId, OBJPROP_PRICE2);
+        if (pCommonData.mCtrlHold == true){
+            if (pCommonData.mMouseTime == time1){
+                price1 = pCommonData.mMousePrice;
+            }
+            else if (pCommonData.mMouseTime == time2){
+                price2 = pCommonData.mMousePrice;
+            }
+        }
+    }
+    else if (objId == cPt01) {
         time1 = (datetime)ObjectGet(objId, OBJPROP_TIME1);
         if (pCommonData.mShiftHold) {
             price1 = price2;
@@ -386,8 +419,10 @@ void Trend::onItemDrag(const string &itemId, const string &objId)
         else {
             price1 = ObjectGet(objId, OBJPROP_PRICE1);
         }
+        time2   = (datetime)ObjectGet(cPt02, OBJPROP_TIME1);
+        price2  =           ObjectGet(cPt02, OBJPROP_PRICE1);
     }
-    else if (objId == cPoint2) {
+    else if (objId == cPt02) {
         time2 = (datetime)ObjectGet(objId, OBJPROP_TIME1);
         if (pCommonData.mShiftHold) {
             price2 = price1;
@@ -398,10 +433,8 @@ void Trend::onItemDrag(const string &itemId, const string &objId)
         else {
             price2 = ObjectGet(objId, OBJPROP_PRICE1);
         }
-    }
-    else if (objId == cMTrend && pCommonData.mCtrlHold){
-        price1 = pCommonData.mMousePrice;
-        price2 = pCommonData.mMousePrice;
+        time1   = (datetime)ObjectGet(cPt01, OBJPROP_TIME1);
+        price1  =           ObjectGet(cPt01, OBJPROP_PRICE1);
     }
 
     getCenterPos(time1, time2, price1, price2, time3, price3);
@@ -410,34 +443,28 @@ void Trend::onItemDrag(const string &itemId, const string &objId)
 }
 void Trend::onItemClick(const string &itemId, const string &objId)
 {
-    string targetobj = objId;
-    if (objId == iAngle0 || objId == iArrowT || objId == iLbText)
-    {
-        if ((int)ObjectGet(cMTrend, OBJPROP_SELECTED) == 0) return;
-        targetobj = cMTrend;
-    }
-    int selected = (int)ObjectGet(targetobj, OBJPROP_SELECTED);
-    setMultiProp(OBJPROP_SELECTED, selected, mAllItem);
-    if (selected && StringFind(objId, "_c") >= 0 && pCommonData.mShiftHold){
-        gContextMenu.openContextMenu(objId, mContextType, mIndexType);
-    }
+    if (StringFind(objId, TAG_CTRL) < 0) return;
+    int selected = (int)ObjectGet(objId, OBJPROP_SELECTED);
+    if (selected && pCommonData.mShiftHold) gContextMenu.openContextMenu(objId, mContextType, mIndexType);
+    setCtrlItemSelectState(mAllItem, selected);
+    setMultiProp(OBJPROP_COLOR, selected ? gColorMousePoint : clrNONE, cPt01+cPt02);
 }
 void Trend::onItemChange(const string &itemId, const string &objId)
 {
-    if (objId == cMTrend) setMultiProp(OBJPROP_COLOR, (color)ObjectGet(cMTrend, OBJPROP_COLOR), iLbText+iRtText+iLtText+iArrowT);
-    if (objId == cPoint1 || objId == cPoint2 || objId == cMTrend){
-        string strLbText = ObjectDescription(cMTrend);
-        string strRtText = ObjectDescription(cPoint2);
-        string strLtText = ObjectDescription(cPoint1);
-        if (strLbText != "") ObjectSetText(iLbText, strLbText);
-        if (strRtText != "") ObjectSetText(iRtText, strRtText);
-        if (strLtText != "") ObjectSetText(iLtText, strLtText);
-        if (strLbText == ".") ObjectSetText(iLbText, "");
-        if (strRtText == ".") ObjectSetText(iRtText, "");
-        if (strLtText == ".") ObjectSetText(iLtText, "");
-        ObjectSetText(cMTrend, "");
-        ObjectSetText(cPoint2, "");
-        ObjectSetText(cPoint1, "");
+    if (objId == cLnM0) setMultiProp(OBJPROP_COLOR, (color)ObjectGet(cLnM0, OBJPROP_COLOR), iTxtC+iTxtR+iTxtL+iTxtA);
+    if (objId == cPt01 || objId == cPt02 || objId == cLnM0){
+        string strLbText = ObjectDescription(cLnM0);
+        string strRtText = ObjectDescription(cPt02);
+        string strLtText = ObjectDescription(cPt01);
+        if (strLbText != "") ObjectSetText(iTxtC, strLbText);
+        if (strRtText != "") ObjectSetText(iTxtR, strRtText);
+        if (strLtText != "") ObjectSetText(iTxtL, strLtText);
+        if (strLbText == ".") ObjectSetText(iTxtC, "");
+        if (strRtText == ".") ObjectSetText(iTxtR, "");
+        if (strLtText == ".") ObjectSetText(iTxtL, "");
+        ObjectSetText(cLnM0, "");
+        ObjectSetText(cPt02, "");
+        ObjectSetText(cPt01, "");
     }
     onItemDrag(itemId, objId);
 }

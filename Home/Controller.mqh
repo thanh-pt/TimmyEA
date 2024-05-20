@@ -10,29 +10,21 @@
 #include "../Tools/Label.mqh"
 #include "../InfoItem/MouseInfo.mqh"
 
-#define CHECK_NOT_ACTIVE_RETURN if(mActive == IDX_NONE){return;}
-#define CHECK_ACTIVE_RETURN if(mActive != IDX_NONE){return;}
+#define CHECK_NOT_ACTIVE_RETURN if(mActive == eNONE){return;}
+#define CHECK_ACTIVE_RETURN if(mActive != eNONE){return;}
 
-#define IDX_NONE        -1
-#define IDX_TREND       0
-#define IDX_ZIGZAG      1
-#define IDX_RECTANGLE   2
-#define IDX_FIBONACI    3
-#define IDX_CALLOUT     4
-#define IDX_TRADE       5
-#define IDX_ALERT       6
-#define IDX_POINT       7
-#define IDX_LABEL       8
-
-#define ITEM_TREND      ".Trend"
-#define ITEM_ZIGZAG     ".ZigZag"
-#define ITEM_RECTANGLE  ".Rectangle"
-#define ITEM_FIBONACI   ".Fibonacci"
-#define ITEM_CALLOUT    ".CallOut"
-#define ITEM_TRADE      ".Trade"
-#define ITEM_ALERT      ".Alert"
-#define ITEM_POINT      ".Point"
-#define ITEM_LABEL      ".Label"
+enum eToolIdx{
+    eTREND    ,
+    eZIGZAG   ,
+    eRECTANGLE,
+    eFIBONACI ,
+    eCALLOUT  ,
+    eTRADE    ,
+    eALERT    ,
+    ePOINT    ,
+    eLABEL    ,
+    eNONE     ,
+};
 
 class Controller
 {
@@ -63,31 +55,31 @@ public:
 void Controller::Controller(CommonData* commonData, MouseInfo* mouseInfo)
 {
     pMouseInfo = mouseInfo;
-    mActive = IDX_NONE;
-    mListItem[IDX_TREND     ]    = new Trend     ( ITEM_TREND     , commonData, mouseInfo);
-    mListItem[IDX_ZIGZAG    ]    = new ZigZag    ( ITEM_ZIGZAG    , commonData, mouseInfo);
-    mListItem[IDX_RECTANGLE ]    = new Rectangle ( ITEM_RECTANGLE , commonData, mouseInfo);
-    mListItem[IDX_FIBONACI  ]    = new Fibonacci ( ITEM_FIBONACI  , commonData, mouseInfo);
-    mListItem[IDX_CALLOUT   ]    = new CallOut   ( ITEM_CALLOUT   , commonData, mouseInfo);
-    mListItem[IDX_TRADE     ]    = new Trade     ( ITEM_TRADE     , commonData, mouseInfo);
-    mListItem[IDX_ALERT     ]    = new Alert     ( ITEM_ALERT     , commonData, mouseInfo);
-    mListItem[IDX_POINT     ]    = new Point     ( ITEM_POINT     , commonData, mouseInfo);
-    mListItem[IDX_LABEL     ]    = new LabelText ( ITEM_LABEL     , commonData, mouseInfo);
+    mActive = eNONE;
+    mListItem[eTREND    ]   = new Trend     (commonData, mouseInfo);
+    mListItem[eZIGZAG   ]   = new ZigZag    (commonData, mouseInfo);
+    mListItem[eRECTANGLE]   = new Rectangle (commonData, mouseInfo);
+    mListItem[eFIBONACI ]   = new Fibonacci (commonData, mouseInfo);
+    mListItem[eCALLOUT  ]   = new CallOut   (commonData, mouseInfo);
+    mListItem[eTRADE    ]   = new Trade     (commonData, mouseInfo);
+    mListItem[eALERT    ]   = new Alert     (commonData, mouseInfo);
+    mListItem[ePOINT    ]   = new Point     (commonData, mouseInfo);
+    mListItem[eLABEL    ]   = new LabelText (commonData, mouseInfo);
 
-    gpTrade = (Trade*)mListItem[IDX_TRADE];
+    gpTrade = (Trade*)mListItem[eTRADE];
 }
 
 Controller::~Controller()
 {
-    delete mListItem[IDX_TREND     ];
-    delete mListItem[IDX_ZIGZAG    ];
-    delete mListItem[IDX_RECTANGLE ];
-    delete mListItem[IDX_FIBONACI  ];
-    delete mListItem[IDX_CALLOUT   ];
-    delete mListItem[IDX_TRADE ];
-    delete mListItem[IDX_ALERT     ];
-    delete mListItem[IDX_POINT     ];
-    delete mListItem[IDX_LABEL     ];
+    delete mListItem[eTREND     ];
+    delete mListItem[eZIGZAG    ];
+    delete mListItem[eRECTANGLE ];
+    delete mListItem[eFIBONACI  ];
+    delete mListItem[eCALLOUT   ];
+    delete mListItem[eTRADE     ];
+    delete mListItem[eALERT     ];
+    delete mListItem[ePOINT     ];
+    delete mListItem[eLABEL     ];
 }
 
 void Controller::setFinishedJobCB(FinishedJob cb)
@@ -100,35 +92,35 @@ void Controller::finishedJob()
     CHECK_NOT_ACTIVE_RETURN
     pMouseInfo.setText("");
     mListItem[mActive].finishedDeactivate();
-    mActive = IDX_NONE;
+    mActive = eNONE;
 }
 
 int Controller::findItemIdByKey(const int key)
 {
-    if (key == 'W') return IDX_TRADE     ;
-    if (key == 'R') return IDX_RECTANGLE ;
-    if (key == 'T') return IDX_TREND     ;
-    if (key == 'F') return IDX_FIBONACI  ;
-    if (key == 'G') return IDX_LABEL     ;
-    if (key == 'Z') return IDX_ZIGZAG    ;
-    if (key == 'X') return IDX_ALERT     ;
-    if (key == 'C') return IDX_CALLOUT   ;
-    if (key == 'S') return IDX_POINT     ;
-    return IDX_NONE;
+    if (key == 'W') return eTRADE     ;
+    if (key == 'R') return eRECTANGLE ;
+    if (key == 'T') return eTREND     ;
+    if (key == 'F') return eFIBONACI  ;
+    if (key == 'G') return eLABEL     ;
+    if (key == 'Z') return eZIGZAG    ;
+    if (key == 'X') return eALERT     ;
+    if (key == 'C') return eCALLOUT   ;
+    if (key == 'S') return ePOINT     ;
+    return eNONE;
 }
 
 int Controller::findItemIdByName(const string& name)
 {
-    if (name == ITEM_TREND     ) return IDX_TREND     ;
-    if (name == ITEM_ZIGZAG    ) return IDX_ZIGZAG    ;
-    if (name == ITEM_RECTANGLE ) return IDX_RECTANGLE ;
-    if (name == ITEM_FIBONACI  ) return IDX_FIBONACI  ;
-    if (name == ITEM_CALLOUT   ) return IDX_CALLOUT   ;
-    if (name == ITEM_TRADE     ) return IDX_TRADE     ;
-    if (name == ITEM_ALERT     ) return IDX_ALERT     ;
-    if (name == ITEM_POINT     ) return IDX_POINT     ;
-    if (name == ITEM_LABEL     ) return IDX_LABEL     ;
-    return IDX_NONE;
+    if (name == Trend::Tag     ) return eTREND     ;
+    if (name == ZigZag::Tag    ) return eZIGZAG    ;
+    if (name == Rectangle::Tag ) return eRECTANGLE ;
+    if (name == Fibonacci::Tag ) return eFIBONACI  ;
+    if (name == CallOut::Tag   ) return eCALLOUT   ;
+    if (name == Trade::Tag     ) return eTRADE     ;
+    if (name == Alert::Tag     ) return eALERT     ;
+    if (name == Point::Tag     ) return ePOINT     ;
+    if (name == LabelText::Tag ) return eLABEL     ;
+    return eNONE;
 }
 
 void Controller::handleKeyEvent(const long &key)
@@ -157,10 +149,10 @@ void Controller::handleKeyEvent(const long &key)
         break;
     // QWERT Line
     case 'Y':
-        ((Trade*)mListItem[IDX_TRADE]).showHistory(true);
+        ((Trade*)mListItem[eTRADE]).showHistory(true);
         break;
     case 'U':
-        ((Trade*)mListItem[IDX_TRADE]).showHistory(false);
+        ((Trade*)mListItem[eTRADE]).showHistory(false);
         break;
     case 'H':
         setChartFree(true);
@@ -169,10 +161,10 @@ void Controller::handleKeyEvent(const long &key)
         setChartFree(false);
         break;
     case 'V':
-        syncSelectedItem();
+        syncTimmyItem();
         break;
     case 'B':
-        syncDeleteSelectedItem();
+        deleteTimmyItem();
         break;
     case 'Q':
         ChartSetSymbolPeriod(ChartID(), ChartSymbol(), lowerTF());
@@ -195,7 +187,7 @@ void Controller::handleKeyEvent(const long &key)
         bFunctionKey = false;
         break;
     }
-    if (mActive == IDX_NONE) {
+    if (mActive == eNONE) {
         if (key == 'E') {
             mbActiveErase = true;
             pMouseInfo.setText("Erase: 1-All | 2-ThisTF | 3-LowerTF | 4-BgOverlap");
@@ -220,7 +212,7 @@ void Controller::handleKeyEvent(const long &key)
 
     // S2: Active drawing tool
     int activeTarget = findItemIdByKey((int)key);
-    if (activeTarget == IDX_NONE)
+    if (activeTarget == eNONE)
     {
         return;
     }
@@ -262,7 +254,7 @@ void Controller::handleSparamEvent(const int id, const string& sparam)
         return;
     }
     int receiverItem = findItemIdByName(sparamItems[0]);
-    if (receiverItem == IDX_NONE)
+    if (receiverItem == eNONE)
     {
         return;
     }
@@ -272,19 +264,21 @@ void Controller::handleSparamEvent(const int id, const string& sparam)
     switch (id)
     {
     case CHARTEVENT_OBJECT_DELETE:
-        if (StringFind(sparam, "_c") == -1) return;
+        if (StringFind(sparam, TAG_CTRL) == -1) return;
         mListItem[receiverItem].onItemDeleted(itemId, sparam);
         gContextMenu.clearContextMenu();
         break;
     case CHARTEVENT_OBJECT_DRAG:
-        if (StringFind(sparam, "_c") == -1) return;
+        if (StringFind(sparam, TAG_CTRL) == -1) return;
         mListItem[receiverItem].onItemDrag(itemId, sparam);
         break;
     case CHARTEVENT_OBJECT_CHANGE:
-        if (StringFind(sparam, "_c") == -1) return;
+        if (StringFind(sparam, TAG_CTRL) == -1) return;
         mListItem[receiverItem].onItemChange(itemId, sparam);
         break;
     case CHARTEVENT_OBJECT_CLICK:
+        if (StringFind(sparam, TAG_CTRL) == -1) return;
+        if ((int)ObjectGet(sparam, OBJPROP_SELECTED) == 1) setUnselectAllExcept(itemId);
         mListItem[receiverItem].onItemClick(itemId, sparam);
         break;
     case CHART_EVENT_SELECT_CONTEXTMENU:
@@ -295,6 +289,6 @@ void Controller::handleSparamEvent(const int id, const string& sparam)
 
 void Controller::handleOntick()
 {
-    ((Alert*)mListItem[IDX_ALERT]).checkAlert();
-    ((Trade*)mListItem[IDX_TRADE]).scanLiveTrade();
+    ((Alert*)mListItem[eALERT]).checkAlert();
+    ((Trade*)mListItem[eTRADE]).scanLiveTrade();
 }

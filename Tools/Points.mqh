@@ -32,7 +32,7 @@ private:
 
 // Component name
 private:
-    string cPoint;
+    string cPtM0;
 
 // Value define for Item
 private:
@@ -40,7 +40,7 @@ private:
     double   price;
 
 public:
-    Point(const string name, CommonData* commonData, MouseInfo* mouseInfo);
+    Point(CommonData* commonData, MouseInfo* mouseInfo);
 
 // Internal Event
 public:
@@ -60,11 +60,17 @@ public:
     virtual void onItemDrag(const string &itemId, const string &objId);
     virtual void onItemClick(const string &itemId, const string &objId);
     virtual void onItemChange(const string &itemId, const string &objId);
+
+public:
+    static string getAllItem(string itemId);
+    static string Tag;
 };
 
-Point::Point(const string name, CommonData* commonData, MouseInfo* mouseInfo)
+static string Point::Tag = ".TMPoint";
+
+Point::Point(CommonData* commonData, MouseInfo* mouseInfo)
 {
-    mItemName = name;
+    mItemName = Point::Tag;
     pCommonData = commonData;
     pMouseInfo = mouseInfo;
 
@@ -93,7 +99,7 @@ Point::Point(const string name, CommonData* commonData, MouseInfo* mouseInfo)
 void Point::prepareActive(){}
 void Point::createItem()
 {
-    ObjectCreate(cPoint, OBJ_TEXT , 0, 0, 0);
+    ObjectCreate(cPtM0, OBJ_TEXT , 0, 0, 0);
     updateDefaultProperty();
     updateTypeProperty();
     time  = pCommonData.mMouseTime;
@@ -102,23 +108,30 @@ void Point::createItem()
 }
 void Point::updateDefaultProperty()
 {
-    ObjectSet(cPoint, OBJPROP_BACK , true);
+    ObjectSet(cPtM0, OBJPROP_BACK , true);
 }
 void Point::updateTypeProperty()
 {
-    ObjectSetText(cPoint, mCharecter[mIndexType], mSize[mIndexType], mFont[mIndexType], mColor[mIndexType]);
+    ObjectSetText(cPtM0, mCharecter[mIndexType], mSize[mIndexType], mFont[mIndexType], mColor[mIndexType]);
 }
 void Point::activateItem(const string& itemId)
 {
-    cPoint = itemId + "_cmPoint";
-    mAllItem += cPoint;
+    cPtM0 = itemId + TAG_CTRM + "cPtM0";
+    mAllItem += cPtM0;
+}
+string Point::getAllItem(string itemId)
+{
+    string allItem = itemId + "_mTData";
+    allItem += itemId + TAG_CTRM + "cPtM0";
+
+    return allItem;
 }
 void Point::updateItemAfterChangeType(){}
 void Point::refreshData()
 {
-    ObjectSetInteger(ChartID(), cPoint, OBJPROP_ANCHOR, ANCHOR_CENTER);
-    ObjectSetString(ChartID(), cPoint, OBJPROP_TOOLTIP, DoubleToString(price, 5));
-    setItemPos(cPoint, time, price);
+    ObjectSetInteger(ChartID(), cPtM0, OBJPROP_ANCHOR, ANCHOR_CENTER);
+    ObjectSetString(ChartID(), cPtM0, OBJPROP_TOOLTIP, DoubleToString(price, 5));
+    setItemPos(cPtM0, time, price);
 }
 void Point::finishedJobDone(){}
 
@@ -137,8 +150,8 @@ void Point::onMouseClick()
 void Point::onItemDrag(const string &itemId, const string &objId)
 {
     gContextMenu.clearContextMenu();
-    time  = (datetime)ObjectGet(cPoint, OBJPROP_TIME1);
-    price =           ObjectGet(cPoint, OBJPROP_PRICE1);
+    time  = (datetime)ObjectGet(cPtM0, OBJPROP_TIME1);
+    price =           ObjectGet(cPtM0, OBJPROP_PRICE1);
 
     if (pCommonData.mCtrlHold)
     {
@@ -148,10 +161,9 @@ void Point::onItemDrag(const string &itemId, const string &objId)
 }
 void Point::onItemClick(const string &itemId, const string &objId)
 {
+    // if (StringFind(objId, TAG_CTRL) < 0) return;
     int selected = (int)ObjectGet(objId, OBJPROP_SELECTED);
-    setMultiProp(OBJPROP_SELECTED   , selected, mAllItem);
-    if (selected && pCommonData.mShiftHold){
-        gContextMenu.openContextMenu(objId, mContextType, mIndexType);
-    }
+    if (selected && pCommonData.mShiftHold) gContextMenu.openContextMenu(objId, mContextType, mIndexType);
+    // setCtrlItemSelectState(mAllItem, selected);
 }
 void Point::onItemChange(const string &itemId, const string &objId){}

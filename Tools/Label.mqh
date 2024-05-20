@@ -18,13 +18,16 @@ private:
     int spaceSize;
 // Component name
 private:
-    string cLbText;
+    string cTxtM;
+    string cTxtX;
+    string iTxBg;
+    string iTBgX;
 
 // Value define for Item
 private:
 
 public:
-    LabelText(const string name, CommonData* commonData, MouseInfo* mouseInfo);
+    LabelText(CommonData* commonData, MouseInfo* mouseInfo);
 
 // Internal Event
 public:
@@ -46,11 +49,17 @@ public:
     virtual void onItemChange(const string &itemId, const string &objId);
     virtual void onItemDeleted(const string &itemId, const string &objId);
     virtual void onUserRequest(const string &itemId, const string &objId);
+
+public:
+    static string getAllItem(string itemId);
+    static string Tag;
 };
 
-LabelText::LabelText(const string name, CommonData* commonData, MouseInfo* mouseInfo)
+static string LabelText::Tag = ".TMLabel";
+
+LabelText::LabelText(CommonData* commonData, MouseInfo* mouseInfo)
 {
-    mItemName = name;
+    mItemName = LabelText::Tag;
     pCommonData = commonData;
     pMouseInfo = mouseInfo;
 
@@ -71,35 +80,79 @@ LabelText::LabelText(const string name, CommonData* commonData, MouseInfo* mouse
 void LabelText::prepareActive(){}
 void LabelText::createItem()
 {
-    ObjectCreate(cLbText, OBJ_LABEL, 0, 0, 0);
+    ObjectCreate(iTxBg, OBJ_LABEL, 0, 0, 0);
+    ObjectCreate(cTxtM, OBJ_LABEL, 0, 0, 0);
     updateDefaultProperty();
     updateTypeProperty();
-    ObjectSet(cLbText, OBJPROP_XDISTANCE, pCommonData.mMouseX);
-    ObjectSet(cLbText, OBJPROP_YDISTANCE, pCommonData.mMouseY);
+    posX = pCommonData.mMouseX;
+    posY = pCommonData.mMouseY;
+    refreshData();
 }
 void LabelText::updateDefaultProperty()
 {
-    ObjectSetText(cLbText, "label", 12, "Consolas", Label_Color);
+    ObjectSetText(cTxtM, getRandStr(), 10, "Consolas", Label_Color);
+    ObjectSetText(iTxBg, "   ", 10, "Consolas", clrLightGray);
 }
 void LabelText::updateTypeProperty(){}
 void LabelText::activateItem(const string& itemId)
 {
-    cLbText = itemId + "_cLbText";
+    cTxtM = itemId + TAG_CTRM + "cTxtM";
+    cTxtX = itemId + TAG_CTRL + "cTxtX";
+    iTxBg = itemId + TAG_INFO + "iTxBg";
+    iTBgX = itemId + TAG_INFO + "iTBgX";
+}
+string LabelText::getAllItem(string itemId)
+{
+    string allItem = itemId + "_mTData";
+    allItem += itemId + TAG_INFO + "iTxBg";
+    allItem += itemId + TAG_CTRM + "cTxtM";
+
+    string txtX   = itemId + TAG_CTRL + "cTxtX";
+    string tBgX   = itemId + TAG_INFO + "iTBgX";
+    int i = 1;
+    string objCTxtX = txtX + "#" + IntegerToString(i);
+    string objiTBgX = tBgX + "#" + IntegerToString(i++);
+    while (ObjectFind(objCTxtX) >= 0){
+        allItem += objiTBgX;
+        allItem += objCTxtX;
+        objCTxtX = txtX + "#" + IntegerToString(i);
+        objiTBgX = tBgX + "#" + IntegerToString(i++);
+    }
+
+    return allItem;
 }
 void LabelText::updateItemAfterChangeType(){}
 void LabelText::refreshData()
 {
-    ObjectSet(cLbText, OBJPROP_XDISTANCE, posX);
-    ObjectSet(cLbText, OBJPROP_YDISTANCE, posY);
-    int idx = 0;
-    string additionalText = cLbText +"#"+ IntegerToString(idx);
-    while (ObjectFind(additionalText) >= 0)
+    ObjectSet(cTxtM, OBJPROP_XDISTANCE, posX);
+    ObjectSet(cTxtM, OBJPROP_YDISTANCE, posY);
+    ObjectSet(iTxBg, OBJPROP_XDISTANCE, posX);
+    ObjectSet(iTxBg, OBJPROP_YDISTANCE, posY);
+    int maxLen = StringLen(ObjectDescription(cTxtM));
+    int strLen = 0;
+
+    int idx = 1;
+    string objCTxtX = cTxtX +"#"+ IntegerToString(idx);
+    string objiTBgX = iTBgX +"#"+ IntegerToString(idx);
+    while (ObjectFind(objCTxtX) >= 0)
     {
-        ObjectSet(additionalText, OBJPROP_XDISTANCE, posX);
-        ObjectSet(additionalText, OBJPROP_YDISTANCE, posY+(idx+1)*spaceSize);
+        ObjectSet(objCTxtX, OBJPROP_XDISTANCE, posX);
+        ObjectSet(objCTxtX, OBJPROP_YDISTANCE, posY+(idx)*spaceSize);
+        ObjectSet(objiTBgX, OBJPROP_XDISTANCE, posX);
+        ObjectSet(objiTBgX, OBJPROP_YDISTANCE, posY+(idx)*spaceSize);
+        strLen = StringLen(ObjectDescription(objCTxtX));
+        if (strLen > maxLen) maxLen = strLen;
         idx++;
-        additionalText = cLbText +"#"+ IntegerToString(idx);
+        objCTxtX = cTxtX +"#"+ IntegerToString(idx);
+        objiTBgX = iTBgX +"#"+ IntegerToString(idx);
     }
+    idx--;
+    string bgBlock = getFullBlock(maxLen);
+    while (idx >= 1){
+        objiTBgX = iTBgX +"#"+ IntegerToString(idx--);
+        ObjectSetText(objiTBgX, bgBlock);
+    }
+    ObjectSetText(iTxBg, bgBlock);
 }
 void LabelText::finishedJobDone(){}
 
@@ -116,8 +169,8 @@ void LabelText::onItemDrag(const string &itemId, const string &objId)
     if     (size == 10) spaceSize = 15;
     else if(size == 12) spaceSize = 19;
 
-    itemDragIdx = -1;
-    if (objId == cLbText)
+    itemDragIdx = 0;
+    if (objId == cTxtM)
     {
         posX = (int)ObjectGet(objId, OBJPROP_XDISTANCE);
         posY = (int)ObjectGet(objId, OBJPROP_YDISTANCE);
@@ -129,93 +182,116 @@ void LabelText::onItemDrag(const string &itemId, const string &objId)
         if (k != 3) return;
         itemDragIdx = StrToInteger(sparamItems[2]);
         posX = (int)ObjectGet(objId, OBJPROP_XDISTANCE);
-        posY = (int)ObjectGet(objId, OBJPROP_YDISTANCE)-(itemDragIdx+1)*spaceSize;
+        posY = (int)ObjectGet(objId, OBJPROP_YDISTANCE)-itemDragIdx*spaceSize;
     }
     refreshData();
 }
 void LabelText::onItemClick(const string &itemId, const string &objId)
 {
-    string lastItem = cLbText;
+    if (StringFind(objId, TAG_CTRL) < 0) return;
     int selected = (int)ObjectGet(objId, OBJPROP_SELECTED);
-    ObjectSet(cLbText, OBJPROP_SELECTED, selected);
 
-    int idx = 0;
-    string additionalText = cLbText +"#"+ IntegerToString(idx);
-    while (ObjectFind(additionalText) >= 0)
+    string lastItem = cTxtM;
+    ObjectSet(cTxtM, OBJPROP_SELECTED, selected);
+
+    int idx = 1;
+    string objCTxtX = cTxtX +"#"+ IntegerToString(idx);
+    while (ObjectFind(objCTxtX) >= 0)
     {
-        ObjectSet(additionalText, OBJPROP_SELECTED, selected);
-        lastItem = additionalText;
+        ObjectSet(objCTxtX, OBJPROP_SELECTED, selected);
+        lastItem = objCTxtX;
         idx++;
-        additionalText = cLbText +"#"+ IntegerToString(idx);
+        objCTxtX = cTxtX +"#"+ IntegerToString(idx);
     }
     if (selected == true && objId == lastItem && pCommonData.mShiftHold) gContextMenu.openContextMenu(objId, mContextType, -1);
 }
 void LabelText::onItemChange(const string &itemId, const string &objId)
 {
-    int selected = (int)ObjectGet(objId, OBJPROP_SELECTED);
     // font color size
     string font = ObjectGetString(ChartID(), objId, OBJPROP_FONT);
     color c     = (color)ObjectGet(objId, OBJPROP_COLOR);
     int size    = (int)  ObjectGet(objId, OBJPROP_FONTSIZE);
-    int anchor  = (int)  ObjectGetInteger(ChartID(), cLbText, OBJPROP_ANCHOR);
-    int corner  = (int)  ObjectGetInteger(ChartID(), cLbText, OBJPROP_CORNER);
+    int anchor  = (int)  ObjectGetInteger(ChartID(), cTxtM, OBJPROP_ANCHOR);
+    int corner  = (int)  ObjectGetInteger(ChartID(), cTxtM, OBJPROP_CORNER);
     
-    ObjectSet(cLbText, OBJPROP_COLOR, c);
-    ObjectSet(cLbText, OBJPROP_FONTSIZE, size);
-    ObjectSetString(ChartID(), cLbText, OBJPROP_FONT, font);
-    ObjectSetInteger(ChartID(), cLbText, OBJPROP_ANCHOR, anchor);
-    ObjectSetInteger(ChartID(), cLbText, OBJPROP_CORNER, corner);
+    ObjectSet(cTxtM, OBJPROP_COLOR, c);
+    ObjectSet(cTxtM, OBJPROP_FONTSIZE, size);
+    ObjectSetString(ChartID(), cTxtM, OBJPROP_FONT, font);
+    ObjectSetInteger(ChartID(), cTxtM, OBJPROP_ANCHOR, anchor);
+    ObjectSetInteger(ChartID(), cTxtM, OBJPROP_CORNER, corner);
+    ObjectSet(iTxBg, OBJPROP_FONTSIZE, size);
+    ObjectSetString(ChartID(),  iTxBg, OBJPROP_FONT, font);
+    ObjectSetInteger(ChartID(), iTxBg, OBJPROP_ANCHOR, anchor);
+    ObjectSetInteger(ChartID(), iTxBg, OBJPROP_CORNER, corner);
 
-    int idx = 0;
-    string additionalText = cLbText +"#"+ IntegerToString(idx);
-    while (ObjectFind(additionalText) >= 0)
+    int idx = 1;
+    string objCTxtX = cTxtX +"#"+ IntegerToString(idx);
+    string objiTBgX = iTBgX +"#"+ IntegerToString(idx);
+    while (ObjectFind(objCTxtX) >= 0)
     {
-        ObjectSet(additionalText, OBJPROP_COLOR, c);
-        ObjectSet(additionalText, OBJPROP_FONTSIZE, size);
-        ObjectSetString(ChartID(), additionalText, OBJPROP_FONT, font);
-        ObjectSetInteger(ChartID(), additionalText, OBJPROP_ANCHOR, anchor);
-        ObjectSetInteger(ChartID(), additionalText, OBJPROP_CORNER, corner);
+        ObjectSet(objCTxtX, OBJPROP_COLOR, c);
+        ObjectSet(objCTxtX, OBJPROP_FONTSIZE, size);
+        ObjectSetString(ChartID(), objCTxtX, OBJPROP_FONT, font);
+        ObjectSetInteger(ChartID(), objCTxtX, OBJPROP_ANCHOR, anchor);
+        ObjectSetInteger(ChartID(), objCTxtX, OBJPROP_CORNER, corner);
+        
+        ObjectSet(objiTBgX, OBJPROP_FONTSIZE, size);
+        ObjectSetString(ChartID(),  objiTBgX, OBJPROP_FONT, font);
+        ObjectSetInteger(ChartID(), objiTBgX, OBJPROP_ANCHOR, anchor);
+        ObjectSetInteger(ChartID(), objiTBgX, OBJPROP_CORNER, corner);
         idx++;
-        additionalText = cLbText +"#"+ IntegerToString(idx);
+        objCTxtX = cTxtX +"#"+ IntegerToString(idx);
+        objiTBgX = iTBgX +"#"+ IntegerToString(idx);
     }
 }
 void LabelText::onItemDeleted(const string &itemId, const string &objId)
 {
-    ObjectDelete(cLbText);
-    int idx = 0;
-    string objName = "";
+    ObjectDelete(cTxtM);
+    ObjectDelete(iTxBg);
+    int idx = 1;
+    string objCTxtX;
+    string objiTBgX;
     do
     {
-        objName = cLbText +"#"+ IntegerToString(idx);
+        objCTxtX = cTxtX +"#"+ IntegerToString(idx);
+        objiTBgX = iTBgX +"#"+ IntegerToString(idx);
+        ObjectDelete(objiTBgX);
         idx++;
     }
-    while (ObjectDelete(objName) == true);
+    while (ObjectDelete(objCTxtX) == true);
 }
 void LabelText::onUserRequest(const string &itemId, const string &objId)
 {
     onItemDrag(itemId, objId);
 
     int newIdx = itemDragIdx+1;
-    string objName = cLbText +"#"+ IntegerToString(newIdx);
-    string tempContent1 = ObjectDescription(objName);
-    while (ObjectFind(objName) >= 0)
+    string objCTxtX = cTxtX +"#"+ IntegerToString(newIdx);
+    string objiTBgX = iTBgX +"#"+ IntegerToString(newIdx);
+    while (ObjectFind(objCTxtX) >= 0)
     {
         newIdx++;
-        objName = cLbText +"#"+ IntegerToString(newIdx);
+        objCTxtX = cTxtX +"#"+ IntegerToString(newIdx);
+        objiTBgX = iTBgX +"#"+ IntegerToString(newIdx);
     }
-    ObjectCreate(objName, OBJ_LABEL, 0, 0, 0);
-    string font = ObjectGetString(ChartID(), cLbText, OBJPROP_FONT);
-    color c     = (color)ObjectGet(cLbText, OBJPROP_COLOR);
-    int size    = (int)  ObjectGet(cLbText, OBJPROP_FONTSIZE);
-    int anchor  = (int)  ObjectGetInteger(ChartID(), cLbText, OBJPROP_ANCHOR);
-    int corner  = (int)  ObjectGetInteger(ChartID(), cLbText, OBJPROP_CORNER);
-    ObjectSet(objName, OBJPROP_COLOR, c);
-    ObjectSet(objName, OBJPROP_FONTSIZE, size);
-    ObjectSetString(ChartID(), objName, OBJPROP_FONT, font);
-    ObjectSetInteger(ChartID(), objName, OBJPROP_ANCHOR, anchor);
-    ObjectSetInteger(ChartID(), objName, OBJPROP_CORNER, corner);
-    ObjectSet(objName, OBJPROP_XDISTANCE, posX);
-    ObjectSet(objName, OBJPROP_YDISTANCE, posY+(newIdx+1)*spaceSize);
+    ObjectCreate(objiTBgX, OBJ_LABEL, 0, 0, 0);
+    ObjectCreate(objCTxtX, OBJ_LABEL, 0, 0, 0);
+    string font = ObjectGetString(ChartID(), cTxtM, OBJPROP_FONT);
+    color c     = (color)ObjectGet(cTxtM, OBJPROP_COLOR);
+    int size    = (int)  ObjectGet(cTxtM, OBJPROP_FONTSIZE);
+    int anchor  = (int)  ObjectGetInteger(ChartID(), cTxtM, OBJPROP_ANCHOR);
+    int corner  = (int)  ObjectGetInteger(ChartID(), cTxtM, OBJPROP_CORNER);
+
+    ObjectSet(objCTxtX, OBJPROP_XDISTANCE, posX);
+    ObjectSet(objCTxtX, OBJPROP_YDISTANCE, posY+(newIdx)*spaceSize);
+    ObjectSetText(objCTxtX, getRandStr(), size, font, c);
+    ObjectSetInteger(ChartID(), objCTxtX, OBJPROP_ANCHOR, anchor);
+    ObjectSetInteger(ChartID(), objCTxtX, OBJPROP_CORNER, corner);
+
+    ObjectSet(objiTBgX, OBJPROP_XDISTANCE, posX);
+    ObjectSet(objiTBgX, OBJPROP_YDISTANCE, posY+(newIdx)*spaceSize);
+    ObjectSetText(objiTBgX, getFullBlock(StringLen(ObjectDescription(objCTxtX))), size, font, clrLightGray);
+    ObjectSetInteger(ChartID(), objiTBgX, OBJPROP_ANCHOR, anchor);
+    ObjectSetInteger(ChartID(), objiTBgX, OBJPROP_CORNER, corner);
 
     gContextMenu.clearContextMenu();
 }

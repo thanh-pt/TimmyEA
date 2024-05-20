@@ -37,21 +37,20 @@ private:
 
 // Component name
 private:
-    string cBkgnd;
-    string iCText;
-    string iLText;
-    string iRText;
+    string cBgM0;
+    string cPtL1;
+    string cPtL2;
+    string cPtR1;
+    string cPtR2;
+    string cPtC1;
+    string cPtC2;
 
-    string iLine1;
-    string iLine2;
-    string iLine3;
-
-    string cPointL1;
-    string cPointL2;
-    string cPointR1;
-    string cPointR2;
-    string cPointC1;
-    string cPointC2;
+    string iTxtC;
+    string iTxtL;
+    string iTxtR;
+    string iLn01;
+    string iLn02;
+    string iLn03;
 
 // Value define for Item
 private:
@@ -64,7 +63,7 @@ private:
     datetime centerTime;
 
 public:
-    Rectangle(const string name, CommonData* commonData, MouseInfo* mouseInfo);
+    Rectangle(CommonData* commonData, MouseInfo* mouseInfo);
 
 // Internal Event
 public:
@@ -86,11 +85,17 @@ public:
     virtual void onItemChange(const string &itemId, const string &objId);
     virtual void onItemDeleted(const string &itemId, const string &objId);
     virtual void onUserRequest(const string &itemId, const string &objId);
+
+public:
+    static string getAllItem(string itemId);
+    static string Tag;
 };
 
-Rectangle::Rectangle(const string name, CommonData* commonData, MouseInfo* mouseInfo)
+static string Rectangle::Tag = ".TMRect";
+
+Rectangle::Rectangle(CommonData* commonData, MouseInfo* mouseInfo)
 {
-    mItemName = name;
+    mItemName = Rectangle::Tag;
     pCommonData = commonData;
     pMouseInfo = mouseInfo;
 
@@ -122,67 +127,86 @@ Rectangle::Rectangle(const string name, CommonData* commonData, MouseInfo* mouse
 void Rectangle::prepareActive(){}
 void Rectangle::createItem()
 {
-    ObjectCreate(cPointL1, OBJ_ARROW, 0, 0, 0);
-    ObjectCreate(cPointL2, OBJ_ARROW, 0, 0, 0);
-    ObjectCreate(cPointR1, OBJ_ARROW, 0, 0, 0);
-    ObjectCreate(cPointR2, OBJ_ARROW, 0, 0, 0);
-    ObjectCreate(cPointC1, OBJ_ARROW, 0, 0, 0);
-    ObjectCreate(cPointC2, OBJ_ARROW, 0, 0, 0);
+    ObjectCreate(cBgM0, OBJ_RECTANGLE , 0, 0, 0);
+    ObjectCreate(cPtL1, OBJ_ARROW, 0, 0, 0);
+    ObjectCreate(cPtL2, OBJ_ARROW, 0, 0, 0);
+    ObjectCreate(cPtR1, OBJ_ARROW, 0, 0, 0);
+    ObjectCreate(cPtR2, OBJ_ARROW, 0, 0, 0);
+    ObjectCreate(cPtC1, OBJ_ARROW, 0, 0, 0);
+    ObjectCreate(cPtC2, OBJ_ARROW, 0, 0, 0);
 
-    ObjectCreate(iCText, OBJ_TEXT      , 0, 0, 0);
-    ObjectCreate(iLText, OBJ_TEXT      , 0, 0, 0);
-    ObjectCreate(iRText, OBJ_TEXT      , 0, 0, 0);
-    ObjectCreate(cBkgnd, OBJ_RECTANGLE , 0, 0, 0);
+    ObjectCreate(iTxtC, OBJ_TEXT      , 0, 0, 0);
+    ObjectCreate(iTxtL, OBJ_TEXT      , 0, 0, 0);
+    ObjectCreate(iTxtR, OBJ_TEXT      , 0, 0, 0);
 
-    updateTypeProperty();
     updateDefaultProperty();
+    updateTypeProperty();
     // Value define update
     time1  = pCommonData.mMouseTime;
     price1 = pCommonData.mMousePrice;
 }
 void Rectangle::updateDefaultProperty()
 {
-    setMultiProp(OBJPROP_ARROWCODE,       4, cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2);
-    setMultiProp(OBJPROP_COLOR    , clrNONE, cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2);
+    setMultiProp(OBJPROP_ARROWCODE,       4, cPtL1+cPtL2+cPtR1+cPtR2+cPtC1+cPtC2);
+    setMultiProp(OBJPROP_COLOR    , clrNONE, cPtL1+cPtL2+cPtR1+cPtR2+cPtC1+cPtC2);
 
-    ObjectSetText(iCText, "");
-    ObjectSetText(iLText, "");
-    ObjectSetText(iRText, "");
+    ObjectSetText(iTxtC, "");
+    ObjectSetText(iTxtL, "");
+    ObjectSetText(iTxtR, "");
 
-    ObjectSetInteger(ChartID(), iCText, OBJPROP_ANCHOR, ANCHOR_CENTER);
-    ObjectSetInteger(ChartID(), iLText, OBJPROP_ANCHOR, ANCHOR_LEFT);
-    ObjectSetInteger(ChartID(), iRText, OBJPROP_ANCHOR, ANCHOR_RIGHT);
+    ObjectSetInteger(ChartID(), iTxtC, OBJPROP_ANCHOR, ANCHOR_CENTER);
+    ObjectSetInteger(ChartID(), iTxtL, OBJPROP_ANCHOR, ANCHOR_LEFT);
+    ObjectSetInteger(ChartID(), iTxtR, OBJPROP_ANCHOR, ANCHOR_RIGHT);
 
-    setMultiProp(OBJPROP_COLOR     , Rect_Text_Color, iCText+iLText+iRText);
-    setMultiProp(OBJPROP_SELECTABLE, false         , iCText+iLText+iRText);
-    setMultiStrs(OBJPROP_TOOLTIP   , "\n"          , cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2+cBkgnd+iCText+iLText+iRText);
+    setMultiProp(OBJPROP_COLOR     , Rect_Text_Color, iTxtC+iTxtL+iTxtR);
+    setMultiProp(OBJPROP_SELECTABLE, false         , iTxtC+iTxtL+iTxtR);
+    setMultiStrs(OBJPROP_TOOLTIP   , "\n"          , mAllItem);
 }
 void Rectangle::updateTypeProperty()
 {
-    setRectangleBackground(cBkgnd, mPropColor[mIndexType]);
+    setRectangleBackground(cBgM0, mPropColor[mIndexType]);
 }
 void Rectangle::activateItem(const string& itemId)
 {
-    cBkgnd = itemId + "_c0Bkgnd";
-    iCText = itemId + "_0iCText";
-    iLText = itemId + "_0iLText";
-    iRText = itemId + "_0iRText";
+    cBgM0 = itemId + TAG_CTRM + "cBgM0";
+    cPtL1 = itemId + TAG_CTRL + "cPtL1";
+    cPtL2 = itemId + TAG_CTRL + "cPtL2";
+    cPtR1 = itemId + TAG_CTRL + "cPtR1";
+    cPtR2 = itemId + TAG_CTRL + "cPtR2";
+    cPtC1 = itemId + TAG_CTRL + "cPtC1";
+    cPtC2 = itemId + TAG_CTRL + "cPtC2";
+    iTxtC = itemId + TAG_INFO + "iTxtC";
+    iTxtL = itemId + TAG_INFO + "iTxtL";
+    iTxtR = itemId + TAG_INFO + "iTxtR";
+    iLn01 = itemId + TAG_INFO + "iLn01";
+    iLn02 = itemId + TAG_INFO + "iLn02";
+    iLn03 = itemId + TAG_INFO + "iLn03";
 
-    iLine1 = itemId + "_0iLine1";
-    iLine2 = itemId + "_0iLine2";
-    iLine3 = itemId + "_0iLine3";
-
-    cPointL1 = itemId + "_cPointL1";
-    cPointL2 = itemId + "_cPointL2";
-    cPointR1 = itemId + "_cPointR1";
-    cPointR2 = itemId + "_cPointR2";
-    cPointC1 = itemId + "_cPointC1";
-    cPointC2 = itemId + "_cPointC2";
-
-    mAllItem += cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2+cBkgnd
-                +iCText+iLText+iRText
-                +iLine1+iLine2+iLine3;
+    mAllItem += cPtL1+cPtL2+cPtR1+cPtR2+cPtC1+cPtC2+cBgM0
+                +iTxtC+iTxtL+iTxtR
+                +iLn01+iLn02+iLn03;
 }
+
+string Rectangle::getAllItem(string itemId)
+{
+    string allItem = itemId + "_mTData";
+    allItem += itemId + TAG_CTRM + "cBgM0";
+    allItem += itemId + TAG_CTRL + "cPtL1";
+    allItem += itemId + TAG_CTRL + "cPtL2";
+    allItem += itemId + TAG_CTRL + "cPtR1";
+    allItem += itemId + TAG_CTRL + "cPtR2";
+    allItem += itemId + TAG_CTRL + "cPtC1";
+    allItem += itemId + TAG_CTRL + "cPtC2";
+    allItem += itemId + TAG_INFO + "iTxtC";
+    allItem += itemId + TAG_INFO + "iTxtL";
+    allItem += itemId + TAG_INFO + "iTxtR";
+    allItem += itemId + TAG_INFO + "iLn01";
+    allItem += itemId + TAG_INFO + "iLn02";
+    allItem += itemId + TAG_INFO + "iLn03";
+
+    return allItem;
+}
+
 void Rectangle::updateItemAfterChangeType()
 {
     if (mFirstPoint == true)
@@ -194,27 +218,27 @@ void Rectangle::refreshData()
 {
     getCenterPos(time1, time2, price1, price2, centerTime, centerPrice);
 
-    setItemPos(cPointL1, time1, price1);
-    setItemPos(cPointL2, time1, price2);
-    setItemPos(cPointR1, time2, price1);
-    setItemPos(cPointR2, time2, price2);
-    setItemPos(cPointC1, time1, centerPrice);
-    setItemPos(cPointC2, time2, centerPrice);
+    setItemPos(cPtL1, time1, price1);
+    setItemPos(cPtL2, time1, price2);
+    setItemPos(cPtR1, time2, price1);
+    setItemPos(cPtR2, time2, price2);
+    setItemPos(cPtC1, time1, centerPrice);
+    setItemPos(cPtC2, time2, centerPrice);
 
-    setItemPos(cBkgnd, time1, time2, price1, price2);
-    setItemPos(iLine1, time1, time2, price1, price1);
-    setItemPos(iLine2, time1, time2, centerPrice, centerPrice);
-    setItemPos(iLine3, time1, time2, price2, price2);
+    setItemPos(cBgM0, time1, time2, price1, price2);
+    setItemPos(iLn01, time1, time2, price1, price1);
+    setItemPos(iLn02, time1, time2, centerPrice, centerPrice);
+    setItemPos(iLn03, time1, time2, price2, price2);
     //-------------------------------------------------
-    setTextPos(iLText, time1 + ChartPeriod()*60, centerPrice);
-    setTextPos(iRText, time2 - ChartPeriod()*60, centerPrice);
-    setTextPos(iCText, centerTime, centerPrice);
+    setTextPos(iTxtL, time1 + ChartPeriod()*60, centerPrice);
+    setTextPos(iTxtR, time2 - ChartPeriod()*60, centerPrice);
+    setTextPos(iTxtC, centerTime, centerPrice);
     //-------------------------------------------------
-    scanBackgroundOverlap(cBkgnd);
+    scanBackgroundOverlap(cBgM0);
     //-------------------------------------------------
-    int selected = (int)ObjectGet(cBkgnd, OBJPROP_SELECTED);
-    setMultiProp(OBJPROP_SELECTED, selected, cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2+cBkgnd+iCText+iLText+iRText);
-    setMultiProp(OBJPROP_COLOR   , selected ? gColorMousePoint : clrNONE, cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2);
+    int selected = (int)ObjectGet(cBgM0, OBJPROP_SELECTED);
+    setMultiProp(OBJPROP_SELECTED, selected, cPtL1+cPtL2+cPtR1+cPtR2+cPtC1+cPtC2+cBgM0+iTxtC+iTxtL+iTxtR);
+    setMultiProp(OBJPROP_COLOR   , selected ? gColorMousePoint : clrNONE, cPtL1+cPtL2+cPtR1+cPtR2+cPtC1+cPtC2);
 }
 void Rectangle::finishedJobDone(){}
 
@@ -244,68 +268,64 @@ void Rectangle::onItemDrag(const string &itemId, const string &objId)
     gContextMenu.clearContextMenu();
     if (pCommonData.mCtrlHold)
     {
-        if (objId == cPointL1 || objId == cPointR2 || objId == cPointL2 || objId == cPointR1) ObjectSet(objId, OBJPROP_PRICE1, pCommonData.mMousePrice);
+        if (objId == cPtL1 || objId == cPtR2 || objId == cPtL2 || objId == cPtR1) ObjectSet(objId, OBJPROP_PRICE1, pCommonData.mMousePrice);
     }
 
-    if (objId == cPointL1 || objId == cPointR2 )
+    if (objId == cPtL1 || objId == cPtR2 )
     {
-        time1  = (datetime)ObjectGet(cPointL1, OBJPROP_TIME1);
-        price1 =           ObjectGet(cPointL1, OBJPROP_PRICE1);
-        time2  = (datetime)ObjectGet(cPointR2, OBJPROP_TIME1);
-        price2 =           ObjectGet(cPointR2, OBJPROP_PRICE1);
+        time1  = (datetime)ObjectGet(cPtL1, OBJPROP_TIME1);
+        price1 =           ObjectGet(cPtL1, OBJPROP_PRICE1);
+        time2  = (datetime)ObjectGet(cPtR2, OBJPROP_TIME1);
+        price2 =           ObjectGet(cPtR2, OBJPROP_PRICE1);
     }
-    else if (objId == cPointL2 || objId == cPointR1)
+    else if (objId == cPtL2 || objId == cPtR1)
     {
-        time1  = (datetime)ObjectGet(cPointL2, OBJPROP_TIME1);
-        price2 =           ObjectGet(cPointL2, OBJPROP_PRICE1);
-        time2  = (datetime)ObjectGet(cPointR1, OBJPROP_TIME1);
-        price1 =           ObjectGet(cPointR1, OBJPROP_PRICE1);
+        time1  = (datetime)ObjectGet(cPtL2, OBJPROP_TIME1);
+        price2 =           ObjectGet(cPtL2, OBJPROP_PRICE1);
+        time2  = (datetime)ObjectGet(cPtR1, OBJPROP_TIME1);
+        price1 =           ObjectGet(cPtR1, OBJPROP_PRICE1);
     }
     else
     {
-        time1  = (datetime)ObjectGet(cPointL1, OBJPROP_TIME1);
-        price1 =           ObjectGet(cPointL1, OBJPROP_PRICE1);
-        time2  = (datetime)ObjectGet(cPointR2, OBJPROP_TIME1);
-        price2 =           ObjectGet(cPointR2, OBJPROP_PRICE1);
-        if (objId == cPointC1)
+        time1  = (datetime)ObjectGet(cPtL1, OBJPROP_TIME1);
+        price1 =           ObjectGet(cPtL1, OBJPROP_PRICE1);
+        time2  = (datetime)ObjectGet(cPtR2, OBJPROP_TIME1);
+        price2 =           ObjectGet(cPtR2, OBJPROP_PRICE1);
+        if (objId == cPtC1)
         {
             time1 = (datetime)ObjectGet(objId, OBJPROP_TIME1);
         }
-        else if (objId == cPointC2)
+        else if (objId == cPtC2)
         {
             time2 = (datetime)ObjectGet(objId, OBJPROP_TIME1);
         }
     }
-    if (objId == cBkgnd)
+    if (objId == cBgM0)
     {
         if (MathAbs(time2-time1)/ChartPeriod()/60 > 15)
         {
-            time1  = (datetime)ObjectGet(cBkgnd, OBJPROP_TIME1);
-            time2  = (datetime)ObjectGet(cBkgnd, OBJPROP_TIME2);
-            price1 =           ObjectGet(cBkgnd, OBJPROP_PRICE1);
-            price2 =           ObjectGet(cBkgnd, OBJPROP_PRICE2);
+            time1  = (datetime)ObjectGet(cBgM0, OBJPROP_TIME1);
+            time2  = (datetime)ObjectGet(cBgM0, OBJPROP_TIME2);
+            price1 =           ObjectGet(cBgM0, OBJPROP_PRICE1);
+            price2 =           ObjectGet(cBgM0, OBJPROP_PRICE2);
         }
     }
     refreshData();
 }
 void Rectangle::onItemClick(const string &itemId, const string &objId)
 {
-    if (StringFind(objId, "_0i") >= 0) return;
+    if (StringFind(objId, TAG_CTRL) < 0) return;
     int selected = (int)ObjectGet(objId, OBJPROP_SELECTED);
-    setMultiProp(OBJPROP_SELECTED, selected, mAllItem);
-    setMultiProp(OBJPROP_COLOR   , selected ? gColorMousePoint : clrNONE, cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2);
-    if (selected) {
-        setUnselectAllExcept(itemId);
-        if (StringFind(objId, "_c") >= 0 && pCommonData.mShiftHold)
-            gContextMenu.openContextMenu(objId, mContextType, mIndexType);
-    }
+    if (selected && pCommonData.mShiftHold) gContextMenu.openContextMenu(objId, mContextType, mIndexType);
+    setCtrlItemSelectState(mAllItem, selected);
+    setMultiProp(OBJPROP_COLOR, selected ? gColorMousePoint : clrNONE, cPtL1+cPtL2+cPtR1+cPtR2+cPtC1+cPtC2);
 }
 void Rectangle::onItemChange(const string &itemId, const string &objId)
 {
     string targetItem;
-    if (objId == cBkgnd)        targetItem = iCText;
-    else if (objId == cPointC2) targetItem = iRText;
-    else if (objId == cPointC1) targetItem = iLText;
+    if (objId == cBgM0)        targetItem = iTxtC;
+    else if (objId == cPtC2) targetItem = iTxtR;
+    else if (objId == cPtC1) targetItem = iTxtL;
     else                      return;
     
     string txtContent = ObjectDescription(objId);
@@ -318,7 +338,7 @@ void Rectangle::onItemChange(const string &itemId, const string &objId)
 void Rectangle::onItemDeleted(const string &itemId, const string &objId)
 {
     BaseItem::onItemDeleted(itemId, objId);
-    removeBackgroundOverlap(cBkgnd);
+    removeBackgroundOverlap(cBgM0);
 }
 void Rectangle::onUserRequest(const string &itemId, const string &objId)
 {
@@ -330,18 +350,18 @@ void Rectangle::onUserRequest(const string &itemId, const string &objId)
         updateTypeProperty();
         onItemDrag(itemId, objId);
     } else if (gContextMenu.mActiveItemStr == CTX_RANGE) {
-        ObjectCreate(iLine1, OBJ_TREND, 0, 0, 0);
-        ObjectCreate(iLine2, OBJ_TREND, 0, 0, 0);
-        ObjectCreate(iLine3, OBJ_TREND, 0, 0, 0);
+        ObjectCreate(iLn01, OBJ_TREND, 0, 0, 0);
+        ObjectCreate(iLn02, OBJ_TREND, 0, 0, 0);
+        ObjectCreate(iLn03, OBJ_TREND, 0, 0, 0);
         
-        setMultiProp(OBJPROP_SELECTABLE, false, iLine1+iLine2+iLine3);
-        setObjectStyle(iLine1, clrGray, 0, 0, true);
-        setObjectStyle(iLine2, clrSilver, 0, 0, true);
-        setObjectStyle(iLine3, clrGray, 0, 0, true);
+        setMultiProp(OBJPROP_SELECTABLE, false, iLn01+iLn02+iLn03);
+        setObjectStyle(iLn01, clrGray, 0, 0, true);
+        setObjectStyle(iLn02, clrSilver, 0, 0, true);
+        setObjectStyle(iLn03, clrGray, 0, 0, true);
         onItemDrag(itemId, objId);
     } else if (gContextMenu.mActiveItemStr == CTX_NORANGE) {
-        setObjectStyle(iLine1, clrNONE, 0, 0);
-        setObjectStyle(iLine2, clrNONE, 0, 0);
-        setObjectStyle(iLine3, clrNONE, 0, 0);
+        setObjectStyle(iLn01, clrNONE, 0, 0);
+        setObjectStyle(iLn02, clrNONE, 0, 0);
+        setObjectStyle(iLn03, clrNONE, 0, 0);
     }
 }

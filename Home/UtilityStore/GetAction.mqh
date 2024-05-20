@@ -56,7 +56,7 @@ string getItemUnderMouse(int posX, int posY)
         string objName = ObjectName(i);
         if (ObjectGet(objName, OBJPROP_SELECTED) == false) continue;
         if (ObjectGet(objName, OBJPROP_SELECTABLE) == false) continue;
-        if (StringFind(objName, "_c") == -1) continue;
+        if (StringFind(objName, TAG_CTRL) == -1) continue;
 
         int objType = ObjectType(objName);
 
@@ -134,4 +134,12 @@ int getObjectTimeId(string objId)
     if (endP < 0) return hashString(objId);
     string timeIdStr = StringSubstr(objId, startP+1, endP-startP-1);
     return StrToInteger(timeIdStr);
+}
+
+string getRandStr(){
+    return gStrRand[rand()%(ArraySize(gStrRand))];
+}
+
+string getFullBlock(int size){
+    return StringSubstr(FULL_BLOCK, 0, size);
 }

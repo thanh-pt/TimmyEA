@@ -48,26 +48,26 @@ private:
 
 // Component name
 private:
-    string ckLne;
-    string iFib0;
-    string iFib1;
-    string iFib2;
-    string iFib3;
-    string iFib4;
-    string iFib5;
+    string cBgM0;
+    string cPtL1;
+    string cPtL2;
+    string cPtR1;
+    string cPtR2;
+    string cPtC1;
+    string cPtC2;
+
+    string iLn00;
+    string iLn01;
+    string iLn02;
+    string iLn03;
+    string iLn04;
+    string iLn05;
     string iTxt0;
     string iTxt1;
     string iTxt2;
     string iTxt3;
     string iTxt4;
     string iTxt5;
-
-    string cPointL1;
-    string cPointL2;
-    string cPointR1;
-    string cPointR2;
-    string cPointC1;
-    string cPointC2;
 
 // Value define for Item
 private:
@@ -80,7 +80,7 @@ private:
     datetime centerTime;
 
 public:
-    Fibonacci(const string name, CommonData* commonData, MouseInfo* mouseInfo);
+    Fibonacci(CommonData* commonData, MouseInfo* mouseInfo);
 
 // Internal Event
 public:
@@ -100,11 +100,17 @@ public:
     virtual void onItemDrag(const string &itemId, const string &objId);
     virtual void onItemClick(const string &itemId, const string &objId);
     virtual void onItemChange(const string &itemId, const string &objId);
+
+public:
+    static string getAllItem(string itemId);
+    static string Tag;
 };
 
-Fibonacci::Fibonacci(const string name, CommonData* commonData, MouseInfo* mouseInfo)
+static string Fibonacci::Tag = ".TMFib";
+
+Fibonacci::Fibonacci(CommonData* commonData, MouseInfo* mouseInfo)
 {
-    mItemName = name;
+    mItemName = Fibonacci::Tag;
     pCommonData = commonData;
     pMouseInfo = mouseInfo;
 
@@ -126,12 +132,12 @@ Fibonacci::Fibonacci(const string name, CommonData* commonData, MouseInfo* mouse
 void Fibonacci::prepareActive(){}
 void Fibonacci::createItem()
 {
-    if (Fib_0_Color != clrNONE) ObjectCreate(iFib0, OBJ_TREND, 0, 0, 0);
-    if (Fib_1_Color != clrNONE) ObjectCreate(iFib1, OBJ_TREND, 0, 0, 0);
-    if (Fib_2_Color != clrNONE) ObjectCreate(iFib2, OBJ_TREND, 0, 0, 0);
-    if (Fib_3_Color != clrNONE) ObjectCreate(iFib3, OBJ_TREND, 0, 0, 0);
-    if (Fib_4_Color != clrNONE) ObjectCreate(iFib4, OBJ_TREND, 0, 0, 0);
-    if (Fib_5_Color != clrNONE) ObjectCreate(iFib5, OBJ_TREND, 0, 0, 0);
+    if (Fib_0_Color != clrNONE) ObjectCreate(iLn00, OBJ_TREND, 0, 0, 0);
+    if (Fib_1_Color != clrNONE) ObjectCreate(iLn01, OBJ_TREND, 0, 0, 0);
+    if (Fib_2_Color != clrNONE) ObjectCreate(iLn02, OBJ_TREND, 0, 0, 0);
+    if (Fib_3_Color != clrNONE) ObjectCreate(iLn03, OBJ_TREND, 0, 0, 0);
+    if (Fib_4_Color != clrNONE) ObjectCreate(iLn04, OBJ_TREND, 0, 0, 0);
+    if (Fib_5_Color != clrNONE) ObjectCreate(iLn05, OBJ_TREND, 0, 0, 0);
     //------------------------------------------
     if (Fib_0_Color != clrNONE /*&& Fib_0_Text != ""*/) ObjectCreate(iTxt0, OBJ_TEXT, 0, 0, 0);
     if (Fib_1_Color != clrNONE /*&& Fib_1_Text != ""*/) ObjectCreate(iTxt1, OBJ_TEXT, 0, 0, 0);
@@ -139,14 +145,14 @@ void Fibonacci::createItem()
     if (Fib_3_Color != clrNONE /*&& Fib_3_Text != ""*/) ObjectCreate(iTxt3, OBJ_TEXT, 0, 0, 0);
     if (Fib_4_Color != clrNONE /*&& Fib_4_Text != ""*/) ObjectCreate(iTxt4, OBJ_TEXT, 0, 0, 0);
     if (Fib_5_Color != clrNONE /*&& Fib_5_Text != ""*/) ObjectCreate(iTxt5, OBJ_TEXT, 0, 0, 0);
-    ObjectCreate(ckLne, OBJ_RECTANGLE, 0, 0, 0);
+    ObjectCreate(cBgM0, OBJ_RECTANGLE, 0, 0, 0);
 
-    ObjectCreate(cPointL1, OBJ_ARROW, 0, 0, 0);
-    ObjectCreate(cPointL2, OBJ_ARROW, 0, 0, 0);
-    ObjectCreate(cPointR1, OBJ_ARROW, 0, 0, 0);
-    ObjectCreate(cPointR2, OBJ_ARROW, 0, 0, 0);
-    ObjectCreate(cPointC1, OBJ_ARROW, 0, 0, 0);
-    ObjectCreate(cPointC2, OBJ_ARROW, 0, 0, 0);
+    ObjectCreate(cPtL1, OBJ_ARROW, 0, 0, 0);
+    ObjectCreate(cPtL2, OBJ_ARROW, 0, 0, 0);
+    ObjectCreate(cPtR1, OBJ_ARROW, 0, 0, 0);
+    ObjectCreate(cPtR2, OBJ_ARROW, 0, 0, 0);
+    ObjectCreate(cPtC1, OBJ_ARROW, 0, 0, 0);
+    ObjectCreate(cPtC2, OBJ_ARROW, 0, 0, 0);
 
     updateDefaultProperty();
     updateTypeProperty();
@@ -156,16 +162,16 @@ void Fibonacci::createItem()
 }
 void Fibonacci::updateDefaultProperty()
 {
-    setMultiProp(OBJPROP_STYLE        , getLineStyle(Fib_Style), iFib0+iFib1+iFib2+iFib3+iFib4+iFib5);
-    setMultiProp(OBJPROP_BACK         , true      , iFib0+iFib1+iFib2+iFib3+iFib4+iFib5);
-    setMultiProp(OBJPROP_SELECTABLE   , false     , iFib0+iFib1+iFib2+iFib3+iFib4+iFib5
+    setMultiProp(OBJPROP_STYLE        , getLineStyle(Fib_Style), iLn00+iLn01+iLn02+iLn03+iLn04+iLn05);
+    setMultiProp(OBJPROP_BACK         , true      , iLn00+iLn01+iLn02+iLn03+iLn04+iLn05);
+    setMultiProp(OBJPROP_SELECTABLE   , false     , iLn00+iLn01+iLn02+iLn03+iLn04+iLn05
                                                    +iTxt0+iTxt1+iTxt2+iTxt3+iTxt4+iTxt5);
     setMultiInts(OBJPROP_ANCHOR, ANCHOR_RIGHT     , iTxt0+iTxt1+iTxt2+iTxt3+iTxt4+iTxt5);
-    setMultiInts(OBJPROP_HIDDEN, true, iFib0+iFib1+iFib2+iFib3+iFib4+iFib5
+    setMultiInts(OBJPROP_HIDDEN, true, iLn00+iLn01+iLn02+iLn03+iLn04+iLn05
                                       +iTxt0+iTxt1+iTxt2+iTxt3+iTxt4+iTxt5);
 
-    setMultiProp(OBJPROP_ARROWCODE,       4, cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2);
-    setMultiProp(OBJPROP_COLOR    , clrNONE, cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2);
+    setMultiProp(OBJPROP_ARROWCODE,       4, cPtL1+cPtL2+cPtR1+cPtR2+cPtC1+cPtC2);
+    setMultiProp(OBJPROP_COLOR    , clrNONE, cPtL1+cPtL2+cPtR1+cPtR2+cPtC1+cPtC2);
     
     setMultiStrs(OBJPROP_TOOLTIP, "\n", mAllItem);
 }
@@ -179,61 +185,88 @@ void Fibonacci::updateTypeProperty()
     ObjectSetText(iTxt4, Fib_4_Text + "  ", 7, NULL, Fib_4_Color);
     ObjectSetText(iTxt5, Fib_5_Text + "  ", 7, NULL, Fib_5_Color);
     //------------------------------------------
-    setRectangleBackground(ckLne, Fib_Bkgrd_Color);
-    setMultiProp(OBJPROP_RAY, false, iFib0+iFib1+iFib2+iFib3+iFib4+iFib5);
-    setMultiProp(OBJPROP_WIDTH     , getLineWidth(Fib_Style), iFib0+iFib1+iFib2+iFib3+iFib4+iFib5);
+    setRectangleBackground(cBgM0, Fib_Bkgrd_Color);
+    setMultiProp(OBJPROP_RAY, false, iLn00+iLn01+iLn02+iLn03+iLn04+iLn05);
+    setMultiProp(OBJPROP_WIDTH     , getLineWidth(Fib_Style), iLn00+iLn01+iLn02+iLn03+iLn04+iLn05);
     //------------------------------------------
-    ObjectSet(iFib0, OBJPROP_COLOR, Fib_0_Color);
-    ObjectSet(iFib1, OBJPROP_COLOR, Fib_1_Color);
-    ObjectSet(iFib2, OBJPROP_COLOR, Fib_2_Color);
-    ObjectSet(iFib3, OBJPROP_COLOR, Fib_3_Color);
-    ObjectSet(iFib4, OBJPROP_COLOR, Fib_4_Color);
-    ObjectSet(iFib5, OBJPROP_COLOR, Fib_5_Color);
+    ObjectSet(iLn00, OBJPROP_COLOR, Fib_0_Color);
+    ObjectSet(iLn01, OBJPROP_COLOR, Fib_1_Color);
+    ObjectSet(iLn02, OBJPROP_COLOR, Fib_2_Color);
+    ObjectSet(iLn03, OBJPROP_COLOR, Fib_3_Color);
+    ObjectSet(iLn04, OBJPROP_COLOR, Fib_4_Color);
+    ObjectSet(iLn05, OBJPROP_COLOR, Fib_5_Color);
 
     if (mIndexType != FIB_FULL) {
-        setMultiProp(OBJPROP_COLOR, clrNONE, iFib3+iFib4+iFib5 + iTxt3+iTxt4+iTxt5);
+        setMultiProp(OBJPROP_COLOR, clrNONE, iLn03+iLn04+iLn05 + iTxt3+iTxt4+iTxt5);
     }
     if (mIndexType == FIB_RANGE || mIndexType == FIB_RANGE_EXT){
         ObjectSetText(iTxt2, "  ", 8);
-        setMultiProp(OBJPROP_COLOR, clrDarkOrange, iFib2);
+        setMultiProp(OBJPROP_COLOR, clrDarkOrange, iLn02);
     }
     if (mIndexType == FIB_RANGE_EXT) {
-        setMultiProp(OBJPROP_RAY, true, iFib0+iFib1);
+        setMultiProp(OBJPROP_RAY, true, iLn00+iLn01);
     }
     if (mIndexType == FIB_RANGE2){
         ObjectSetText(iTxt0, "   ");
         ObjectSetText(iTxt1, "   ");
         ObjectSetText(iTxt2, "   ");
-        setRectangleBackground(ckLne, clrOldLace);
-        setMultiProp(OBJPROP_WIDTH, getLineWidth(Fib_Style)+1, iFib0+iFib1);
+        setRectangleBackground(cBgM0, clrOldLace);
+        setMultiProp(OBJPROP_WIDTH, getLineWidth(Fib_Style)+1, iLn00+iLn01);
     }
 }
 void Fibonacci::activateItem(const string& itemId)
 {
-    ckLne = itemId + "_c0Lne";
-    iFib0 = itemId + "_0iFib0";
-    iFib1 = itemId + "_0iFib1";
-    iFib2 = itemId + "_0iFib2";
-    iFib3 = itemId + "_0iFib3";
-    iFib4 = itemId + "_0iFib4";
-    iFib5 = itemId + "_0iFib5";
-    iTxt0 = itemId + "_0iTxt0";
-    iTxt1 = itemId + "_0iTxt1";
-    iTxt2 = itemId + "_0iTxt2";
-    iTxt3 = itemId + "_0iTxt3";
-    iTxt4 = itemId + "_0iTxt4";
-    iTxt5 = itemId + "_0iTxt5";
+    cBgM0 = itemId + TAG_CTRM + "cBgM0";
+    cPtL1 = itemId + TAG_CTRL + "cPtL1";
+    cPtL2 = itemId + TAG_CTRL + "cPtL2";
+    cPtR1 = itemId + TAG_CTRL + "cPtR1";
+    cPtR2 = itemId + TAG_CTRL + "cPtR2";
+    cPtC1 = itemId + TAG_CTRL + "cPtC1";
+    cPtC2 = itemId + TAG_CTRL + "cPtC2";
+    iLn00 = itemId + TAG_INFO + "iLn00";
+    iLn01 = itemId + TAG_INFO + "iLn01";
+    iLn02 = itemId + TAG_INFO + "iLn02";
+    iLn03 = itemId + TAG_INFO + "iLn03";
+    iLn04 = itemId + TAG_INFO + "iLn04";
+    iLn05 = itemId + TAG_INFO + "iLn05";
+    iTxt0 = itemId + TAG_INFO + "iTxt0";
+    iTxt1 = itemId + TAG_INFO + "iTxt1";
+    iTxt2 = itemId + TAG_INFO + "iTxt2";
+    iTxt3 = itemId + TAG_INFO + "iTxt3";
+    iTxt4 = itemId + TAG_INFO + "iTxt4";
+    iTxt5 = itemId + TAG_INFO + "iTxt5";
 
-    cPointL1 = itemId + "_cPointL1";
-    cPointL2 = itemId + "_cPointL2";
-    cPointR1 = itemId + "_cPointR1";
-    cPointR2 = itemId + "_cPointR2";
-    cPointC1 = itemId + "_cPointC1";
-    cPointC2 = itemId + "_cPointC2";
-
-    mAllItem += ckLne+iFib0+iFib1+iFib2+iFib3+iFib4+iFib5+iTxt0+iTxt1+iTxt2+iTxt3+iTxt4+iTxt5
-                +cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2;
+    mAllItem += cBgM0+iLn00+iLn01+iLn02+iLn03+iLn04+iLn05+iTxt0+iTxt1+iTxt2+iTxt3+iTxt4+iTxt5
+                +cPtL1+cPtL2+cPtR1+cPtR2+cPtC1+cPtC2;
 }
+
+string Fibonacci::getAllItem(string itemId)
+{
+    string allItem = itemId + "_mTData";
+    allItem += itemId + TAG_CTRM + "cBgM0";
+    allItem += itemId + TAG_CTRL + "cPtL1";
+    allItem += itemId + TAG_CTRL + "cPtL2";
+    allItem += itemId + TAG_CTRL + "cPtR1";
+    allItem += itemId + TAG_CTRL + "cPtR2";
+    allItem += itemId + TAG_CTRL + "cPtC1";
+    allItem += itemId + TAG_CTRL + "cPtC2";
+    allItem += itemId + TAG_INFO + "iLn00";
+    allItem += itemId + TAG_INFO + "iLn01";
+    allItem += itemId + TAG_INFO + "iLn02";
+    allItem += itemId + TAG_INFO + "iLn03";
+    allItem += itemId + TAG_INFO + "iLn04";
+    allItem += itemId + TAG_INFO + "iLn05";
+    allItem += itemId + TAG_INFO + "iTxt0";
+    allItem += itemId + TAG_INFO + "iTxt1";
+    allItem += itemId + TAG_INFO + "iTxt2";
+    allItem += itemId + TAG_INFO + "iTxt3";
+    allItem += itemId + TAG_INFO + "iTxt4";
+    allItem += itemId + TAG_INFO + "iTxt5";
+    allItem += itemId + "_mTData";
+
+    return allItem;
+}
+
 void Fibonacci::updateItemAfterChangeType()
 {
     updateTypeProperty();
@@ -245,13 +278,13 @@ void Fibonacci::refreshData()
     double price4 = price1-Fib_4_Ratio*(price1-price0);
     double price5 = price1-Fib_5_Ratio*(price1-price0);
     //-------------------------------------------------
-    setItemPos(ckLne, time0, time1, price0, price1);
-    setItemPos(iFib0, time0, time1, price0, price0);
-    setItemPos(iFib1, time0, time1, price1, price1);
-    setItemPos(iFib2, time0, time1, price2, price2);
-    setItemPos(iFib3, time0, time1, price3, price3);
-    setItemPos(iFib4, time0, time1, price4, price4);
-    setItemPos(iFib5, time0, time1, price5, price5);
+    setItemPos(cBgM0, time0, time1, price0, price1);
+    setItemPos(iLn00, time0, time1, price0, price0);
+    setItemPos(iLn01, time0, time1, price1, price1);
+    setItemPos(iLn02, time0, time1, price2, price2);
+    setItemPos(iLn03, time0, time1, price3, price3);
+    setItemPos(iLn04, time0, time1, price4, price4);
+    setItemPos(iLn05, time0, time1, price5, price5);
     //-------------------------------------------------
     setTextPos(iTxt0, time0, price0);
     setTextPos(iTxt1, time0, price1);
@@ -262,23 +295,23 @@ void Fibonacci::refreshData()
     //-------------------------------------------------
     getCenterPos(time0, time1, price0, price1, centerTime, centerPrice);
 
-    setItemPos(cPointL1, time0, price0);
-    setItemPos(cPointL2, time0, price1);
-    setItemPos(cPointR1, time1, price0);
-    setItemPos(cPointR2, time1, price1);
-    setItemPos(cPointC1, time0, centerPrice);
-    setItemPos(cPointC2, time1, centerPrice);
+    setItemPos(cPtL1, time0, price0);
+    setItemPos(cPtL2, time0, price1);
+    setItemPos(cPtR1, time1, price0);
+    setItemPos(cPtR2, time1, price1);
+    setItemPos(cPtC1, time0, centerPrice);
+    setItemPos(cPtC2, time1, centerPrice);
     //-------------------------------------------------
-    int selected = (int)ObjectGet(ckLne, OBJPROP_SELECTED);
-    setMultiProp(OBJPROP_COLOR   , selected ? gColorMousePoint : clrNONE, cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2);
-    setMultiProp(OBJPROP_SELECTED, selected, cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2+ckLne);
+    int selected = (int)ObjectGet(cBgM0, OBJPROP_SELECTED);
+    setMultiProp(OBJPROP_COLOR   , selected ? gColorMousePoint : clrNONE, cPtL1+cPtL2+cPtR1+cPtR2+cPtC1+cPtC2);
+    setMultiProp(OBJPROP_SELECTED, selected, cPtL1+cPtL2+cPtR1+cPtR2+cPtC1+cPtC2+cBgM0);
     //-------------------------------------------------
     if (mIndexType == FIB_RANGE || mIndexType == FIB_RANGE_EXT){
         bool isUp = (price1 > price0);
         ObjectSetText(iTxt0, isUp ? "𝙇𝙤  " : "𝙃𝙞  ", 8);
         ObjectSetText(iTxt1, isUp ? "𝙃𝙞  " : "𝙇𝙤  ", 8);
-        setMultiProp(OBJPROP_COLOR, isUp ? clrGreen : clrRed  , iFib0+iTxt0);
-        setMultiProp(OBJPROP_COLOR, isUp ? clrRed   : clrGreen, iFib1+iTxt1);
+        setMultiProp(OBJPROP_COLOR, isUp ? clrGreen : clrRed  , iLn00+iTxt0);
+        setMultiProp(OBJPROP_COLOR, isUp ? clrRed   : clrGreen, iLn01+iTxt1);
     }
 
 }
@@ -308,45 +341,45 @@ void Fibonacci::onMouseClick()
 void Fibonacci::onItemDrag(const string &itemId, const string &objId)
 {
     gContextMenu.clearContextMenu();
-    if (objId == ckLne)
+    if (objId == cBgM0)
     {
-        time0   = (datetime)ObjectGet(ckLne, OBJPROP_TIME1);
-        time1   = (datetime)ObjectGet(ckLne, OBJPROP_TIME2);
-        price0  =           ObjectGet(ckLne, OBJPROP_PRICE1);
-        price1  =           ObjectGet(ckLne, OBJPROP_PRICE2);
+        time0   = (datetime)ObjectGet(cBgM0, OBJPROP_TIME1);
+        time1   = (datetime)ObjectGet(cBgM0, OBJPROP_TIME2);
+        price0  =           ObjectGet(cBgM0, OBJPROP_PRICE1);
+        price1  =           ObjectGet(cBgM0, OBJPROP_PRICE2);
     }
     else
     {
         if (pCommonData.mCtrlHold)
         {
-            if (objId == cPointL1 || objId == cPointR2 || objId == cPointL2 || objId == cPointR1) ObjectSet(objId, OBJPROP_PRICE1, pCommonData.mMousePrice);
+            if (objId == cPtL1 || objId == cPtR2 || objId == cPtL2 || objId == cPtR1) ObjectSet(objId, OBJPROP_PRICE1, pCommonData.mMousePrice);
         }
 
-        if (objId == cPointL1 || objId == cPointR2 )
+        if (objId == cPtL1 || objId == cPtR2 )
         {
-            time0  = (datetime)ObjectGet(cPointL1, OBJPROP_TIME1);
-            price0 =           ObjectGet(cPointL1, OBJPROP_PRICE1);
-            time1  = (datetime)ObjectGet(cPointR2, OBJPROP_TIME1);
-            price1 =           ObjectGet(cPointR2, OBJPROP_PRICE1);
+            time0  = (datetime)ObjectGet(cPtL1, OBJPROP_TIME1);
+            price0 =           ObjectGet(cPtL1, OBJPROP_PRICE1);
+            time1  = (datetime)ObjectGet(cPtR2, OBJPROP_TIME1);
+            price1 =           ObjectGet(cPtR2, OBJPROP_PRICE1);
         }
-        else if (objId == cPointL2 || objId == cPointR1)
+        else if (objId == cPtL2 || objId == cPtR1)
         {
-            time0  = (datetime)ObjectGet(cPointL2, OBJPROP_TIME1);
-            price1 =           ObjectGet(cPointL2, OBJPROP_PRICE1);
-            time1  = (datetime)ObjectGet(cPointR1, OBJPROP_TIME1);
-            price0 =           ObjectGet(cPointR1, OBJPROP_PRICE1);
+            time0  = (datetime)ObjectGet(cPtL2, OBJPROP_TIME1);
+            price1 =           ObjectGet(cPtL2, OBJPROP_PRICE1);
+            time1  = (datetime)ObjectGet(cPtR1, OBJPROP_TIME1);
+            price0 =           ObjectGet(cPtR1, OBJPROP_PRICE1);
         }
         else
         {
-            time0  = (datetime)ObjectGet(cPointL1, OBJPROP_TIME1);
-            price0 =           ObjectGet(cPointL1, OBJPROP_PRICE1);
-            time1  = (datetime)ObjectGet(cPointR2, OBJPROP_TIME1);
-            price1 =           ObjectGet(cPointR2, OBJPROP_PRICE1);
-            if (objId == cPointC1)
+            time0  = (datetime)ObjectGet(cPtL1, OBJPROP_TIME1);
+            price0 =           ObjectGet(cPtL1, OBJPROP_PRICE1);
+            time1  = (datetime)ObjectGet(cPtR2, OBJPROP_TIME1);
+            price1 =           ObjectGet(cPtR2, OBJPROP_PRICE1);
+            if (objId == cPtC1)
             {
                 time0 = (datetime)ObjectGet(objId, OBJPROP_TIME1);
             }
-            else if (objId == cPointC2)
+            else if (objId == cPtC2)
             {
                 time1 = (datetime)ObjectGet(objId, OBJPROP_TIME1);
             }
@@ -357,16 +390,10 @@ void Fibonacci::onItemDrag(const string &itemId, const string &objId)
 }
 void Fibonacci::onItemClick(const string &itemId, const string &objId)
 {
-    if (StringFind(objId, "_c") == -1) return;
-
+    if (StringFind(objId, TAG_CTRL) < 0) return;
     int selected = (int)ObjectGet(objId, OBJPROP_SELECTED);
-    setMultiProp(OBJPROP_COLOR   , selected ? gColorMousePoint : clrNONE, cPointL1+cPointL2+cPointR1+cPointR2+cPointC1+cPointC2);
-    setMultiProp(OBJPROP_SELECTED, selected, mAllItem);
-    if (selected)
-    {
-        setUnselectAllExcept(itemId);
-        if (StringFind(objId, "_c") >= 0 && pCommonData.mShiftHold)
-            gContextMenu.openContextMenu(objId, mContextType, mIndexType);
-    }
+    if (selected && pCommonData.mShiftHold) gContextMenu.openContextMenu(objId, mContextType, mIndexType);
+    setCtrlItemSelectState(mAllItem, selected);
+    setMultiProp(OBJPROP_COLOR, selected ? gColorMousePoint : clrNONE, cPtL1+cPtL2+cPtR1+cPtR2+cPtC1+cPtC2);
 }
 void Fibonacci::onItemChange(const string &itemId, const string &objId){}
