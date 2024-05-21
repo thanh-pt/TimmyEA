@@ -268,14 +268,15 @@ void Trend::activateItem(const string& itemId)
 string Trend::getAllItem(string itemId)
 {
     string allItem = itemId + "_mTData";
-    allItem += itemId + TAG_CTRM + "cLnM0";
-    allItem += itemId + TAG_CTRL + "cPt01";
-    allItem += itemId + TAG_CTRL + "cPt02";
     allItem += itemId + TAG_INFO + "iAng0";
     allItem += itemId + TAG_INFO + "iTxtC";
     allItem += itemId + TAG_INFO + "iTxtR";
     allItem += itemId + TAG_INFO + "iTxtL";
     allItem += itemId + TAG_INFO + "iTxtA";
+    //--- Control item ---
+    allItem += itemId + TAG_CTRM + "cLnM0";
+    allItem += itemId + TAG_CTRL + "cPt01";
+    allItem += itemId + TAG_CTRL + "cPt02";
 
     return allItem;
 }

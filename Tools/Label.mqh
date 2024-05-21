@@ -107,11 +107,11 @@ string LabelText::getAllItem(string itemId)
     allItem += itemId + TAG_INFO + "iTxBg";
     allItem += itemId + TAG_CTRM + "cTxtM";
 
-    string txtX   = itemId + TAG_CTRL + "cTxtX";
     string tBgX   = itemId + TAG_INFO + "iTBgX";
+    string txtX   = itemId + TAG_CTRL + "cTxtX";
     int i = 1;
-    string objCTxtX = txtX + "#" + IntegerToString(i);
     string objiTBgX = tBgX + "#" + IntegerToString(i++);
+    string objCTxtX = txtX + "#" + IntegerToString(i);
     while (ObjectFind(objCTxtX) >= 0){
         allItem += objiTBgX;
         allItem += objCTxtX;

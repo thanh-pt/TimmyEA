@@ -208,13 +208,13 @@ void Trade::updateDefaultProperty()
     ObjectSet(cBgBd, OBJPROP_BACK, false);
     ObjectSet(cBgBd, OBJPROP_COLOR, clrNONE);
     //-------------------------------------------------
-    setMultiProp(OBJPROP_ARROWCODE , 4    , cPtWD+cPtBE);
-    setMultiProp(OBJPROP_ARROWCODE , 4    , cPtTP+cPtSL);
-    ObjectSet(cPtEN, OBJPROP_ARROWCODE, 4);
+    setMultiProp(OBJPROP_ARROWCODE , 4    , cPtTP+cPtSL+cPtEN+cPtWD+cPtBE);
     
     setMultiProp(OBJPROP_SELECTED  , true , cPtTP+cPtSL+cPtEN+cPtWD+cPtBE);
     setMultiProp(OBJPROP_RAY       , false, iLnTp+iLnBe+iLnEn+iLnSl);
     setMultiProp(OBJPROP_SELECTABLE, false, iBgSl+iBgTP+iLnTp+iLnBe+iLnEn+iLnSl+iTxpT+iTxpE+iTxpS+iTxtT+iTxtE+iTxtS+iTxtB);
+
+    setMultiProp(OBJPROP_COLOR, gColorMousePoint, cPtTP+cPtSL+cPtEN+cPtWD+cPtBE);
     //-------------------------------------------------
     setMultiStrs(OBJPROP_TOOLTIP, "\n", iBgSl+iBgTP+iLnTp+iLnBe+iLnEn+iLnSl+iTxpT+iTxpE+iTxpS+iTxtT+iTxtE+iTxtS+iTxtB+cBgBd+cPtTP+cPtSL+cPtEN+cPtWD+cPtBE);
 }
@@ -225,9 +225,9 @@ void Trade::updateTypeProperty()
     ObjectSet(iLnBe, OBJPROP_WIDTH, 1);
     ObjectSet(iLnBe, OBJPROP_STYLE, 2);
     //-------------------------------------------------
-    setMultiProp(OBJPROP_COLOR, Trd_TpColor  , iLnTp+iLnBe+cPtTP+cPtBE);
-    setMultiProp(OBJPROP_COLOR, Trd_EnColor  , iLnEn+cPtEN+cPtWD);
-    setMultiProp(OBJPROP_COLOR, Trd_SlColor  , iLnSl+cPtSL);
+    setMultiProp(OBJPROP_COLOR, Trd_TpColor  , iLnTp+iLnBe);
+    setMultiProp(OBJPROP_COLOR, Trd_EnColor  , iLnEn);
+    setMultiProp(OBJPROP_COLOR, Trd_SlColor  , iLnSl);
     setMultiProp(OBJPROP_COLOR, Trd_TextColor, iTxtT+iTxtE+iTxtS+iTxtB+iTxpT+iTxpE+iTxpS);
     //-------------------------------------------------
     setMultiProp(OBJPROP_WIDTH   , Trd_LineWidth, iLnTp+iLnEn+iLnSl);
@@ -262,12 +262,6 @@ void Trade::activateItem(const string& itemId)
 string Trade::getAllItem(string itemId)
 {
     string allItem = itemId + "_mTData";
-    allItem += itemId + TAG_CTRL + "cBgBd";
-    allItem += itemId + TAG_CTRM + "cPtWD";
-    allItem += itemId + TAG_CTRL + "cPtSL";
-    allItem += itemId + TAG_CTRL + "cPtEN";
-    allItem += itemId + TAG_CTRL + "cPtBE";
-    allItem += itemId + TAG_CTRL + "cPtTP";
     allItem += itemId + TAG_INFO + "iBgSl";
     allItem += itemId + TAG_INFO + "iBgTP";
     allItem += itemId + TAG_INFO + "iLnTp";
@@ -281,6 +275,13 @@ string Trade::getAllItem(string itemId)
     allItem += itemId + TAG_INFO + "iTxtE";
     allItem += itemId + TAG_INFO + "iTxtS";
     allItem += itemId + TAG_INFO + "iTxtB";
+    //--- Control item ---
+    allItem += itemId + TAG_CTRL + "cBgBd";
+    allItem += itemId + TAG_CTRM + "cPtWD";
+    allItem += itemId + TAG_CTRL + "cPtSL";
+    allItem += itemId + TAG_CTRL + "cPtEN";
+    allItem += itemId + TAG_CTRL + "cPtBE";
+    allItem += itemId + TAG_CTRL + "cPtTP";
 
     return allItem;
 }
@@ -400,6 +401,8 @@ void Trade::refreshData()
     ObjectSetText(iTxtB, strBeInfo);
     //scanBackgroundOverlap(iBgSl);
     //scanBackgroundOverlap(iBgTP);
+    int selected = (int)ObjectGet(cPtWD, OBJPROP_SELECTED);
+    setMultiProp(OBJPROP_COLOR, selected ? gColorMousePoint : clrNONE, cPtTP+cPtSL+cPtEN+cPtWD+cPtBE);
 
 }
 void Trade::finishedJobDone()
@@ -476,6 +479,7 @@ void Trade::onItemClick(const string &itemId, const string &objId)
         }   
     }
     setCtrlItemSelectState(mAllItem, selected);
+    setMultiProp(OBJPROP_COLOR, selected ? gColorMousePoint : clrNONE, cPtTP+cPtSL+cPtEN+cPtWD+cPtBE);
 }
 void Trade::onItemChange(const string &itemId, const string &objId)
 {

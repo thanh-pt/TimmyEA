@@ -110,6 +110,7 @@ string CallOut::getAllItem(string itemId)
     string allItem = itemId + "_mTData";
     allItem += itemId + TAG_INFO + "iTxBg";
     allItem += itemId + TAG_INFO + "iTxtU";
+    //--- Control item ---
     allItem += itemId + TAG_CTRM + "cTxtM";
     allItem += itemId + TAG_CTRL + "cLn01";
 

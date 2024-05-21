@@ -243,13 +243,6 @@ void Fibonacci::activateItem(const string& itemId)
 string Fibonacci::getAllItem(string itemId)
 {
     string allItem = itemId + "_mTData";
-    allItem += itemId + TAG_CTRM + "cBgM0";
-    allItem += itemId + TAG_CTRL + "cPtL1";
-    allItem += itemId + TAG_CTRL + "cPtL2";
-    allItem += itemId + TAG_CTRL + "cPtR1";
-    allItem += itemId + TAG_CTRL + "cPtR2";
-    allItem += itemId + TAG_CTRL + "cPtC1";
-    allItem += itemId + TAG_CTRL + "cPtC2";
     allItem += itemId + TAG_INFO + "iLn00";
     allItem += itemId + TAG_INFO + "iLn01";
     allItem += itemId + TAG_INFO + "iLn02";
@@ -262,7 +255,14 @@ string Fibonacci::getAllItem(string itemId)
     allItem += itemId + TAG_INFO + "iTxt3";
     allItem += itemId + TAG_INFO + "iTxt4";
     allItem += itemId + TAG_INFO + "iTxt5";
-    allItem += itemId + "_mTData";
+    //--- Control item ---
+    allItem += itemId + TAG_CTRM + "cBgM0";
+    allItem += itemId + TAG_CTRL + "cPtL1";
+    allItem += itemId + TAG_CTRL + "cPtL2";
+    allItem += itemId + TAG_CTRL + "cPtR1";
+    allItem += itemId + TAG_CTRL + "cPtR2";
+    allItem += itemId + TAG_CTRL + "cPtC1";
+    allItem += itemId + TAG_CTRL + "cPtC2";
 
     return allItem;
 }

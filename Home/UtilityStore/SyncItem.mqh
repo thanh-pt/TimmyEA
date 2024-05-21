@@ -199,6 +199,8 @@ void syncItemToTargetChart(ObjectProperty &objProp, long chartId, bool objectExi
     }
     if (objType == OBJ_ARROW) {
         ObjectSetInteger(chartId, objProp.Name, OBJPROP_ARROWCODE  , objProp.ArrowCode  );
+        // Remove color of Arrow
+        ObjectSetInteger(chartId, objProp.Name, OBJPROP_COLOR      , clrNONE);
     }
 }
 
