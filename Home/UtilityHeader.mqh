@@ -7,6 +7,7 @@
 #define TAG_CTRM "_cM"
 #define TAG_CTRL "_c"
 #define TAG_INFO "_0i"
+#define EMPTY_STR "‎"
 
 #define CTX_MAX 10
 

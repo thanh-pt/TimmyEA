@@ -147,9 +147,9 @@ void syncTimmyItem()
     while(curChart > 0)
     {
         if (ChartSymbol(curChart) == chartSymbol && curChart != chartID) {
-            bool objectExit = (ObjectFind(curChart, mainObj) >= 0);
+            // bool objectExit = (ObjectFind(curChart, mainObj) >= 0);
             for (int i = 0; i < itemNum; i++) {
-                syncItemToTargetChart(gListSyncProp[i], curChart, objectExit);
+                syncItemToTargetChart(gListSyncProp[i], curChart, false);
             }
         }
         curChart = ChartNext(curChart);
@@ -168,9 +168,9 @@ void syncItemToTargetChart(ObjectProperty &objProp, long chartId, bool objectExi
                     objProp.Price1);
     }
     else {
-        ObjectSetInteger(chartId, objProp.Name, OBJPROP_TIME1, objProp.Time1);
-        ObjectSetDouble (chartId, objProp.Name, OBJPROP_PRICE1, objProp.Price1);
     }
+    ObjectSetInteger(chartId, objProp.Name, OBJPROP_TIME1, objProp.Time1);
+    ObjectSetDouble (chartId, objProp.Name, OBJPROP_PRICE1, objProp.Price1);
     ObjectSetInteger(chartId, objProp.Name, OBJPROP_STYLE      , objProp.Style      );
     ObjectSetInteger(chartId, objProp.Name, OBJPROP_WIDTH      , objProp.Width      );
     ObjectSetInteger(chartId, objProp.Name, OBJPROP_BACK       , objProp.Back       );

@@ -10,6 +10,7 @@ private:
     CommonData* pCommonData;
     string mVCrossHair;
     string mHCrossHair;
+    string mInfoBkgn;
     string mWeekInfo;
     string mDateInfo;
     string mPriceInfo;
@@ -19,11 +20,12 @@ private:
 public:
     CrossHair(CommonData* commonData)
     {
-        mVCrossHair = STATIC_TAG + "VCrossHair";
-        mHCrossHair = STATIC_TAG + "HCrossHair";
-        mWeekInfo   = STATIC_TAG + "mWeekInfo";
-        mDateInfo   = STATIC_TAG + "mDateInfo";
-        mPriceInfo  = STATIC_TAG + "mPriceInfo";
+        mVCrossHair = "." + STATIC_TAG + "VCrossHair";
+        mHCrossHair = "." + STATIC_TAG + "HCrossHair";
+        mInfoBkgn   = "." + STATIC_TAG + "0InfoBkgn";
+        mWeekInfo   = "." + STATIC_TAG + "mWeekInfo";
+        mDateInfo   = "." + STATIC_TAG + "mDateInfo";
+        mPriceInfo  = "." + STATIC_TAG + "mPriceInfo";
         pCommonData = commonData;
 
         if (ChartPeriod() == PERIOD_MN1) mTimeOffset = ChartPeriod()*60*100;
@@ -46,6 +48,15 @@ public:
         ObjectSet(mHCrossHair, OBJPROP_TIME2, 0);
         ObjectSet(mHCrossHair, OBJPROP_PRICE2, 0);
 
+        
+        // --- Info background ---
+        ObjectCreate(mInfoBkgn, OBJ_LABEL, 0, 0, 0);
+        ObjectSetText(mInfoBkgn, "██████", 20, "Consolas");
+        ObjectSet(mInfoBkgn, OBJPROP_SELECTABLE, false);
+        ObjectSet(mInfoBkgn, OBJPROP_COLOR, clrWhite);
+        ObjectSet(mInfoBkgn, OBJPROP_YDISTANCE, CrossHair_DisplayDateInfo ? 25 : 15);
+        ObjectSetInteger(0, mInfoBkgn, OBJPROP_CORNER , CORNER_LEFT_LOWER);
+        ObjectSetString( 0, mInfoBkgn, OBJPROP_TOOLTIP,"\n");
         // mWeekInfo
         ObjectCreate(mWeekInfo, OBJ_LABEL, 0, 0, 0);
         ObjectSetText(mWeekInfo, "", 10, "Consolas");
@@ -86,22 +97,17 @@ public:
                 return;
             }
             mIsHided = false;
-            ObjectSet(mDateInfo,   OBJPROP_COLOR, CrossHair_Color);
-            ObjectSet(mWeekInfo,   OBJPROP_COLOR, CrossHair_Color);
-            ObjectSet(mPriceInfo,  OBJPROP_COLOR, CrossHair_Color);
-            ObjectSet(mVCrossHair, OBJPROP_COLOR, CrossHair_Color);
-            ObjectSet(mHCrossHair, OBJPROP_COLOR, CrossHair_Color);
+            ObjectSet(mInfoBkgn, OBJPROP_COLOR, clrWhite);
+            setMultiProp(OBJPROP_COLOR, CrossHair_Color, mDateInfo + mWeekInfo + mPriceInfo
+                                                       + mVCrossHair + mHCrossHair);
         }
         else
         {
             if (mHideState == true)
             {
                 mIsHided = true;
-                ObjectSet(mDateInfo,   OBJPROP_COLOR, clrNONE);
-                ObjectSet(mWeekInfo,   OBJPROP_COLOR, clrNONE);
-                ObjectSet(mPriceInfo , OBJPROP_COLOR, clrNONE);
-                ObjectSet(mVCrossHair, OBJPROP_COLOR, clrNONE);
-                ObjectSet(mHCrossHair, OBJPROP_COLOR, clrNONE);
+                setMultiProp(OBJPROP_COLOR, clrNONE, mDateInfo + mWeekInfo + mPriceInfo
+                                                   + mVCrossHair + mHCrossHair+mInfoBkgn);
                 return;
             }
         }
@@ -118,6 +124,7 @@ public:
 
         
         // mWeekInfo and mDateInfo
+        ObjectSet(mInfoBkgn, OBJPROP_XDISTANCE, pCommonData.mMouseX + 10);
         ObjectSet(mWeekInfo, OBJPROP_XDISTANCE, pCommonData.mMouseX + 10);
         ObjectSet(mDateInfo, OBJPROP_XDISTANCE, pCommonData.mMouseX + 10);
         ObjectSetText(mDateInfo, TimeToStr(pCommonData.mMouseTime, TIME_DATE));

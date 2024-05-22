@@ -460,9 +460,9 @@ void Trend::onItemChange(const string &itemId, const string &objId)
         if (strLbText != "") ObjectSetText(iTxtC, strLbText);
         if (strRtText != "") ObjectSetText(iTxtR, strRtText);
         if (strLtText != "") ObjectSetText(iTxtL, strLtText);
-        if (strLbText == ".") ObjectSetText(iTxtC, "");
-        if (strRtText == ".") ObjectSetText(iTxtR, "");
-        if (strLtText == ".") ObjectSetText(iTxtL, "");
+        if (strLbText == "-") ObjectSetText(iTxtC, EMPTY_STR);
+        if (strRtText == "-") ObjectSetText(iTxtR, EMPTY_STR);
+        if (strLtText == "-") ObjectSetText(iTxtL, EMPTY_STR);
         ObjectSetText(cLnM0, "");
         ObjectSetText(cPt02, "");
         ObjectSetText(cPt01, "");

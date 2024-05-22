@@ -35,10 +35,10 @@ color           Fib_5_Color = clrRed;
 enum FibType
 {
     FIB_RANGE,
-    FIB_RANGE2,
     FIB_FULL,
     FIB_RANGE_EXT,
     FIB_NUM,
+    FIB_RANGE2, // Don't use this
 };
 
 class Fibonacci : public BaseItem
@@ -117,7 +117,7 @@ Fibonacci::Fibonacci(CommonData* commonData, MouseInfo* mouseInfo)
     // Init variable type
     mIndexType = 0;
     mNameType[FIB_RANGE]     = "Range";
-    mNameType[FIB_RANGE2]    = "Range2";
+    // mNameType[FIB_RANGE2]    = "Range2";
     mNameType[FIB_RANGE_EXT] = "RangeExt";
     mNameType[FIB_FULL]      = "Fib";
     mTypeNum = FIB_NUM;
@@ -200,16 +200,18 @@ void Fibonacci::updateTypeProperty()
         setMultiProp(OBJPROP_COLOR, clrNONE, iLn03+iLn04+iLn05 + iTxt3+iTxt4+iTxt5);
     }
     if (mIndexType == FIB_RANGE || mIndexType == FIB_RANGE_EXT){
-        ObjectSetText(iTxt2, "  ", 8);
+        ObjectSetText(iTxt2, EMPTY_STR, 8);
         setMultiProp(OBJPROP_COLOR, clrDarkOrange, iLn02);
     }
     if (mIndexType == FIB_RANGE_EXT) {
         setMultiProp(OBJPROP_RAY, true, iLn00+iLn01);
+        setMultiProp(OBJPROP_WIDTH, getLineWidth(Fib_Style)+1, iLn00+iLn01);
+        setRectangleBackground(cBgM0, C'252,252,252');
     }
     if (mIndexType == FIB_RANGE2){
-        ObjectSetText(iTxt0, "   ");
-        ObjectSetText(iTxt1, "   ");
-        ObjectSetText(iTxt2, "   ");
+        ObjectSetText(iTxt0, EMPTY_STR);
+        ObjectSetText(iTxt1, EMPTY_STR);
+        ObjectSetText(iTxt2, EMPTY_STR);
         setRectangleBackground(cBgM0, clrOldLace);
         setMultiProp(OBJPROP_WIDTH, getLineWidth(Fib_Style)+1, iLn00+iLn01);
     }
@@ -308,8 +310,8 @@ void Fibonacci::refreshData()
     //-------------------------------------------------
     if (mIndexType == FIB_RANGE || mIndexType == FIB_RANGE_EXT){
         bool isUp = (price1 > price0);
-        ObjectSetText(iTxt0, isUp ? "𝙇𝙤  " : "𝙃𝙞  ", 8);
-        ObjectSetText(iTxt1, isUp ? "𝙃𝙞  " : "𝙇𝙤  ", 8);
+        ObjectSetText(iTxt0, isUp ? "𝙇 " : "𝙃 ", 8);
+        ObjectSetText(iTxt1, isUp ? "𝙃 " : "𝙇 ", 8);
         setMultiProp(OBJPROP_COLOR, isUp ? clrGreen : clrRed  , iLn00+iTxt0);
         setMultiProp(OBJPROP_COLOR, isUp ? clrRed   : clrGreen, iLn01+iTxt1);
     }

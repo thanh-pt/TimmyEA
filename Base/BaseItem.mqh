@@ -7,7 +7,7 @@ typedef void(*FinishedJob)();
 class BaseItem
 {
 private:
-    string      mContextItems[];
+    string      mlistItems[];
 protected:
     string      mItemName;
     CommonData* pCommonData;
@@ -153,10 +153,10 @@ void BaseItem::onUserRequest(const string &itemId, const string &objId)
 
 void BaseItem::onItemDeleted(const string &itemId, const string &objId)
 {
-    int k=StringSplit(mAllItem,'.',mContextItems);
+    int k=StringSplit(mAllItem,'.',mlistItems);
     for (int i = 0; i < k; i++)
     {
-        if (mContextItems[i] == "") continue;
-        ObjectDelete("."+mContextItems[i]);
+        if (mlistItems[i] == "") continue;
+        ObjectDelete("."+mlistItems[i]);
     }
 }

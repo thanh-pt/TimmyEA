@@ -324,14 +324,14 @@ void Rectangle::onItemClick(const string &itemId, const string &objId)
 void Rectangle::onItemChange(const string &itemId, const string &objId)
 {
     string targetItem;
-    if (objId == cBgM0)        targetItem = iTxtC;
+    if (objId == cBgM0)      targetItem = iTxtC;
     else if (objId == cPtC2) targetItem = iTxtR;
     else if (objId == cPtC1) targetItem = iTxtL;
     else                      return;
     
     string txtContent = ObjectDescription(objId);
     if (txtContent == "" ) return;
-    if (txtContent == "-") txtContent = "";
+    if (txtContent == "-") txtContent = EMPTY_STR;
     ObjectSetText(targetItem, txtContent);
     ObjectSetText(objId, "");
     onItemDrag(itemId, objId);
