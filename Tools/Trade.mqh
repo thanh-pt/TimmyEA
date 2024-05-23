@@ -49,14 +49,13 @@ string mLiveTradeCtx;
 
 // Component name
 private:
-    string cBgBd ;
     string cPtWD ;
     string cPtSL ;
     string cPtEN ;
     string cPtBE ;
     string cPtTP ;
+    string cBgSl ;
 
-    string iBgSl ;
     string iBgTP ;
     string iLnTp ;
     string iLnEn ;
@@ -165,7 +164,6 @@ Trade::Trade(CommonData* commonData, MouseInfo* mouseInfo)
 void Trade::prepareActive(){}
 void Trade::createItem()
 {
-    ObjectCreate(iBgSl , OBJ_RECTANGLE , 0, 0, 0);
     ObjectCreate(iBgTP , OBJ_RECTANGLE , 0, 0, 0);
     ObjectCreate(iLnTp , OBJ_TREND     , 0, 0, 0);
     ObjectCreate(iLnBe , OBJ_TREND     , 0, 0, 0);
@@ -178,7 +176,7 @@ void Trade::createItem()
     ObjectCreate(iTxtE , OBJ_TEXT      , 0, 0, 0);
     ObjectCreate(iTxtS , OBJ_TEXT      , 0, 0, 0);
     ObjectCreate(iTxtB , OBJ_TEXT      , 0, 0, 0);
-    ObjectCreate(cBgBd , OBJ_RECTANGLE , 0, 0, 0);
+    ObjectCreate(cBgSl , OBJ_RECTANGLE , 0, 0, 0);
     ObjectCreate(cPtTP , OBJ_ARROW     , 0, 0, 0);
     ObjectCreate(cPtSL , OBJ_ARROW     , 0, 0, 0);
     ObjectCreate(cPtEN , OBJ_ARROW     , 0, 0, 0);
@@ -200,25 +198,22 @@ void Trade::initData()
 void Trade::updateDefaultProperty()
 {
     //-------------------------------------------------
-    ObjectSet(iBgSl, OBJPROP_BACK, true);
+    ObjectSet(cBgSl, OBJPROP_BACK, true);
     ObjectSet(iBgTP, OBJPROP_BACK, true);
-    //-------------------------------------------------
-    ObjectSet(cBgBd, OBJPROP_BACK, false);
-    ObjectSet(cBgBd, OBJPROP_COLOR, clrNONE);
     //-------------------------------------------------
     setMultiProp(OBJPROP_ARROWCODE , 4    , cPtTP+cPtSL+cPtEN+cPtWD+cPtBE);
     
-    setMultiProp(OBJPROP_SELECTED  , true , cPtTP+cPtSL+cPtEN+cPtWD+cPtBE);
+    setMultiProp(OBJPROP_SELECTED  , true , cBgSl+cPtTP+cPtSL+cPtEN+cPtWD+cPtBE);
     setMultiProp(OBJPROP_RAY       , false, iLnTp+iLnBe+iLnEn+iLnSl);
-    setMultiProp(OBJPROP_SELECTABLE, false, iBgSl+iBgTP+iLnTp+iLnBe+iLnEn+iLnSl+iTxT2+iTxE2+iTxS2+iTxtT+iTxtE+iTxtS+iTxtB);
+    setMultiProp(OBJPROP_SELECTABLE, false, iBgTP+iLnTp+iLnBe+iLnEn+iLnSl+iTxT2+iTxE2+iTxS2+iTxtT+iTxtE+iTxtS+iTxtB);
 
     setMultiProp(OBJPROP_COLOR, gColorMousePoint, cPtTP+cPtSL+cPtEN+cPtWD+cPtBE);
     //-------------------------------------------------
-    setMultiStrs(OBJPROP_TOOLTIP, "\n", iBgSl+iBgTP+iLnTp+iLnBe+iLnEn+iLnSl+iTxT2+iTxE2+iTxS2+iTxtT+iTxtE+iTxtS+iTxtB+cBgBd+cPtTP+cPtSL+cPtEN+cPtWD+cPtBE);
+    setMultiStrs(OBJPROP_TOOLTIP, "\n", mAllItem);
 }
 void Trade::updateTypeProperty()
 {
-    ObjectSet(iBgSl, OBJPROP_COLOR, Trd_SlBkgrdColor);
+    ObjectSet(cBgSl, OBJPROP_COLOR, Trd_SlBkgrdColor);
     ObjectSet(iBgTP, OBJPROP_COLOR, Trd_TpBkgrdColor);
     ObjectSet(iLnBe, OBJPROP_WIDTH, 1);
     ObjectSet(iLnBe, OBJPROP_STYLE, 2);
@@ -233,13 +228,12 @@ void Trade::updateTypeProperty()
 }
 void Trade::activateItem(const string& itemId)
 {
-    cBgBd = itemId + TAG_CTRL + "cBgBd";
     cPtWD = itemId + TAG_CTRM + "cPtWD";
     cPtSL = itemId + TAG_CTRL + "cPtSL";
     cPtEN = itemId + TAG_CTRL + "cPtEN";
     cPtBE = itemId + TAG_CTRL + "cPtBE";
     cPtTP = itemId + TAG_CTRL + "cPtTP";
-    iBgSl = itemId + TAG_INFO + "iBgSl";
+    cBgSl = itemId + TAG_CTRL + "cBgSl";
     iBgTP = itemId + TAG_INFO + "iBgTP";
     iLnTp = itemId + TAG_INFO + "iLnTp";
     iLnEn = itemId + TAG_INFO + "iLnEn";
@@ -253,14 +247,13 @@ void Trade::activateItem(const string& itemId)
     iTxtS = itemId + TAG_INFO + "iTxtS";
     iTxtB = itemId + TAG_INFO + "iTxtB";
 
-    mAllItem += iBgSl+iBgTP+iLnTp+iLnEn+iLnSl+iLnBe+iTxT2+iTxE2+iTxS2+iTxtT+iTxtE+iTxtS+iTxtB;
-    mAllItem += cBgBd+cPtTP+cPtSL+cPtEN+cPtWD+cPtBE;
+    mAllItem += iBgTP+iLnTp+iLnEn+iLnSl+iLnBe+iTxT2+iTxE2+iTxS2+iTxtT+iTxtE+iTxtS+iTxtB;
+    mAllItem += cPtTP+cPtSL+cPtEN+cPtWD+cPtBE+cBgSl;
 }
 
 string Trade::getAllItem(string itemId)
 {
     string allItem = itemId + "_mTData";
-    allItem += itemId + TAG_INFO + "iBgSl";
     allItem += itemId + TAG_INFO + "iBgTP";
     allItem += itemId + TAG_INFO + "iLnTp";
     allItem += itemId + TAG_INFO + "iLnEn";
@@ -274,7 +267,7 @@ string Trade::getAllItem(string itemId)
     allItem += itemId + TAG_INFO + "iTxtS";
     allItem += itemId + TAG_INFO + "iTxtB";
     //--- Control item ---
-    allItem += itemId + TAG_CTRL + "cBgBd";
+    allItem += itemId + TAG_CTRL + "cBgSl";
     allItem += itemId + TAG_CTRM + "cPtWD";
     allItem += itemId + TAG_CTRL + "cPtSL";
     allItem += itemId + TAG_CTRL + "cPtEN";
@@ -287,15 +280,10 @@ string Trade::getAllItem(string itemId)
 void Trade::updateItemAfterChangeType(){}
 void Trade::refreshData()
 {
-    if (ObjectFind(ChartID(), iBgSl) < 0)
-    {
-        createItem();
-    }
     datetime centerTime = getCenterTime(time1, time2);
     
-    setItemPos(iBgSl  , time1, time2, priceEN, priceSL);
+    setItemPos(cBgSl  , time1, time2, priceEN, priceSL);
     setItemPos(iBgTP  , time1, time2, priceEN, priceTP);
-    setItemPos(cBgBd   , time1, time2, priceSL, priceTP);
     setItemPos(iLnTp  , time1, time2, priceTP, priceTP);
     setItemPos(iLnEn  , time1, time2, priceEN, priceEN);
     setItemPos(iLnSl  , time1, time2, priceSL, priceSL);
@@ -419,20 +407,19 @@ void Trade::onItemDrag(const string &itemId, const string &objId)
     priceBE =           ObjectGet(cPtBE, OBJPROP_PRICE1);
     time1   = (datetime)ObjectGet(cPtEN, OBJPROP_TIME1);
     time2   = (datetime)ObjectGet(cPtWD, OBJPROP_TIME1);
-    if (objId == cBgBd)
+    if (objId == cBgSl)
     {
-        datetime newtime1 = (datetime)ObjectGet(cBgBd, OBJPROP_TIME1);
-        datetime newtime2 = (datetime)ObjectGet(cBgBd, OBJPROP_TIME2);
+        datetime newtime1 = (datetime)ObjectGet(cBgSl, OBJPROP_TIME1);
+        datetime newtime2 = (datetime)ObjectGet(cBgSl, OBJPROP_TIME2);
         datetime timeCenter;
-        double newtpPrice;
-        getCenterPos(newtime1, newtime2, priceTP, priceTP, timeCenter, newtpPrice);
+        double newSlPrice;
+        getCenterPos(newtime1, newtime2, priceTP, priceTP, timeCenter, newSlPrice);
         if (timeCenter == pCommonData.mMouseTime) {
-            newtpPrice = ObjectGet(cBgBd, OBJPROP_PRICE2);
-            double newslPrice = ObjectGet(cBgBd, OBJPROP_PRICE1);
-            priceBE += (newtpPrice-priceTP);
-            priceEN += (newtpPrice-priceTP);
-            priceSL = newslPrice;
-            priceTP = newtpPrice;
+            priceEN     = ObjectGet(cBgSl, OBJPROP_PRICE1);
+            newSlPrice  = ObjectGet(cBgSl, OBJPROP_PRICE2);
+            priceBE += (newSlPrice-priceSL);
+            priceTP += (newSlPrice-priceSL);
+            priceSL = newSlPrice;
             time1 = newtime1;
             time2 = newtime2;
         }
@@ -501,8 +488,8 @@ void Trade::showHistory(bool isShow)
             priceEN =           ObjectGet(cPtEN, OBJPROP_PRICE1);
             priceSL =           ObjectGet(cPtSL, OBJPROP_PRICE1);
             priceBE =           ObjectGet(cPtBE, OBJPROP_PRICE1);
-            time1   = (datetime)ObjectGet(cBgBd, OBJPROP_TIME1);
-            time2   = (datetime)ObjectGet(cBgBd, OBJPROP_TIME2);
+            time1   = (datetime)ObjectGet(cBgSl, OBJPROP_TIME1);
+            time2   = (datetime)ObjectGet(cBgSl, OBJPROP_TIME2);
             refreshData();
             continue;
         }
@@ -510,20 +497,18 @@ void Trade::showHistory(bool isShow)
         if ((bool)ObjectGet(cPtWD, OBJPROP_SELECTED)) continue;
         if (ObjectDescription(cPtWD) != "") continue; // Don't hide live trade
         // Hide Item
-        ObjectSet(iBgSl, OBJPROP_PRICE1, 0);
+        ObjectSet(cBgSl, OBJPROP_PRICE1, 0);
         ObjectSet(iBgTP, OBJPROP_PRICE1, 0);
         ObjectSet(iLnTp, OBJPROP_PRICE1, 0);
         ObjectSet(iLnBe, OBJPROP_PRICE1, 0);
         ObjectSet(iLnEn, OBJPROP_PRICE1, 0);
         ObjectSet(iLnSl, OBJPROP_PRICE1, 0);
-        ObjectSet(cBgBd, OBJPROP_PRICE1, 0);
-        ObjectSet(iBgSl, OBJPROP_PRICE2, 0);
+        ObjectSet(cBgSl, OBJPROP_PRICE2, 0);
         ObjectSet(iBgTP, OBJPROP_PRICE2, 0);
         ObjectSet(iLnTp, OBJPROP_PRICE2, 0);
         ObjectSet(iLnBe, OBJPROP_PRICE2, 0);
         ObjectSet(iLnEn, OBJPROP_PRICE2, 0);
         ObjectSet(iLnSl, OBJPROP_PRICE2, 0);
-        ObjectSet(cBgBd, OBJPROP_PRICE2, 0);
 
         ObjectSet(iTxT2, OBJPROP_TIME1, 0);
         ObjectSet(iTxE2, OBJPROP_TIME1, 0);
@@ -558,7 +543,7 @@ void Trade::onUserRequest(const string &itemId, const string &objId)
             Print("Order ",OrderNumber," open");
             // Lấy những thông tin từ trade cũ
             priceBE = ObjectGet(cPtBE, OBJPROP_PRICE1);
-            time1 = (datetime)ObjectGet(cBgBd  , OBJPROP_TIME1);
+            time1 = (datetime)ObjectGet(cPtEN, OBJPROP_TIME1);
             time2 = (datetime)ObjectGet(cPtWD, OBJPROP_TIME1);
             // Xoá trade item
             ObjectDelete(cPtWD);
@@ -696,7 +681,7 @@ void Trade::scanLiveTrade()
         }
         // Trade đã tồn tại trên đồ thị
         else {
-            time1 = (datetime)ObjectGet(cBgBd  , OBJPROP_TIME1);
+            time1 = (datetime)ObjectGet(cPtEN, OBJPROP_TIME1);
             time2 = (datetime)ObjectGet(cPtWD, OBJPROP_TIME1);
             priceBE = ObjectGet(cPtBE, OBJPROP_PRICE1);
         }
