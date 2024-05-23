@@ -7,13 +7,13 @@ input color             Rect_Text_Color  = clrMidnightBlue; //Text Color
 input color             Rect_Sz_Color      = C'255,200,200'; // Sz Color
 //-----------------------------------------------------------
       string            Rect_SzLight_Name  = "lSz";
-input color             Rect_SzLight_Color = C'255,234,234'; // Sz Light Color
+      color             Rect_SzLight_Color = C'255,234,234'; // Sz Light Color
 //-----------------------------------------------------------
       string            Rect_Dz_Name       = "Dz";
 input color             Rect_Dz_Color      = C'209,225,237'; // Dz Color
 //-----------------------------------------------------------
       string            Rect_DzLight_Name  = "lDz";
-input color             Rect_DzLight_Color = C'232,240,247'; // Dz Light Color
+      color             Rect_DzLight_Color = C'232,240,247'; // Dz Light Color
 //-----------------------------------------------------------
 
 #define CTX_RANGE   "Range"

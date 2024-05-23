@@ -11,9 +11,9 @@
 
 enum e_display
 {
-    HIDE,   // Always Hide
-    SHOW,   // Always Show
-    OPTION, // Show when Selected
+    HIDE,   // Hide
+    SHOW,   // Always
+    OPTION, // When Select
 };
 
 input string          Trd_; // ●  T R A D E  ●

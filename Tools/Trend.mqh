@@ -8,12 +8,12 @@ enum TEXT_POS
 };
 
 enum ETrendText{
-    ETrendTextLeft,     // Left
-    ETrendTextCenter,   // Center
-    ETrendTextRight,    // Right
-    ETrendTextLeftArr,  // Left + Arrow
-    ETrendTextCenterArr,// Center + Arrow
-    ETrendTextRightArr, // Right + Arrow
+    ETrendTextLeft,     // =------
+    ETrendTextCenter,   // ---=---
+    ETrendTextRight,    // ------=
+    ETrendTextLeftArr,  // =------►
+    ETrendTextCenterArr,// ---=---►
+    ETrendTextRightArr, // ------►=
 };
 
 TEXT_POS getTextPos(ETrendText eTrendText){
