@@ -16,8 +16,6 @@ color gColorMousePoint = clrSlateGray;
 void FinishedJobFunc();
 void detectMouseDraging(const string &sparam);
 
-Trade* gpTrade;
-
 int    gSymbolDigits= 0;
 double gScaleRange = 0;
 color  gForegroundColor = (color)ChartGetInteger(ChartID(),CHART_COLOR_FOREGROUND,0);

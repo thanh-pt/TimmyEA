@@ -65,8 +65,6 @@ void Controller::Controller(CommonData* commonData, MouseInfo* mouseInfo)
     mListItem[eALERT    ]   = new Alert     (commonData, mouseInfo);
     mListItem[ePOINT    ]   = new Point     (commonData, mouseInfo);
     mListItem[eLABEL    ]   = new LabelText (commonData, mouseInfo);
-
-    gpTrade = (Trade*)mListItem[eTRADE];
 }
 
 Controller::~Controller()

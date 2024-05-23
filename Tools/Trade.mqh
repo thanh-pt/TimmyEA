@@ -11,28 +11,26 @@
 
 enum e_display
 {
-    HIDE, // Hide
-    SHOW, // Show
-    OPTION, // Selected → Show
+    HIDE,   // Always Hide
+    SHOW,   // Always Show
+    OPTION, // Show when Selected
 };
 
 input string          Trd_; // ●  T R A D E  ●
 //-------------------------------------------------
-input string          Trd_calc; //→ Tính toán:
-input double          Trd_Cost          = 5;     //Cost ($)
-input e_display       Trd_ShowStats     = SHOW;  //Show Stats
-input e_display       Trd_ShowPrice     = HIDE;  //Show Price
-input e_display       Trd_ShowDollar    = HIDE;  //Show Dollar
+input double          Trd_Cost          = 1.5;     //Cost ($)
+input e_display       Trd_ShowStats     = OPTION;  //Show Stats
+input e_display       Trd_ShowDollar    = HIDE;    //Show Dollar
 //-------------------------------------------------
-input string          Trd_apperence; //→ Giao diện:
-input color           Trd_TextColor     = clrMidnightBlue;   // Text Color
-input int             Trd_TextSize      = 8;                 // Text Size
-input color           Trd_TpColor       = clrSteelBlue;      // TP Color
-input color           Trd_SlColor       = clrChocolate;      // SL Color
-input color           Trd_EnColor       = clrChocolate;      // EN Color
+input string          Trd_apperence; //→ Color:
+      color           Trd_TextColor     = clrMidnightBlue;   // Text
+      int             Trd_TextSize      = 8;                 // Text Size
+input color           Trd_TpColor       = clrSteelBlue;      // TP Line
+input color           Trd_SlColor       = clrChocolate;      // SL Line
+input color           Trd_EnColor       = clrChocolate;      // EN Line
       int             Trd_LineWidth     = 1;                 // Line Width
-input color           Trd_SlBkgrdColor  = clrLavenderBlush;  // SlBg Color
-input color           Trd_TpBkgrdColor  = clrWhiteSmoke;     // TpBg Color
+input color           Trd_SlBkgrdColor  = clrLavenderBlush;  // SlBg
+input color           Trd_TpBkgrdColor  = clrWhiteSmoke;     // TpBg
 
 int Trd_StlSpace = 2;
 
@@ -64,9 +62,9 @@ private:
     string iLnEn ;
     string iLnSl ;
     string iLnBe ;
-    string iTxpT ;
-    string iTxpE ;
-    string iTxpS ;
+    string iTxT2 ;
+    string iTxE2 ;
+    string iTxS2 ;
     string iTxtT ;
     string iTxtE ;
     string iTxtS ;
@@ -173,9 +171,9 @@ void Trade::createItem()
     ObjectCreate(iLnBe , OBJ_TREND     , 0, 0, 0);
     ObjectCreate(iLnEn , OBJ_TREND     , 0, 0, 0);
     ObjectCreate(iLnSl , OBJ_TREND     , 0, 0, 0);
-    ObjectCreate(iTxpT , OBJ_TEXT      , 0, 0, 0);
-    ObjectCreate(iTxpE , OBJ_TEXT      , 0, 0, 0);
-    ObjectCreate(iTxpS , OBJ_TEXT      , 0, 0, 0);
+    ObjectCreate(iTxT2 , OBJ_TEXT      , 0, 0, 0);
+    ObjectCreate(iTxE2 , OBJ_TEXT      , 0, 0, 0);
+    ObjectCreate(iTxS2 , OBJ_TEXT      , 0, 0, 0);
     ObjectCreate(iTxtT , OBJ_TEXT      , 0, 0, 0);
     ObjectCreate(iTxtE , OBJ_TEXT      , 0, 0, 0);
     ObjectCreate(iTxtS , OBJ_TEXT      , 0, 0, 0);
@@ -212,11 +210,11 @@ void Trade::updateDefaultProperty()
     
     setMultiProp(OBJPROP_SELECTED  , true , cPtTP+cPtSL+cPtEN+cPtWD+cPtBE);
     setMultiProp(OBJPROP_RAY       , false, iLnTp+iLnBe+iLnEn+iLnSl);
-    setMultiProp(OBJPROP_SELECTABLE, false, iBgSl+iBgTP+iLnTp+iLnBe+iLnEn+iLnSl+iTxpT+iTxpE+iTxpS+iTxtT+iTxtE+iTxtS+iTxtB);
+    setMultiProp(OBJPROP_SELECTABLE, false, iBgSl+iBgTP+iLnTp+iLnBe+iLnEn+iLnSl+iTxT2+iTxE2+iTxS2+iTxtT+iTxtE+iTxtS+iTxtB);
 
     setMultiProp(OBJPROP_COLOR, gColorMousePoint, cPtTP+cPtSL+cPtEN+cPtWD+cPtBE);
     //-------------------------------------------------
-    setMultiStrs(OBJPROP_TOOLTIP, "\n", iBgSl+iBgTP+iLnTp+iLnBe+iLnEn+iLnSl+iTxpT+iTxpE+iTxpS+iTxtT+iTxtE+iTxtS+iTxtB+cBgBd+cPtTP+cPtSL+cPtEN+cPtWD+cPtBE);
+    setMultiStrs(OBJPROP_TOOLTIP, "\n", iBgSl+iBgTP+iLnTp+iLnBe+iLnEn+iLnSl+iTxT2+iTxE2+iTxS2+iTxtT+iTxtE+iTxtS+iTxtB+cBgBd+cPtTP+cPtSL+cPtEN+cPtWD+cPtBE);
 }
 void Trade::updateTypeProperty()
 {
@@ -228,10 +226,10 @@ void Trade::updateTypeProperty()
     setMultiProp(OBJPROP_COLOR, Trd_TpColor  , iLnTp+iLnBe);
     setMultiProp(OBJPROP_COLOR, Trd_EnColor  , iLnEn);
     setMultiProp(OBJPROP_COLOR, Trd_SlColor  , iLnSl);
-    setMultiProp(OBJPROP_COLOR, Trd_TextColor, iTxtT+iTxtE+iTxtS+iTxtB+iTxpT+iTxpE+iTxpS);
+    setMultiProp(OBJPROP_COLOR, Trd_TextColor, iTxtT+iTxtE+iTxtS+iTxtB+iTxT2+iTxE2+iTxS2);
     //-------------------------------------------------
     setMultiProp(OBJPROP_WIDTH   , Trd_LineWidth, iLnTp+iLnEn+iLnSl);
-    setMultiProp(OBJPROP_FONTSIZE, Trd_TextSize , iTxpT+iTxpE+iTxpS+iTxtT+iTxtE+iTxtS+iTxtB+iTxpT+iTxpE+iTxpS);
+    setMultiProp(OBJPROP_FONTSIZE, Trd_TextSize , iTxT2+iTxE2+iTxS2+iTxtT+iTxtE+iTxtS+iTxtB+iTxT2+iTxE2+iTxS2);
 }
 void Trade::activateItem(const string& itemId)
 {
@@ -247,15 +245,15 @@ void Trade::activateItem(const string& itemId)
     iLnEn = itemId + TAG_INFO + "iLnEn";
     iLnSl = itemId + TAG_INFO + "iLnSl";
     iLnBe = itemId + TAG_INFO + "iLnBe";
-    iTxpT = itemId + TAG_INFO + "iTxpT";
-    iTxpE = itemId + TAG_INFO + "iTxpE";
-    iTxpS = itemId + TAG_INFO + "iTxpS";
+    iTxT2 = itemId + TAG_INFO + "iTxT2";
+    iTxE2 = itemId + TAG_INFO + "iTxE2";
+    iTxS2 = itemId + TAG_INFO + "iTxS2";
     iTxtT = itemId + TAG_INFO + "iTxtT";
     iTxtE = itemId + TAG_INFO + "iTxtE";
     iTxtS = itemId + TAG_INFO + "iTxtS";
     iTxtB = itemId + TAG_INFO + "iTxtB";
 
-    mAllItem += iBgSl+iBgTP+iLnTp+iLnEn+iLnSl+iLnBe+iTxpT+iTxpE+iTxpS+iTxtT+iTxtE+iTxtS+iTxtB;
+    mAllItem += iBgSl+iBgTP+iLnTp+iLnEn+iLnSl+iLnBe+iTxT2+iTxE2+iTxS2+iTxtT+iTxtE+iTxtS+iTxtB;
     mAllItem += cBgBd+cPtTP+cPtSL+cPtEN+cPtWD+cPtBE;
 }
 
@@ -268,9 +266,9 @@ string Trade::getAllItem(string itemId)
     allItem += itemId + TAG_INFO + "iLnEn";
     allItem += itemId + TAG_INFO + "iLnSl";
     allItem += itemId + TAG_INFO + "iLnBe";
-    allItem += itemId + TAG_INFO + "iTxpT";
-    allItem += itemId + TAG_INFO + "iTxpE";
-    allItem += itemId + TAG_INFO + "iTxpS";
+    allItem += itemId + TAG_INFO + "iTxT2";
+    allItem += itemId + TAG_INFO + "iTxE2";
+    allItem += itemId + TAG_INFO + "iTxS2";
     allItem += itemId + TAG_INFO + "iTxtT";
     allItem += itemId + TAG_INFO + "iTxtE";
     allItem += itemId + TAG_INFO + "iTxtS";
@@ -317,21 +315,21 @@ void Trade::refreshData()
     ObjectSetInteger(0, iTxtE, OBJPROP_ANCHOR, ANCHOR_LOWER);
     if (priceTP > priceSL)
     {
-        ObjectSetInteger(0, iTxtS, OBJPROP_ANCHOR, ANCHOR_UPPER);
-        ObjectSetInteger(0, iTxtT, OBJPROP_ANCHOR, ANCHOR_LOWER);
-        ObjectSetInteger(0, iTxtB, OBJPROP_ANCHOR, ANCHOR_RIGHT_LOWER);
-        ObjectSetInteger(0,iTxpT, OBJPROP_ANCHOR, ANCHOR_UPPER);
-        ObjectSetInteger(0,iTxpE, OBJPROP_ANCHOR, ANCHOR_UPPER);
-        ObjectSetInteger(0,iTxpS, OBJPROP_ANCHOR, ANCHOR_LOWER);
+        ObjectSetInteger(0,iTxtS, OBJPROP_ANCHOR, ANCHOR_UPPER);
+        ObjectSetInteger(0,iTxtT, OBJPROP_ANCHOR, ANCHOR_LOWER);
+        ObjectSetInteger(0,iTxtB, OBJPROP_ANCHOR, ANCHOR_RIGHT_LOWER);
+        ObjectSetInteger(0,iTxT2, OBJPROP_ANCHOR, ANCHOR_UPPER);
+        ObjectSetInteger(0,iTxE2, OBJPROP_ANCHOR, ANCHOR_UPPER);
+        ObjectSetInteger(0,iTxS2, OBJPROP_ANCHOR, ANCHOR_LOWER);
     }
     else
     {
-        ObjectSetInteger(0, iTxtS, OBJPROP_ANCHOR, ANCHOR_LOWER);
-        ObjectSetInteger(0, iTxtT, OBJPROP_ANCHOR, ANCHOR_UPPER);
-        ObjectSetInteger(0, iTxtB, OBJPROP_ANCHOR, ANCHOR_RIGHT_UPPER);
-        ObjectSetInteger(0,iTxpT, OBJPROP_ANCHOR, ANCHOR_LOWER);
-        ObjectSetInteger(0,iTxpE, OBJPROP_ANCHOR, ANCHOR_UPPER);
-        ObjectSetInteger(0,iTxpS, OBJPROP_ANCHOR, ANCHOR_UPPER);
+        ObjectSetInteger(0,iTxtS, OBJPROP_ANCHOR, ANCHOR_LOWER);
+        ObjectSetInteger(0,iTxtT, OBJPROP_ANCHOR, ANCHOR_UPPER);
+        ObjectSetInteger(0,iTxtB, OBJPROP_ANCHOR, ANCHOR_RIGHT_UPPER);
+        ObjectSetInteger(0,iTxT2, OBJPROP_ANCHOR, ANCHOR_LOWER);
+        ObjectSetInteger(0,iTxE2, OBJPROP_ANCHOR, ANCHOR_UPPER);
+        ObjectSetInteger(0,iTxS2, OBJPROP_ANCHOR, ANCHOR_UPPER);
     }
     //-------------------------------------------------
     //            TÍNH TOÁN CÁC THỨ
@@ -344,29 +342,36 @@ void Trade::refreshData()
     double be          = (priceBE-priceEN) / (priceEN-priceSL);
     
     mTradeLot          = floor(mNativeCost / slPip * 10)/100;
-    double realCost    = mTradeLot*slPip*10/mNativeCost*Trd_Cost;
+    double tpPip       = slPip * rr;
+    double realCost    = 0;
     // 2. Thông tin hiển thị
     bool   selectState = (bool)ObjectGet(cPtWD, OBJPROP_SELECTED);
     bool   showStats   = (Trd_ShowStats  == SHOW) || (Trd_ShowStats  == OPTION && selectState);
-    bool   showPrice   = (Trd_ShowPrice  == SHOW) || (Trd_ShowPrice  == OPTION && selectState);
-    bool   showDollar  = (Trd_ShowDollar == SHOW) || (Trd_ShowDollar == OPTION && selectState);
+    bool   showDollar  = (Trd_Cost != 0) && ((Trd_ShowDollar == SHOW) || (Trd_ShowDollar == OPTION && selectState));
     
     // 3. String Data để hiển thị
-    string strTpInfo   = DoubleToString(rr,1) + "ʀ"; // RR + dola
-    string strEnInfo   = ObjectDescription(cPtWD); // lot 
+    string strTpInfo   = ""; // pip + dola
+    string strEnInfo   = ObjectDescription(cPtWD); // Cmt + lot 
     string strSlInfo   = ""; // pip + dola
-    string strBeInfo   = ObjectDescription(cPtBE); // RR1
-
+    string strBeInfo   = ObjectDescription(cPtBE); // BE RR + pip
+    
+    if (strBeInfo != ""){
+        strBeInfo += ": ";
+        if (!showStats){
+            strBeInfo += DoubleToString(be,1) + "  ";
+        }
+    }
     if (showStats)
     {
-        if (strBeInfo != "") strBeInfo += ": ";
-        // strTpInfo += DoubleToString(rr,1) + "ʀ";
-        strBeInfo += DoubleToString(be,1) + "ʀ  ";
-        strSlInfo += DoubleToString(slPip, 1) + "ᖰ";
+        double bePip = be * slPip;
+        strTpInfo += DoubleToString(tpPip, 1) + "ᴘ";
+        strBeInfo += DoubleToString(be,1) + " ~ " + DoubleToString(bePip, 1) + "ᴘ ";
+        strSlInfo += DoubleToString(slPip, 1) + "ᴘ";
     }
     //-------------------------------------------------
     if (showDollar)
     {
+        realCost = mTradeLot*slPip*10/mNativeCost*Trd_Cost;
         if (showStats)
         {
             strTpInfo += " ~ ";
@@ -374,33 +379,20 @@ void Trade::refreshData()
         }
         strTpInfo += DoubleToString(rr*realCost, 2) + "$";
         strSlInfo += DoubleToString(realCost, 2) + "$";
-    }
-    //-------------------------------------------------
-    if (showPrice)
-    {
-        ObjectSetText(iTxpT, DoubleToString(priceTP, gSymbolDigits));
-        ObjectSetText(iTxpE, DoubleToString(priceEN, gSymbolDigits));
-        ObjectSetText(iTxpS, DoubleToString(priceSL, gSymbolDigits));
         if (strEnInfo != "") strEnInfo += " ";
         strEnInfo += DoubleToString(mTradeLot,2) + "lot";
     }
-    else
-    {
-        ObjectSetText(iTxpT, "");
-        ObjectSetText(iTxpE, "");
-        ObjectSetText(iTxpS, "");
-    }
+    //-------------------------------------------------
+    ObjectSetText(iTxT2, DoubleToString(rr,1) + "ʀ"); // Display RR
     
-    setTextPos(iTxpT, centerTime, priceTP);
-    setTextPos(iTxpE, centerTime, priceEN);
-    setTextPos(iTxpS, centerTime, priceSL);
+    setTextPos(iTxT2, centerTime, priceTP);
+    setTextPos(iTxE2, centerTime, priceEN);
+    setTextPos(iTxS2, centerTime, priceSL);
     //-------------------------------------------------
     ObjectSetText(iTxtT, strTpInfo);
     ObjectSetText(iTxtE, strEnInfo);
     ObjectSetText(iTxtS, strSlInfo);
     ObjectSetText(iTxtB, strBeInfo);
-    //scanBackgroundOverlap(iBgSl);
-    //scanBackgroundOverlap(iBgTP);
     int selected = (int)ObjectGet(cPtWD, OBJPROP_SELECTED);
     setMultiProp(OBJPROP_COLOR, selected ? gColorMousePoint : clrNONE, cPtTP+cPtSL+cPtEN+cPtWD+cPtBE);
 
@@ -468,7 +460,7 @@ void Trade::onItemClick(const string &itemId, const string &objId)
 {
     if (StringFind(objId, TAG_CTRL) < 0) return;
     int selected = (int)ObjectGet(objId, OBJPROP_SELECTED);
-    if (selected && objId == cPtWD && pCommonData.mShiftHold && Trd_ShowPrice != HIDE)
+    if (selected && objId == cPtWD && pCommonData.mShiftHold && Trd_Cost != 0)
     {
         // onItemDrag(itemId, objId); //=> update lastest data
         if (ObjectDescription(cPtWD) == LIVE_INDI){
@@ -533,9 +525,9 @@ void Trade::showHistory(bool isShow)
         ObjectSet(iLnSl, OBJPROP_PRICE2, 0);
         ObjectSet(cBgBd, OBJPROP_PRICE2, 0);
 
-        ObjectSet(iTxpT, OBJPROP_TIME1, 0);
-        ObjectSet(iTxpE, OBJPROP_TIME1, 0);
-        ObjectSet(iTxpS, OBJPROP_TIME1, 0);
+        ObjectSet(iTxT2, OBJPROP_TIME1, 0);
+        ObjectSet(iTxE2, OBJPROP_TIME1, 0);
+        ObjectSet(iTxS2, OBJPROP_TIME1, 0);
         ObjectSet(iTxtT, OBJPROP_TIME1, 0);
         ObjectSet(iTxtE, OBJPROP_TIME1, 0);
         ObjectSet(iTxtS, OBJPROP_TIME1, 0);
@@ -545,9 +537,6 @@ void Trade::showHistory(bool isShow)
         ObjectSet(cPtEN, OBJPROP_TIME1, 0);
         ObjectSet(cPtWD, OBJPROP_TIME1, 0);
         ObjectSet(cPtBE, OBJPROP_TIME1, 0);
-        
-        //removeBackgroundOverlap(iBgSl);
-        //removeBackgroundOverlap(iBgTP);
     }
 }
 
@@ -639,7 +628,7 @@ void Trade::createTrade(int id, datetime _time1, datetime _time2, double _priceE
 
 void Trade::scanLiveTrade()
 {
-    if (Trd_ShowPrice == HIDE) return;
+    if (Trd_Cost == 0) return;
 
     // First scanning
     if (mListLiveTradeStr == ""){
@@ -682,19 +671,19 @@ void Trade::scanLiveTrade()
         priceEN = OrderOpenPrice();
         priceSL = OrderStopLoss();
         orderType = OrderType();
-        // Lệnh chưa set SL
-        if (priceSL == 0) {
-            priceSL = NormalizeDouble(priceEN - mNativeCost / OrderLots() / 100000, 5);
-        }
         isBuy = (orderType == OP_BUY || orderType == OP_BUYLIMIT || orderType == OP_BUYSTOP);
+        // Lệnh chưa set SL
+        if (priceSL == 0.0) {
+            priceSL = NormalizeDouble(priceEN - (isBuy ? 1 : -1) * mNativeCost / OrderLots() / 100000, 5);
+        } 
         // Lệnh đã đặt BE hoặc SL dương
-        if ((isBuy ? 1 : -1) * (priceSL - priceEN) >= 0) {
+        else if ((isBuy ? 1 : -1) * (priceSL - priceEN) >= 0) {
             isBeManage = true;
-            priceSL = NormalizeDouble(priceEN + mNativeCost / OrderLots() / 100000, 5);
+            priceSL = NormalizeDouble(priceEN - (isBuy ? 1 : -1) * mNativeCost / OrderLots() / 100000, 5);
         }
         // Lệnh chưa set TP
         if (priceTP <= 0.0){
-            priceTP = 4*priceEN - 3*priceSL;
+            priceTP = 4*priceEN - 3*priceSL; // Set TP = 3R
         }
 
         /// B. Kiểm tra Trade đã có trên đồ thị chưa
