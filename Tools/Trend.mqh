@@ -29,23 +29,23 @@ TEXT_POS getTextPos(ETrendText eTrendText){
 }
 
 input string Trend_; // ●  T R E N D  ●
-input int        Trend_amount       = 7;            // Trend amount:
+      int        Trend_amount       = 7;            // Trend amount:
 //--------------------------------------------
-input string     Trend_1______Name  = "BOS";            // → Trend 1
+input string     Trend_1______Name  = "Flow";           // → Trend 1
 input string     Trend_1_Text       = "";               // Text
 input ETrendText Trend_1_TxtPos     = ETrendTextCenter; // Text Position
-input ELineStyle Trend_1_Style      = eLineSolid1;      // Style
+input ELineStyle Trend_1_Style      = eLineDot;         // Style
 input color      Trend_1_Color      = clrNavy;          // Color
 //--------------------------------------------
-input string     Trend_2______Name  = "Break";          // → Trend 2
+input string     Trend_2______Name  = "BoS";            // → Trend 2
 input string     Trend_2_Text       = "";               // Text
 input ETrendText Trend_2_TxtPos     = ETrendTextCenter; // Text Position
-input ELineStyle Trend_2_Style      = eLineDot;         // Style
+input ELineStyle Trend_2_Style      = eLineSolid1;      // Style
 input color      Trend_2_Color      = clrNavy;          // Color
 //--------------------------------------------
 input string     Trend_3______Name  = "Swept";          // → Trend 3
-input string     Trend_3_Text       = "x";              // Text
-input ETrendText Trend_3_TxtPos     = ETrendTextCenter; // Text Position
+input string     Trend_3_Text       = " x";             // Text
+input ETrendText Trend_3_TxtPos     = ETrendTextRight;  // Text Position
 input ELineStyle Trend_3_Style      = eLineSolid1;      // Style
 input color      Trend_3_Color      = clrNavy;          // Color
 //--------------------------------------------
@@ -62,7 +62,7 @@ input ELineStyle Trend_5_Style      = eLineSolid1;      // Style
 input color      Trend_5_Color      = clrGreen;         // Color
 //--------------------------------------------
 input string     Trend_6______Name  = "ERL";            // → Trend 6
-input string     Trend_6_Text       = "  $$$";          // Text
+input string     Trend_6_Text       = " $ $ $";         // Text
 input ETrendText Trend_6_TxtPos     = ETrendTextRight;  // Text Position
 input ELineStyle Trend_6_Style      = eLineSolid2;      // Style
 input color      Trend_6_Color      = clrGreen;         // Color
@@ -302,9 +302,6 @@ void Trend::refreshData()
     int barT2 = iBarShift(ChartSymbol(), ChartPeriod(), time2);
     if (barT1 > barT2 && price1 >= High[barT1]) isUp = true;
     else if (barT2 > barT1 && price2 >= High[barT2]) isUp = true;
-    // // idea check isUp/Down based on time3
-    // int barT3 = iBarShift(ChartSymbol(), ChartPeriod(), time3);
-    // isUp = (price3 >= High[barT3]);
 
     if (angle > 000 && angle <=  90) {
         ObjectSetInteger(0, iTxtC, OBJPROP_ANCHOR, isUp ? ANCHOR_RIGHT_LOWER : ANCHOR_LEFT_UPPER);
@@ -333,6 +330,11 @@ void Trend::refreshData()
         ObjectSetInteger(0, iTxtL, OBJPROP_ANCHOR, barT1 > barT2 ? ANCHOR_RIGHT: ANCHOR_LEFT);
 
         if (barT1 < barT2) ObjectSet(iTxtA, OBJPROP_ANGLE,  90.0); // case 180*
+    }
+    if (price1 == price2){
+        ObjectSetInteger(0, iTxtC, OBJPROP_ANCHOR, isUp ? ANCHOR_LOWER : ANCHOR_UPPER);
+        ObjectSetInteger(0, iTxtR, OBJPROP_ANCHOR, barT1 > barT2 ? ANCHOR_LEFT : ANCHOR_RIGHT);
+        ObjectSetInteger(0, iTxtL, OBJPROP_ANCHOR, barT1 > barT2 ? ANCHOR_RIGHT: ANCHOR_LEFT);
     }
     // Customization
 
@@ -400,42 +402,32 @@ void Trend::onItemDrag(const string &itemId, const string &objId)
         time2 = (datetime)ObjectGet(objId, OBJPROP_TIME2);
         price1 =          ObjectGet(objId, OBJPROP_PRICE1);
         price2 =          ObjectGet(objId, OBJPROP_PRICE2);
-        if (pCommonData.mCtrlHold == true){
-            if (pCommonData.mMouseTime == time1){
-                price1 = pCommonData.mMousePrice;
-            }
-            else if (pCommonData.mMouseTime == time2){
-                price2 = pCommonData.mMousePrice;
-            }
+        if (pCommonData.mMouseTime == time1){
+            if (pCommonData.mShiftHold == true) price1 = price2;
+            else if (pCommonData.mCtrlHold == true) price1 = pCommonData.mMousePrice;
+        }
+        else if (pCommonData.mMouseTime == time2){
+            if (pCommonData.mShiftHold == true) price2 = price1;
+            else if (pCommonData.mCtrlHold == true) price2 = pCommonData.mMousePrice;
         }
     }
     else if (objId == cPt01) {
-        time1 = (datetime)ObjectGet(objId, OBJPROP_TIME1);
-        if (pCommonData.mShiftHold) {
-            price1 = price2;
-        }
-        else if (pCommonData.mCtrlHold) {
-            price1 = pCommonData.mMousePrice;
-        }
-        else {
-            price1 = ObjectGet(objId, OBJPROP_PRICE1);
-        }
         time2   = (datetime)ObjectGet(cPt02, OBJPROP_TIME1);
         price2  =           ObjectGet(cPt02, OBJPROP_PRICE1);
+
+        time1 = (datetime)ObjectGet(cPt01, OBJPROP_TIME1);
+        if (pCommonData.mShiftHold == true) price1 = price2;
+        else if (pCommonData.mCtrlHold == true) price1 = pCommonData.mMousePrice;
+        else price1 = ObjectGet(cPt01, OBJPROP_PRICE1);
     }
     else if (objId == cPt02) {
-        time2 = (datetime)ObjectGet(objId, OBJPROP_TIME1);
-        if (pCommonData.mShiftHold) {
-            price2 = price1;
-        }
-        else if (pCommonData.mCtrlHold) {
-            price2 = pCommonData.mMousePrice;
-        }
-        else {
-            price2 = ObjectGet(objId, OBJPROP_PRICE1);
-        }
         time1   = (datetime)ObjectGet(cPt01, OBJPROP_TIME1);
         price1  =           ObjectGet(cPt01, OBJPROP_PRICE1);
+
+        time2 = (datetime)ObjectGet(cPt02, OBJPROP_TIME1);
+        if (pCommonData.mShiftHold == true) price2 = price1;
+        else if (pCommonData.mCtrlHold == true) price2 = pCommonData.mMousePrice;
+        else price2 = ObjectGet(cPt02, OBJPROP_PRICE1);
     }
 
     getCenterPos(time1, time2, price1, price2, time3, price3);

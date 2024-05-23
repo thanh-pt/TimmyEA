@@ -2,13 +2,13 @@
 
 input string     Point_; // ●  P O I N T  ●
 input string     Point_1______Name  = "Swing"; // → Point 1:
-input string     Point_1_Charecter  = "n";           // Charecter
-input string     Point_1_Font       = "webdings";    // Font
+      string     Point_1_Charecter  = "n";           // Charecter
+      string     Point_1_Font       = "webdings";    // Font
 input int        Point_1_Size       = 10;            // Size
-input color      Point_1_Color      = clrThistle;    // Color
+input color      Point_1_Color      = clrLightSkyBlue;    // Color
 input string     Point_2______Name  = "Sub"; // → Point 2:
-input string     Point_2_Charecter  = "n";           // Charecter
-input string     Point_2_Font       = "webdings";    // Font
+      string     Point_2_Charecter  = "n";           // Charecter
+      string     Point_2_Font       = "webdings";    // Font
 input int        Point_2_Size       = 6;             // Size
 input color      Point_2_Color      = clrMediumPurple;    // Color
 
