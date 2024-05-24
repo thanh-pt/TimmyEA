@@ -305,8 +305,7 @@ void Trade::refreshData()
     setTextPos(iTxS2, centerTime, priceSL);
     //-------------------------------------------------
     ObjectSetInteger(0, iTxtE, OBJPROP_ANCHOR, ANCHOR_LOWER);
-    if (priceTP > priceSL)
-    {
+    if (priceTP > priceSL) {
         ObjectSetInteger(0,iTxtS, OBJPROP_ANCHOR, ANCHOR_UPPER);
         ObjectSetInteger(0,iTxtT, OBJPROP_ANCHOR, ANCHOR_LOWER);
         ObjectSetInteger(0,iTxtB, OBJPROP_ANCHOR, ANCHOR_RIGHT_LOWER);
@@ -314,8 +313,7 @@ void Trade::refreshData()
         ObjectSetInteger(0,iTxE2, OBJPROP_ANCHOR, ANCHOR_UPPER);
         ObjectSetInteger(0,iTxS2, OBJPROP_ANCHOR, ANCHOR_LOWER);
     }
-    else
-    {
+    else {
         ObjectSetInteger(0,iTxtS, OBJPROP_ANCHOR, ANCHOR_LOWER);
         ObjectSetInteger(0,iTxtT, OBJPROP_ANCHOR, ANCHOR_UPPER);
         ObjectSetInteger(0,iTxtB, OBJPROP_ANCHOR, ANCHOR_RIGHT_UPPER);
@@ -343,8 +341,8 @@ void Trade::refreshData()
     
     // 3. String Data để hiển thị
     string strTpInfo   = ""; // pip + dola
-    string strEnInfo   = ObjectDescription(cPtWD); // Cmt + lot 
     string strSlInfo   = ""; // pip + dola
+    string strEnInfo   = ObjectDescription(cPtWD); // Cmt + lot 
     string strBeInfo   = ObjectDescription(cPtBE); // BE RR + pip
     
     if (strBeInfo != ""){
@@ -353,19 +351,16 @@ void Trade::refreshData()
             strBeInfo += DoubleToString(be,1) + "  ";
         }
     }
-    if (showStats)
-    {
+    if (showStats) {
         double bePip = be * slPip;
         strTpInfo += DoubleToString(tpPip, 1) + "ᴘ";
         strBeInfo += DoubleToString(be,1) + " ~ " + DoubleToString(bePip, 1) + "ᴘ ";
         strSlInfo += DoubleToString(slPip, 1) + "ᴘ";
     }
     //-------------------------------------------------
-    if (showDollar)
-    {
+    if (showDollar) {
         realCost = mTradeLot*slPip*10/mNativeCost*Trd_Cost;
-        if (showStats)
-        {
+        if (showStats) {
             strTpInfo += " ~ ";
             strSlInfo += " ~ ";
         }
@@ -374,12 +369,19 @@ void Trade::refreshData()
         if (strEnInfo != "") strEnInfo += " ";
         strEnInfo += DoubleToString(mTradeLot,2) + "lot";
     }
+    string strRRInfo = "";
+    string strRR = DoubleToString(rr,1);
+    for (int i = 0; i < StringLen(strRR); i++) {
+        strRRInfo += StringSubstr(strRR, i, 1);
+        strRRInfo += " ";
+    }
+    strRRInfo += "ʀ";
     //-------------------------------------------------
     ObjectSetText(iTxT2, strTpInfo);
     ObjectSetText(iTxE2, EMPTY_STR);
     ObjectSetText(iTxS2, EMPTY_STR);
     //-------------------------------------------------
-    ObjectSetText(iTxtT, DoubleToString(rr,1) + "ʀ"); // Display RR
+    ObjectSetText(iTxtT, strRRInfo);
     ObjectSetText(iTxtE, strEnInfo);
     ObjectSetText(iTxtS, strSlInfo);
     ObjectSetText(iTxtB, strBeInfo);
