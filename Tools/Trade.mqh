@@ -299,6 +299,10 @@ void Trade::refreshData()
     setItemPos(iTxtE  , centerTime, priceEN);
     setItemPos(iTxtS  , centerTime, priceSL);
     setItemPos(iTxtB  , time2, priceBE);
+
+    setTextPos(iTxT2, centerTime, priceTP);
+    setTextPos(iTxE2, centerTime, priceEN);
+    setTextPos(iTxS2, centerTime, priceSL);
     //-------------------------------------------------
     ObjectSetInteger(0, iTxtE, OBJPROP_ANCHOR, ANCHOR_LOWER);
     if (priceTP > priceSL)
@@ -371,13 +375,11 @@ void Trade::refreshData()
         strEnInfo += DoubleToString(mTradeLot,2) + "lot";
     }
     //-------------------------------------------------
-    ObjectSetText(iTxT2, DoubleToString(rr,1) + "ʀ"); // Display RR
-    
-    setTextPos(iTxT2, centerTime, priceTP);
-    setTextPos(iTxE2, centerTime, priceEN);
-    setTextPos(iTxS2, centerTime, priceSL);
+    ObjectSetText(iTxT2, strTpInfo);
+    ObjectSetText(iTxE2, EMPTY_STR);
+    ObjectSetText(iTxS2, EMPTY_STR);
     //-------------------------------------------------
-    ObjectSetText(iTxtT, strTpInfo);
+    ObjectSetText(iTxtT, DoubleToString(rr,1) + "ʀ"); // Display RR
     ObjectSetText(iTxtE, strEnInfo);
     ObjectSetText(iTxtS, strSlInfo);
     ObjectSetText(iTxtB, strBeInfo);

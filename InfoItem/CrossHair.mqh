@@ -51,7 +51,7 @@ public:
         
         // --- Info background ---
         ObjectCreate(mInfoBkgn, OBJ_LABEL, 0, 0, 0);
-        ObjectSetText(mInfoBkgn, "██████", 20, "Consolas");
+        ObjectSetText(mInfoBkgn, "█████", 20, "Consolas");
         ObjectSet(mInfoBkgn, OBJPROP_SELECTABLE, false);
         ObjectSet(mInfoBkgn, OBJPROP_COLOR, clrWhite);
         ObjectSet(mInfoBkgn, OBJPROP_YDISTANCE, CrossHair_DisplayDateInfo ? 25 : 15);
