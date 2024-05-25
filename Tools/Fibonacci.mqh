@@ -3,7 +3,7 @@
 input string          Fib_;    // ●  F I B O N A C I I  ●
 //--------------------------------------------
 input color           Fib_Bkgrd_Color = clrNONE;    // Bg Color
-input ELineStyle      Fib_Style     = eLineSolid1;  // Style
+input ELineStyle      Fib_Style     = eLineSolid;  // Style
 //--------------------------------------------
 string          Fib_0;    //→ Fib 0
 double          Fib_0_Ratio = 0;              // Ratio

@@ -18,7 +18,7 @@ enum e_display
 
 input string          Trd_; // ●  T R A D E  ●
 //-------------------------------------------------
-input double          Trd_Cost          = 1.5;     //Cost ($)
+input double          Trd_Cost          = 0;       //Cost ($)
 input e_display       Trd_ShowStats     = OPTION;  //Show Stats
 input e_display       Trd_ShowDollar    = HIDE;    //Show Dollar
 //-------------------------------------------------
