@@ -499,7 +499,7 @@ void Trade::showHistory(bool isShow)
         }
         
         if ((bool)ObjectGet(cPtWD, OBJPROP_SELECTED)) continue;
-        if (ObjectDescription(cPtWD) != "") continue; // Don't hide live trade
+        if (ObjectDescription(cPtWD) == LIVE_INDI) continue; // Don't hide live trade
         // Hide Item
         ObjectSet(cBgSl, OBJPROP_PRICE1, 0);
         ObjectSet(iBgTP, OBJPROP_PRICE1, 0);

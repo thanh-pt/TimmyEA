@@ -17,7 +17,7 @@ input color             Rect_DzLight_Color = C'232,240,247'; // Dz Light Color
 //-----------------------------------------------------------
 
 #define CTX_RANGE   "Range"
-#define CTX_NORANGE "No Range"
+#define CTX_NORANGE "xRange"
 
 enum RectangleType
 {
