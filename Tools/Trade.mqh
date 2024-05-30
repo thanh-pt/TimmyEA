@@ -451,6 +451,7 @@ void Trade::onItemClick(const string &itemId, const string &objId)
 {
     if (StringFind(objId, TAG_CTRL) < 0) return;
     int selected = (int)ObjectGet(objId, OBJPROP_SELECTED);
+#ifdef EA
     if (selected && objId == cPtWD && pCommonData.mShiftHold && Trd_Cost != 0)
     {
         // onItemDrag(itemId, objId); //=> update lastest data
@@ -461,6 +462,7 @@ void Trade::onItemClick(const string &itemId, const string &objId)
             gContextMenu.openContextMenu(objId, mContextType, -1);
         }   
     }
+#endif
     setCtrlItemSelectState(mAllItem, selected);
     setMultiProp(OBJPROP_COLOR, selected ? gColorMousePoint : clrNONE, cPtTP+cPtSL+cPtEN+cPtWD+cPtBE);
 }
