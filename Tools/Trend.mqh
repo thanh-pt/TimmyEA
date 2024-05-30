@@ -361,8 +361,8 @@ void Trend::createItem()
     ObjectCreate(cPt01, OBJ_ARROW       , 0, 0, 0);
     ObjectCreate(cPt02, OBJ_ARROW       , 0, 0, 0);
 
-    updateTypeProperty();
     updateDefaultProperty();
+    updateTypeProperty();
     time1  = pCommonData.mMouseTime;
     price1 = pCommonData.mMousePrice;
 }
