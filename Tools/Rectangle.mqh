@@ -149,15 +149,14 @@ void Rectangle::updateDefaultProperty()
     setMultiProp(OBJPROP_ARROWCODE,       4, cPtL1+cPtL2+cPtR1+cPtR2+cPtC1+cPtC2);
     setMultiProp(OBJPROP_COLOR    , clrNONE, cPtL1+cPtL2+cPtR1+cPtR2+cPtC1+cPtC2);
 
-    ObjectSetText(iTxtC, "");
-    ObjectSetText(iTxtL, "");
-    ObjectSetText(iTxtR, "");
+    setTextContent(iTxtC, "", 8, FONT_TEXT, Rect_Text_Color);
+    setTextContent(iTxtL, "", 8, FONT_TEXT, Rect_Text_Color);
+    setTextContent(iTxtR, "", 8, FONT_TEXT, Rect_Text_Color);
 
     ObjectSetInteger(ChartID(), iTxtC, OBJPROP_ANCHOR, ANCHOR_CENTER);
     ObjectSetInteger(ChartID(), iTxtL, OBJPROP_ANCHOR, ANCHOR_LEFT);
     ObjectSetInteger(ChartID(), iTxtR, OBJPROP_ANCHOR, ANCHOR_RIGHT);
 
-    setMultiProp(OBJPROP_COLOR     , Rect_Text_Color, iTxtC+iTxtL+iTxtR);
     setMultiProp(OBJPROP_SELECTABLE, false         , iTxtC+iTxtL+iTxtR);
     setMultiStrs(OBJPROP_TOOLTIP   , "\n"          , mAllItem);
 }
@@ -230,14 +229,16 @@ void Rectangle::refreshData()
     setItemPos(iLn02, time1, time2, centerPrice, centerPrice);
     setItemPos(iLn03, time1, time2, price2, price2);
     //-------------------------------------------------
-    setTextPos(iTxtL, time1 + ChartPeriod()*60, centerPrice);
-    setTextPos(iTxtR, time2 - ChartPeriod()*60, centerPrice);
-    setTextPos(iTxtC, centerTime, centerPrice);
+    setItemPos(iTxtL, time1 + ChartPeriod()*60, centerPrice);
+    setItemPos(iTxtR, time2 - ChartPeriod()*60, centerPrice);
+    setItemPos(iTxtC, centerTime, centerPrice);
+    //-------------------------------------------------
+    setTextContent(iTxtL, ObjectDescription(cPtC1));
+    setTextContent(iTxtR, ObjectDescription(cPtC2));
     //-------------------------------------------------
     scanBackgroundOverlap(cBgM0);
     //-------------------------------------------------
     int selected = (int)ObjectGet(cBgM0, OBJPROP_SELECTED);
-    setMultiProp(OBJPROP_SELECTED, selected, cPtL1+cPtL2+cPtR1+cPtR2+cPtC1+cPtC2+cBgM0+iTxtC+iTxtL+iTxtR);
     setMultiProp(OBJPROP_COLOR   , selected ? gColorMousePoint : clrNONE, cPtL1+cPtL2+cPtR1+cPtR2+cPtC1+cPtC2);
 }
 void Rectangle::finishedJobDone(){}
@@ -322,17 +323,13 @@ void Rectangle::onItemClick(const string &itemId, const string &objId)
 }
 void Rectangle::onItemChange(const string &itemId, const string &objId)
 {
-    string targetItem;
-    if (objId == cBgM0)      targetItem = iTxtC;
-    else if (objId == cPtC2) targetItem = iTxtR;
-    else if (objId == cPtC1) targetItem = iTxtL;
-    else                      return;
-    
-    string txtContent = ObjectDescription(objId);
-    if (txtContent == "" ) return;
-    if (txtContent == "-") txtContent = EMPTY_STR;
-    ObjectSetText(targetItem, txtContent);
-    ObjectSetText(objId, "");
+    if (objId == cBgM0) {
+        string description = ObjectDescription(objId);
+        if (description != ""){
+            setTextContent(objId, "");
+            setTextContent(iTxtC, (description == "-") ? EMPTY_STR : description);
+        }
+    }
     onItemDrag(itemId, objId);
 }
 void Rectangle::onItemDeleted(const string &itemId, const string &objId)

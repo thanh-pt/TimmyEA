@@ -1,4 +1,5 @@
 #include "../Home/CommonData.mqh"
+#include "../Home/UtilityHeader.mqh"
 input string CrossHair_; // ●  C R O S S   H A I R  ●
 input color  CrossHair_Color = clrSlateGray; // Color
       int    CrossHair_LocalTimeZone = 7;
@@ -51,7 +52,7 @@ public:
         
         // --- Info background ---
         ObjectCreate(mInfoBkgn, OBJ_LABEL, 0, 0, 0);
-        ObjectSetText(mInfoBkgn, "█████", 20, "Consolas");
+        setTextContent(mInfoBkgn, "█████", 20, FONT_BLOCK);
         ObjectSet(mInfoBkgn, OBJPROP_SELECTABLE, false);
         ObjectSet(mInfoBkgn, OBJPROP_COLOR, clrWhite);
         ObjectSet(mInfoBkgn, OBJPROP_YDISTANCE, CrossHair_DisplayDateInfo ? 25 : 15);
@@ -59,7 +60,7 @@ public:
         ObjectSetString( 0, mInfoBkgn, OBJPROP_TOOLTIP,"\n");
         // mWeekInfo
         ObjectCreate(mWeekInfo, OBJ_LABEL, 0, 0, 0);
-        ObjectSetText(mWeekInfo, "", 10, "Consolas");
+        setTextContent(mWeekInfo, "", 10, FONT_BLOCK);
         ObjectSet(mWeekInfo, OBJPROP_SELECTABLE, false);
         ObjectSet(mWeekInfo, OBJPROP_COLOR, CrossHair_Color);
         ObjectSet(mWeekInfo, OBJPROP_YDISTANCE, CrossHair_DisplayDateInfo ? 25 : 15);
@@ -68,7 +69,7 @@ public:
 
         // mDateInfo
         ObjectCreate(mDateInfo, OBJ_LABEL, 0, 0, 0);
-        ObjectSetText(mDateInfo, "", 10, "Consolas");
+        setTextContent(mDateInfo, "", 10, FONT_BLOCK);
         ObjectSet(mDateInfo, OBJPROP_SELECTABLE, false);
         ObjectSet(mDateInfo, OBJPROP_COLOR, CrossHair_Color);
         ObjectSet(mDateInfo, OBJPROP_YDISTANCE, CrossHair_DisplayDateInfo ? 15 : 0);
@@ -79,7 +80,7 @@ public:
         ObjectCreate(mPriceInfo, OBJ_LABEL, 0, 0, 0);
         ObjectSetInteger(ChartID(), mPriceInfo, OBJPROP_CORNER , CORNER_RIGHT_UPPER);
         ObjectSetInteger(ChartID(), mPriceInfo, OBJPROP_ANCHOR , ANCHOR_RIGHT_UPPER);
-        ObjectSetText(mPriceInfo, "", 8, "Consolas");
+        setTextContent(mPriceInfo, "", 8, FONT_BLOCK);
         ObjectSet(mPriceInfo, OBJPROP_COLOR, CrossHair_Color);
         ObjectSet(mPriceInfo, OBJPROP_XDISTANCE, 0);
         ObjectSetString( 0, mPriceInfo, OBJPROP_TOOLTIP,"\n");
@@ -127,19 +128,19 @@ public:
         ObjectSet(mInfoBkgn, OBJPROP_XDISTANCE, pCommonData.mMouseX + 10);
         ObjectSet(mWeekInfo, OBJPROP_XDISTANCE, pCommonData.mMouseX + 10);
         ObjectSet(mDateInfo, OBJPROP_XDISTANCE, pCommonData.mMouseX + 10);
-        ObjectSetText(mDateInfo, TimeToStr(pCommonData.mMouseTime, TIME_DATE));
+        setTextContent(mDateInfo, TimeToStr(pCommonData.mMouseTime, TIME_DATE));
         if (ChartPeriod() <= PERIOD_H4)
         {
-            ObjectSetText(mWeekInfo,
+            setTextContent(mWeekInfo,
                             TimeToStr(pCommonData.mMouseTime + CrossHair_LocalTimeZone*3600, TIME_MINUTES)
                             + " · " + getDayOfWeekStr(pCommonData.mMouseTime));
         }
-        else if (ChartPeriod() <= PERIOD_D1) ObjectSetText(mWeekInfo, getDayOfWeekStr(pCommonData.mMouseTime) + "  ·  " + "W"+IntegerToString(getWeekOfYear(pCommonData.mMouseTime),2,'0'));
-        else ObjectSetText(mWeekInfo, "W"+IntegerToString(TimeDayOfYear(pCommonData.mMouseTime)/7,2,'0') + " · " +IntegerToString(TimeYear(pCommonData.mMouseTime)));
+        else if (ChartPeriod() <= PERIOD_D1) setTextContent(mWeekInfo, getDayOfWeekStr(pCommonData.mMouseTime) + "  ·  " + "W"+IntegerToString(getWeekOfYear(pCommonData.mMouseTime),2,'0'));
+        else setTextContent(mWeekInfo, "W"+IntegerToString(TimeDayOfYear(pCommonData.mMouseTime)/7,2,'0') + " · " +IntegerToString(TimeYear(pCommonData.mMouseTime)));
 
         //mPriceInfo
         ObjectSet(mPriceInfo, OBJPROP_YDISTANCE, pCommonData.mMouseY);
-        ObjectSetText(mPriceInfo, DoubleToString(pCommonData.mMousePrice, gSymbolDigits));
+        setTextContent(mPriceInfo, DoubleToString(pCommonData.mMousePrice, gSymbolDigits));
 
     }
     void onObjectDeleted(const string& objectName)

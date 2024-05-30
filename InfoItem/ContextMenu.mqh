@@ -88,8 +88,8 @@ private:
         ObjectCreate(itemName, OBJ_LABEL, 0, 0, 0);
         ObjectSet(itemBgnd, OBJPROP_SELECTABLE, false);
         ObjectSet(itemName, OBJPROP_SELECTABLE, false);
-        ObjectSetText(itemBgnd, getFullBlock(mMaxLength), 10, "Consolas", ContxtMenu_BgColor1);
-        ObjectSetText(itemName,                                     " "+name, 10, "Consolas", gForegroundColor);
+        setTextContent(itemBgnd, getHalfBlock1(mMaxLength), 20, FONT_BLOCK, ContxtMenu_BgColor1);
+        setTextContent(itemName,                  " "+name, 10, FONT_BLOCK, gForegroundColor);
         ObjectSetInteger(0, itemName, OBJPROP_ANCHOR, ANCHOR_LEFT_UPPER);
         ObjectSetInteger(0, itemBgnd, OBJPROP_ANCHOR, ANCHOR_LEFT_UPPER);
 

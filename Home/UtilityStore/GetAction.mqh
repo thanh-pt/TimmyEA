@@ -1,11 +1,12 @@
 string getTFString()
 {
-    string result = "";
     int period = ChartPeriod();
+    if (period == PERIOD_M1) return "I";
+
+    string result = "";
     if (period < PERIOD_H1)
     {
-        result = "m";
-        result += IntegerToString(period);
+        result = IntegerToString(period);
         return result;
     }
     if (period < PERIOD_D1)
@@ -172,6 +173,14 @@ string getRandStr(){
 
 string getFullBlock(int size){
     return StringSubstr(FULL_BLOCK, 0, size);
+}
+string getHalfBlock1(int size){
+    if (size % 2 != 0) size++;
+    return StringSubstr(HALF_BLOCK1, 0, size/2);
+}
+string getHalfBlock2(int size){
+    if (size % 2 != 0) size++;
+    return StringSubstr(HALF_BLOCK2, 0, size/2);
 }
 
 int getWeekOfYear(datetime date)

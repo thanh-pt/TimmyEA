@@ -112,7 +112,7 @@ void Point::updateDefaultProperty()
 }
 void Point::updateTypeProperty()
 {
-    ObjectSetText(cPtM0, mCharecter[mIndexType], mSize[mIndexType], mFont[mIndexType], mColor[mIndexType]);
+    setTextContent(cPtM0, mCharecter[mIndexType], mSize[mIndexType], mFont[mIndexType], mColor[mIndexType]);
 }
 void Point::activateItem(const string& itemId)
 {

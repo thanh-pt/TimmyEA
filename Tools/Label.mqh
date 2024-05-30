@@ -90,8 +90,9 @@ void LabelText::createItem()
 }
 void LabelText::updateDefaultProperty()
 {
-    ObjectSetText(cTxtM, getRandStr(), 10, "Consolas", Label_Color);
-    ObjectSetText(iTxBg, "   ", 10, "Consolas", clrLightGray);
+    ObjectSet(iTxBg, OBJPROP_SELECTABLE, false);
+    setTextContent(cTxtM, getRandStr(), 10, FONT_BLOCK, Label_Color);
+    setTextContent(iTxBg,           "", 20, FONT_BLOCK, clrLightGray);
 }
 void LabelText::updateTypeProperty(){}
 void LabelText::activateItem(const string& itemId)
@@ -147,12 +148,12 @@ void LabelText::refreshData()
         objiTBgX = iTBgX +"#"+ IntegerToString(idx);
     }
     idx--;
-    string bgBlock = getFullBlock(maxLen);
+    string bgBlock = getHalfBlock1(maxLen);
     while (idx >= 1){
         objiTBgX = iTBgX +"#"+ IntegerToString(idx--);
-        ObjectSetText(objiTBgX, bgBlock);
+        setTextContent(objiTBgX, bgBlock);
     }
-    ObjectSetText(iTxBg, bgBlock);
+    setTextContent(iTxBg, bgBlock);
 }
 void LabelText::finishedJobDone(){}
 
@@ -219,7 +220,7 @@ void LabelText::onItemChange(const string &itemId, const string &objId)
     ObjectSetString(ChartID(), cTxtM, OBJPROP_FONT, font);
     ObjectSetInteger(ChartID(), cTxtM, OBJPROP_ANCHOR, anchor);
     ObjectSetInteger(ChartID(), cTxtM, OBJPROP_CORNER, corner);
-    ObjectSet(iTxBg, OBJPROP_FONTSIZE, size);
+    ObjectSet(iTxBg, OBJPROP_FONTSIZE, size*2);
     ObjectSetString(ChartID(),  iTxBg, OBJPROP_FONT, font);
     ObjectSetInteger(ChartID(), iTxBg, OBJPROP_ANCHOR, anchor);
     ObjectSetInteger(ChartID(), iTxBg, OBJPROP_CORNER, corner);
@@ -235,7 +236,7 @@ void LabelText::onItemChange(const string &itemId, const string &objId)
         ObjectSetInteger(ChartID(), objCTxtX, OBJPROP_ANCHOR, anchor);
         ObjectSetInteger(ChartID(), objCTxtX, OBJPROP_CORNER, corner);
         
-        ObjectSet(objiTBgX, OBJPROP_FONTSIZE, size);
+        ObjectSet(objiTBgX, OBJPROP_FONTSIZE, size*2);
         ObjectSetString(ChartID(),  objiTBgX, OBJPROP_FONT, font);
         ObjectSetInteger(ChartID(), objiTBgX, OBJPROP_ANCHOR, anchor);
         ObjectSetInteger(ChartID(), objiTBgX, OBJPROP_CORNER, corner);
@@ -243,6 +244,7 @@ void LabelText::onItemChange(const string &itemId, const string &objId)
         objCTxtX = cTxtX +"#"+ IntegerToString(idx);
         objiTBgX = iTBgX +"#"+ IntegerToString(idx);
     }
+    onItemDrag(itemId, objId);
 }
 void LabelText::onItemDeleted(const string &itemId, const string &objId)
 {
@@ -283,15 +285,16 @@ void LabelText::onUserRequest(const string &itemId, const string &objId)
 
     ObjectSet(objCTxtX, OBJPROP_XDISTANCE, posX);
     ObjectSet(objCTxtX, OBJPROP_YDISTANCE, posY+(newIdx)*spaceSize);
-    ObjectSetText(objCTxtX, getRandStr(), size, font, c);
+    setTextContent(objCTxtX, getRandStr(), size, font, c);
     ObjectSetInteger(ChartID(), objCTxtX, OBJPROP_ANCHOR, anchor);
     ObjectSetInteger(ChartID(), objCTxtX, OBJPROP_CORNER, corner);
 
     ObjectSet(objiTBgX, OBJPROP_XDISTANCE, posX);
     ObjectSet(objiTBgX, OBJPROP_YDISTANCE, posY+(newIdx)*spaceSize);
-    ObjectSetText(objiTBgX, getFullBlock(StringLen(ObjectDescription(objCTxtX))), size, font, clrLightGray);
+    setTextContent(objiTBgX, getHalfBlock1(StringLen(ObjectDescription(objCTxtX))), size*2, font, clrLightGray);
     ObjectSetInteger(ChartID(), objiTBgX, OBJPROP_ANCHOR, anchor);
     ObjectSetInteger(ChartID(), objiTBgX, OBJPROP_CORNER, corner);
+    ObjectSet(objiTBgX, OBJPROP_SELECTABLE, false);
 
     gContextMenu.clearContextMenu();
 }

@@ -91,9 +91,9 @@ void CallOut::updateTypeProperty()
 {
     setObjectStyle(cLn01, CallOut_Color, 0, 1);
     //-------------------------------------------------------------
-    ObjectSetText(cTxtM, DoubleToString(pCommonData.mMousePrice, 5), CallOut_FontSize, "Consolas", CallOut_Color);
-    ObjectSetText(iTxtU,                                    "_____", CallOut_FontSize, "Consolas", CallOut_Color);
-    ObjectSetText(iTxBg,                            getFullBlock(5), CallOut_FontSize, "Consolas", clrLightGray);
+    setTextContent(cTxtM, DoubleToString(pCommonData.mMousePrice, 5), CallOut_FontSize  , FONT_BLOCK, CallOut_Color);
+    setTextContent(iTxtU,                                    "_____", CallOut_FontSize  , FONT_BLOCK, CallOut_Color);
+    setTextContent(iTxBg,                           getHalfBlock2(5), CallOut_FontSize*2, FONT_BLOCK, clrLightGray);
     setCtrlItemSelectState(mAllItem, true);
 }
 void CallOut::activateItem(const string& itemId)
@@ -129,11 +129,11 @@ void CallOut::refreshData()
 
     string callOutValue = ObjectDescription(cTxtM);
     int calloutLen = StringLen(callOutValue);
-    ObjectSetText(iTxtU, StringSubstr(UNDER_LINE, 0, calloutLen));
-    ObjectSetText(iTxBg, getFullBlock(calloutLen));
+    setTextContent(iTxtU, StringSubstr(UNDER_LINE, 0, calloutLen));
+    setTextContent(iTxBg, getHalfBlock2(calloutLen));
     if (calloutLen == 7 && StrToDouble(callOutValue) != 0.0)
     {
-        ObjectSetText(cTxtM, DoubleToString(price1,5));
+        setTextContent(cTxtM, DoubleToString(price1,5));
     }
     // additional leg
     int idx = 0;
@@ -202,6 +202,13 @@ void CallOut::onItemClick(const string &itemId, const string &objId)
 void CallOut::onItemChange(const string &itemId, const string &objId)
 {
     setMultiProp(OBJPROP_COLOR, (color)ObjectGet(objId, OBJPROP_COLOR), cTxtM+cLn01+iTxtU);
+    if (objId == cLn01) {
+        string description = ObjectDescription(objId);
+        if (description != ""){
+            setTextContent(objId, "");
+            setTextContent(cTxtM, description);
+        }
+    }
     onItemDrag(itemId, objId);
 }
 void CallOut::onItemDeleted(const string &itemId, const string &objId)

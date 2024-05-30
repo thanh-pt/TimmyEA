@@ -37,6 +37,7 @@ string getAltName(string name){
     if (StringFind(name, "-") == -1) return name;
     string listName[];
     int k=StringSplit(name,'-',listName);
+    if(listName[1] == "TF") return getTFString();
     return listName[1];
 }
 
@@ -49,7 +50,7 @@ input ETrendText Trend_1_TxtPos     = ETrendTextCenter; // Text Position
 input ELineStyle Trend_1_Style      = eLineDot;         // Style
 input color      Trend_1_Color      = clrNavy;          // Color
 //--------------------------------------------
-input string     Trend_2_Name       = "BoS-";            // → Trend 2
+input string     Trend_2_Name       = "BoS-TF";            // → Trend 2
 input ETrendText Trend_2_TxtPos     = ETrendTextCenter; // Text Position
 input ELineStyle Trend_2_Style      = eLineBold;        // Style
 input color      Trend_2_Color      = clrNavy;          // Color
@@ -292,14 +293,17 @@ void Trend::refreshData()
     setItemPos(cPt01, time1, price1);
     setItemPos(cPt02, time2, price2);
     setItemPos(iAng0, time1, time2, price1-price1, price2-price1);
-    setTextPos(iTxtA, time2, price2);
+    setItemPos(iTxtA, time2, price2);
     double angle=ObjectGet(iAng0, OBJPROP_ANGLE);
     ObjectSet(iTxtA, OBJPROP_ANGLE,  angle-90.0);
 
     // Update Text
-    setTextPos(iTxtC, time3, price3);
-    setTextPos(iTxtR, time2, price2);
-    setTextPos(iTxtL, time1, price1);
+    setItemPos(iTxtC, time3, price3);
+    setItemPos(iTxtR, time2, price2);
+    setItemPos(iTxtL, time1, price1);
+    // Update Text content
+    setTextContent(iTxtL, ObjectDescription(cPt01));
+    setTextContent(iTxtR, ObjectDescription(cPt02));
 
     bool isUp = false;
     int barT1 = iBarShift(ChartSymbol(), ChartPeriod(), time1);
@@ -370,22 +374,29 @@ void Trend::updateDefaultProperty()
     setMultiProp(OBJPROP_COLOR     , clrNONE, cPt01+cPt02+iAng0);
     setMultiStrs(OBJPROP_TOOLTIP   , "\n"   , mAllItem);
 
-    setMultiProp(OBJPROP_RAY     , false, cLnM0+iAng0);
+    setMultiProp(OBJPROP_BACK ,  true, cLnM0+iAng0);
+    setMultiProp(OBJPROP_RAY  , false, cLnM0+iAng0);
     ObjectSetInteger(ChartID(), iTxtA, OBJPROP_ANCHOR, ANCHOR_CENTER);
+    
+    setTextContent(iTxtC, "", 8, FONT_TEXT, mColorType[mIndexType]);
+    setTextContent(iTxtR, "", 8, FONT_TEXT, mColorType[mIndexType]);
+    setTextContent(iTxtL, "", 8, FONT_TEXT, mColorType[mIndexType]);
+    setTextContent(iTxtA, "", 9, FONT_TEXT, clrNONE);
 }
 void Trend::updateTypeProperty()
 {
-    ObjectSetText(iTxtC, "", 8, "Consolas", mColorType[mIndexType]);
-    ObjectSetText(iTxtR, "", 8, "Consolas", mColorType[mIndexType]);
-    ObjectSetText(iTxtL, "", 8, "Consolas", mColorType[mIndexType]);
+    setTextContent(iTxtC,  "");
+    setTextContent(cPt02,  "");
+    setTextContent(cPt01,  "");
 
-    if      (mTextPos[mIndexType] == TXT_CENTER) ObjectSetText (iTxtC,  mDispText[mIndexType]);
-    else if (mTextPos[mIndexType] == TXT_RIGHT)  ObjectSetText (iTxtR,  mDispText[mIndexType]);
-    else                                         ObjectSetText (iTxtL,  mDispText[mIndexType]);
+    setMultiProp(OBJPROP_COLOR, mColorType[mIndexType], iTxtC+iTxtR+iTxtL+iTxtA);
 
-    ObjectSetText (iTxtA,  mShowArrow[mIndexType] ? "▲" : "", 9, "Consolas", mShowArrow[mIndexType] ? mColorType[mIndexType] : clrNONE);
-    setObjectStyle(cLnM0,  mColorType[mIndexType],          mStyleType[mIndexType],  mWidthType[mIndexType]);
-    setMultiProp  (OBJPROP_BACK , true, cLnM0+iAng0);
+    if      (mTextPos[mIndexType] == TXT_CENTER) setTextContent (iTxtC,  mDispText[mIndexType]);
+    else if (mTextPos[mIndexType] == TXT_RIGHT)  setTextContent (cPt02,  mDispText[mIndexType]);
+    else                                         setTextContent (cPt01,  mDispText[mIndexType]);
+
+    setTextContent(iTxtA,  mShowArrow[mIndexType] ? "▲" : "");
+    setObjectStyle(cLnM0,  mColorType[mIndexType], mStyleType[mIndexType],  mWidthType[mIndexType]);
 }
 void Trend::updateItemAfterChangeType()
 {
@@ -448,20 +459,13 @@ void Trend::onItemClick(const string &itemId, const string &objId)
 }
 void Trend::onItemChange(const string &itemId, const string &objId)
 {
-    if (objId == cLnM0) setMultiProp(OBJPROP_COLOR, (color)ObjectGet(cLnM0, OBJPROP_COLOR), iTxtC+iTxtR+iTxtL+iTxtA);
-    if (objId == cPt01 || objId == cPt02 || objId == cLnM0){
-        string strLbText = ObjectDescription(cLnM0);
-        string strRtText = ObjectDescription(cPt02);
-        string strLtText = ObjectDescription(cPt01);
-        if (strLbText != "") ObjectSetText(iTxtC, strLbText);
-        if (strRtText != "") ObjectSetText(iTxtR, strRtText);
-        if (strLtText != "") ObjectSetText(iTxtL, strLtText);
-        if (strLbText == "-") ObjectSetText(iTxtC, EMPTY_STR);
-        if (strRtText == "-") ObjectSetText(iTxtR, EMPTY_STR);
-        if (strLtText == "-") ObjectSetText(iTxtL, EMPTY_STR);
-        ObjectSetText(cLnM0, "");
-        ObjectSetText(cPt02, "");
-        ObjectSetText(cPt01, "");
+    if (objId == cLnM0){
+        setMultiProp(OBJPROP_COLOR, (color)ObjectGet(objId, OBJPROP_COLOR), iTxtC+iTxtR+iTxtL+iTxtA);
+        string description = ObjectDescription(objId);
+        if (description != ""){
+            setTextContent(objId, "");
+            setTextContent(iTxtC, (description == "-") ? EMPTY_STR : description);
+        }
     }
     onItemDrag(itemId, objId);
 }

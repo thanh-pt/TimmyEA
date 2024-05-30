@@ -126,7 +126,7 @@ void Alert::onMouseClick()
         setObjectStyle(cLnM0, InpAlertColor, InpAlertStyle, 0);
         // ObjectSet(cLnM0, OBJPROP_BACK , true);
         mAlertIndi = (ObjectGet(cLnM0, OBJPROP_PRICE1) > Bid ? ALERT_INDI_H : ALERT_INDI_L);
-        ObjectSetText(cLnM0, mAlertIndi + "Alert");
+        setTextContent(cLnM0, mAlertIndi + "Alert");
         // Add Alert to mListAlertStr
         mListAlertStr += cLnM0 + ",";
     }
@@ -151,7 +151,7 @@ void Alert::onItemDrag(const string &itemId, const string &objId)
         StringReplace(mAlertText, ALERT_INDI_L, "");
 
         mAlertText = mAlertIndi + " " + mAlertText;
-        ObjectSetText(cLnM0, mAlertText);
+        setTextContent(cLnM0, mAlertText);
 
         if (StringFind(mListAlertStr, cLnM0) == -1)
         {

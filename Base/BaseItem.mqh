@@ -139,7 +139,7 @@ string BaseItem::createMouseInfo()
 void BaseItem::storeTData()
 {
     if (ObjectFind(mTData) < 0) ObjectCreate(mTData, OBJ_TEXT, 0, 0, 0);
-    ObjectSetText (mTData, IntegerToString(mIndexType));
+    setTextContent(mTData, IntegerToString(mIndexType));
 }
 
 void BaseItem::onUserRequest(const string &itemId, const string &objId)

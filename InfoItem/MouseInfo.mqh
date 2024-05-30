@@ -15,7 +15,7 @@ public:
     void initDrawing()
     {
         ObjectCreate(mObjMouseInfo, OBJ_LABEL, 0, 0, 0);
-        ObjectSetText(mObjMouseInfo, "", 10, "Consolas");
+        setTextContent(mObjMouseInfo, "", 10, FONT_TEXT);
         ObjectSet(mObjMouseInfo, OBJPROP_SELECTABLE, false);
         ObjectSet(mObjMouseInfo, OBJPROP_COLOR, gForegroundColor);
         ObjectSetString( 0, mObjMouseInfo, OBJPROP_TOOLTIP,"\n");
@@ -36,6 +36,6 @@ public:
 public:
     void setText(const string tIcon)
     {
-        ObjectSetText(mObjMouseInfo, tIcon);
+        setTextContent(mObjMouseInfo, tIcon);
     }
 };

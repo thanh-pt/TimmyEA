@@ -41,20 +41,27 @@ void setItemPos(const string& objName, datetime time1, const double price1)
     ObjectSet(objName, OBJPROP_PRICE1, price1);
 }
 
-void setTextPos(const string& objName, datetime time1, const double price1)
-{
-    ObjectSet(objName, OBJPROP_TIME1,  time1);
-
-    string textContent = ObjectDescription(objName);
-    if (textContent == "" || textContent == "Text")
-    {
-        ObjectSet(objName, OBJPROP_PRICE1, 0);
-    }
-    else
-    {
-        ObjectSet(objName, OBJPROP_PRICE1, price1);
-    }
+// - - - Begin: Overload Object Set Text
+void setTextContent(string objName, string content){
+    if (content == "" || content == "Text") content = EMPTY_STR;
+    ObjectSetText(objName, content);
 }
+void setTextContent(string objName, string content, int size)
+{
+    if (content == "" || content == "Text") content = EMPTY_STR;
+    ObjectSetText(objName, content, size);
+}
+void setTextContent(string objName, string content, int size, string font)
+{
+    if (content == "" || content == "Text") content = EMPTY_STR;
+    ObjectSetText(objName, content, size, font);
+}
+void setTextContent(string objName, string content, int size, string font, color clr)
+{
+    if (content == "" || content == "Text") content = EMPTY_STR;
+    ObjectSetText(objName, content, size, font, clr);
+}
+// - - - End: Overload Object Set Text
 
 void setMultiProp(int property, int value, string listObj)
 {

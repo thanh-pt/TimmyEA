@@ -178,12 +178,12 @@ void Fibonacci::updateDefaultProperty()
 void Fibonacci::updateTypeProperty()
 {
     //------------------------------------------
-    ObjectSetText(iTxt0, Fib_0_Text + "  ", 7, NULL, Fib_0_Color);
-    ObjectSetText(iTxt1, Fib_1_Text + "  ", 7, NULL, Fib_1_Color);
-    ObjectSetText(iTxt2, Fib_2_Text + "  ", 7, NULL, Fib_2_Color);
-    ObjectSetText(iTxt3, Fib_3_Text + "  ", 7, NULL, Fib_3_Color);
-    ObjectSetText(iTxt4, Fib_4_Text + "  ", 7, NULL, Fib_4_Color);
-    ObjectSetText(iTxt5, Fib_5_Text + "  ", 7, NULL, Fib_5_Color);
+    setTextContent(iTxt0, Fib_0_Text + "  ", 7, FONT_TEXT, Fib_0_Color);
+    setTextContent(iTxt1, Fib_1_Text + "  ", 7, FONT_TEXT, Fib_1_Color);
+    setTextContent(iTxt2, Fib_2_Text + "  ", 7, FONT_TEXT, Fib_2_Color);
+    setTextContent(iTxt3, Fib_3_Text + "  ", 7, FONT_TEXT, Fib_3_Color);
+    setTextContent(iTxt4, Fib_4_Text + "  ", 7, FONT_TEXT, Fib_4_Color);
+    setTextContent(iTxt5, Fib_5_Text + "  ", 7, FONT_TEXT, Fib_5_Color);
     //------------------------------------------
     setRectangleBackground(cBgM0, Fib_Bkgrd_Color);
     setMultiProp(OBJPROP_RAY, false, iLn00+iLn01+iLn02+iLn03+iLn04+iLn05);
@@ -200,7 +200,7 @@ void Fibonacci::updateTypeProperty()
         setMultiProp(OBJPROP_COLOR, clrNONE, iLn03+iLn04+iLn05 + iTxt3+iTxt4+iTxt5);
     }
     if (mIndexType == FIB_RANGE || mIndexType == FIB_RANGE_EXT){
-        ObjectSetText(iTxt2, EMPTY_STR, 8);
+        setTextContent(iTxt2, EMPTY_STR, 8);
         setMultiProp(OBJPROP_COLOR, clrDarkOrange, iLn02);
     }
     if (mIndexType == FIB_RANGE_EXT) {
@@ -209,9 +209,9 @@ void Fibonacci::updateTypeProperty()
         setRectangleBackground(cBgM0, C'252,252,252');
     }
     if (mIndexType == FIB_RANGE2){
-        ObjectSetText(iTxt0, EMPTY_STR);
-        ObjectSetText(iTxt1, EMPTY_STR);
-        ObjectSetText(iTxt2, EMPTY_STR);
+        setTextContent(iTxt0, EMPTY_STR);
+        setTextContent(iTxt1, EMPTY_STR);
+        setTextContent(iTxt2, EMPTY_STR);
         setRectangleBackground(cBgM0, clrOldLace);
         setMultiProp(OBJPROP_WIDTH, getLineWidth(Fib_Style)+1, iLn00+iLn01);
     }
@@ -288,12 +288,12 @@ void Fibonacci::refreshData()
     setItemPos(iLn04, time0, time1, price4, price4);
     setItemPos(iLn05, time0, time1, price5, price5);
     //-------------------------------------------------
-    setTextPos(iTxt0, time0, price0);
-    setTextPos(iTxt1, time0, price1);
-    setTextPos(iTxt2, time0, price2);
-    setTextPos(iTxt3, time0, price3);
-    setTextPos(iTxt4, time0, price4);
-    setTextPos(iTxt5, time0, price5);
+    setItemPos(iTxt0, time0, price0);
+    setItemPos(iTxt1, time0, price1);
+    setItemPos(iTxt2, time0, price2);
+    setItemPos(iTxt3, time0, price3);
+    setItemPos(iTxt4, time0, price4);
+    setItemPos(iTxt5, time0, price5);
     //-------------------------------------------------
     getCenterPos(time0, time1, price0, price1, centerTime, centerPrice);
 
@@ -310,8 +310,8 @@ void Fibonacci::refreshData()
     //-------------------------------------------------
     if (mIndexType == FIB_RANGE || mIndexType == FIB_RANGE_EXT){
         bool isUp = (price1 > price0);
-        ObjectSetText(iTxt0, isUp ? "𝙇 " : "𝙃 ", 8);
-        ObjectSetText(iTxt1, isUp ? "𝙃 " : "𝙇 ", 8);
+        setTextContent(iTxt0, isUp ? "𝙇 " : "𝙃 ", 8);
+        setTextContent(iTxt1, isUp ? "𝙃 " : "𝙇 ", 8);
         setMultiProp(OBJPROP_COLOR, isUp ? clrGreen : clrRed  , iLn00+iTxt0);
         setMultiProp(OBJPROP_COLOR, isUp ? clrRed   : clrGreen, iLn01+iTxt1);
     }

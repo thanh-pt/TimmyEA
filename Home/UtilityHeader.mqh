@@ -12,7 +12,12 @@
 #define CTX_MAX 10
 
 #define CHART_EVENT_SELECT_CONTEXTMENU CHARTEVENT_CUSTOM+1
-#define FULL_BLOCK "██████████████████████████████████████████████████████████████████"
+#define FULL_BLOCK  "██████████████████████████████████████████████████████████████████"
+#define HALF_BLOCK1 "▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀"
+#define HALF_BLOCK2 "▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄"
+
+#define FONT_BLOCK "Consolas"
+#define FONT_TEXT  "Consolas"
 
 #define MIN(a,b) ((a)<(b)?(a):(b))
 #define MAX(a,b) ((a)>(b)?(a):(b))
