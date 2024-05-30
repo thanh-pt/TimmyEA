@@ -2,8 +2,8 @@
 
 input string          Fib_;    // ●  F I B O N A C I I  ●
 //--------------------------------------------
-input color           Fib_Bkgrd_Color = clrNONE;    // Bg Color
-input ELineStyle      Fib_Style     = eLineSolid;  // Style
+input color           Fib_Bkgrd_Color = clrIvory;   // Bg Color
+      ELineStyle      Fib_Style       = eLineSolid; // Style
 //--------------------------------------------
 string          Fib_0;    //→ Fib 0
 double          Fib_0_Ratio = 0;              // Ratio
@@ -35,10 +35,9 @@ color           Fib_5_Color = clrRed;
 enum FibType
 {
     FIB_RANGE,
-    FIB_FULL,
     FIB_RANGE_EXT,
+    FIB_FULL,
     FIB_NUM,
-    FIB_RANGE2, // Don't use this
 };
 
 class Fibonacci : public BaseItem
@@ -117,7 +116,6 @@ Fibonacci::Fibonacci(CommonData* commonData, MouseInfo* mouseInfo)
     // Init variable type
     mIndexType = 0;
     mNameType[FIB_RANGE]     = "Range";
-    // mNameType[FIB_RANGE2]    = "Range2";
     mNameType[FIB_RANGE_EXT] = "RangeExt";
     mNameType[FIB_FULL]      = "Fib";
     mTypeNum = FIB_NUM;
@@ -200,20 +198,14 @@ void Fibonacci::updateTypeProperty()
         setMultiProp(OBJPROP_COLOR, clrNONE, iLn03+iLn04+iLn05 + iTxt3+iTxt4+iTxt5);
     }
     if (mIndexType == FIB_RANGE || mIndexType == FIB_RANGE_EXT){
-        setTextContent(iTxt2, EMPTY_STR, 8);
-        setMultiProp(OBJPROP_COLOR, clrDarkOrange, iLn02);
-    }
-    if (mIndexType == FIB_RANGE_EXT) {
-        setMultiProp(OBJPROP_RAY, true, iLn00+iLn01);
-        setMultiProp(OBJPROP_WIDTH, getLineWidth(Fib_Style)+1, iLn00+iLn01);
-        setRectangleBackground(cBgM0, C'252,252,252');
-    }
-    if (mIndexType == FIB_RANGE2){
         setTextContent(iTxt0, EMPTY_STR);
         setTextContent(iTxt1, EMPTY_STR);
         setTextContent(iTxt2, EMPTY_STR);
-        setRectangleBackground(cBgM0, clrOldLace);
-        setMultiProp(OBJPROP_WIDTH, getLineWidth(Fib_Style)+1, iLn00+iLn01);
+        setMultiProp(OBJPROP_COLOR, clrDarkOrange, iLn02);
+        if (mIndexType == FIB_RANGE_EXT) {
+            setMultiProp(OBJPROP_RAY, true, iLn00+iLn01);
+            setMultiProp(OBJPROP_WIDTH, getLineWidth(Fib_Style)+1, iLn00+iLn01);
+        }
     }
 }
 void Fibonacci::activateItem(const string& itemId)
@@ -305,13 +297,11 @@ void Fibonacci::refreshData()
     setItemPos(cPtC2, time1, centerPrice);
     //-------------------------------------------------
     int selected = (int)ObjectGet(cBgM0, OBJPROP_SELECTED);
-    setMultiProp(OBJPROP_COLOR   , selected ? gColorMousePoint : clrNONE, cPtL1+cPtL2+cPtR1+cPtR2+cPtC1+cPtC2);
+    setMultiProp(OBJPROP_COLOR   , selected ? gClrPointer : clrNONE, cPtL1+cPtL2+cPtR1+cPtR2+cPtC1+cPtC2);
     setMultiProp(OBJPROP_SELECTED, selected, cPtL1+cPtL2+cPtR1+cPtR2+cPtC1+cPtC2+cBgM0);
     //-------------------------------------------------
     if (mIndexType == FIB_RANGE || mIndexType == FIB_RANGE_EXT){
         bool isUp = (price1 > price0);
-        setTextContent(iTxt0, isUp ? "𝙇 " : "𝙃 ", 8);
-        setTextContent(iTxt1, isUp ? "𝙃 " : "𝙇 ", 8);
         setMultiProp(OBJPROP_COLOR, isUp ? clrGreen : clrRed  , iLn00+iTxt0);
         setMultiProp(OBJPROP_COLOR, isUp ? clrRed   : clrGreen, iLn01+iTxt1);
     }
@@ -396,6 +386,6 @@ void Fibonacci::onItemClick(const string &itemId, const string &objId)
     int selected = (int)ObjectGet(objId, OBJPROP_SELECTED);
     if (selected && pCommonData.mShiftHold) gContextMenu.openContextMenu(objId, mContextType, mIndexType);
     setCtrlItemSelectState(mAllItem, selected);
-    setMultiProp(OBJPROP_COLOR, selected ? gColorMousePoint : clrNONE, cPtL1+cPtL2+cPtR1+cPtR2+cPtC1+cPtC2);
+    setMultiProp(OBJPROP_COLOR, selected ? gClrPointer : clrNONE, cPtL1+cPtL2+cPtR1+cPtR2+cPtC1+cPtC2);
 }
 void Fibonacci::onItemChange(const string &itemId, const string &objId){}

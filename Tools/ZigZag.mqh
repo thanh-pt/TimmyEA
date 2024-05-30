@@ -2,7 +2,7 @@
 
 input string          Zz_;                          // ●  Z I G Z A G  ●
 input color           Zz_Color = clrMidnightBlue;   // Color
-input ELineStyle      Zz_Style = eLineSolid;       // Style
+input ELineStyle      Zz_Style = eLineSolid;        // Style
 
 class ZigZag : public BaseItem
 {

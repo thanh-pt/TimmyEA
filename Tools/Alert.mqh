@@ -20,7 +20,7 @@ enum ENotiType
 input string        _Alert;                         // ●  A L E R T  ●
 input ENotiType     InpNotiType     = ENotiPhone;   // Alert
 input color         InpAlertColor   = clrGainsboro; // Color
-input LINE_STYLE    InpAlertStyle   = STYLE_DOT;    // Style
+      LINE_STYLE    InpAlertStyle   = STYLE_DOT;    // Style
 
 class Alert : public BaseItem
 {

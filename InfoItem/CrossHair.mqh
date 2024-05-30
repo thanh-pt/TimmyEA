@@ -1,9 +1,8 @@
 #include "../Home/CommonData.mqh"
 #include "../Home/UtilityHeader.mqh"
 input string CrossHair_; // ●  C R O S S   H A I R  ●
-input color  CrossHair_Color = clrSlateGray; // Color
-      int    CrossHair_LocalTimeZone = 7;
-input bool   CrossHair_DisplayDateInfo = false; // Date Info
+      int    CrossHair_LocalTimeZone   = 7;
+input bool   CrossHair_DisplayDateInfo = true; // Date Info
 
 class CrossHair
 {
@@ -39,8 +38,8 @@ public:
     {
         ObjectCreate(mVCrossHair, OBJ_RECTANGLE, 0, 0, 0);
         ObjectCreate(mHCrossHair, OBJ_RECTANGLE, 0, 0, 0);
-        setObjectStyle(mVCrossHair, CrossHair_Color, STYLE_DOT, 0);
-        setObjectStyle(mHCrossHair, CrossHair_Color, STYLE_DOT, 0);
+        setObjectStyle(mVCrossHair, gClrPointer, STYLE_DOT, 0);
+        setObjectStyle(mHCrossHair, gClrPointer, STYLE_DOT, 0);
         ObjectSet(mVCrossHair, OBJPROP_SELECTABLE, false);
         ObjectSet(mHCrossHair, OBJPROP_SELECTABLE, false);
 
@@ -62,7 +61,7 @@ public:
         ObjectCreate(mWeekInfo, OBJ_LABEL, 0, 0, 0);
         setTextContent(mWeekInfo, "", 10, FONT_BLOCK);
         ObjectSet(mWeekInfo, OBJPROP_SELECTABLE, false);
-        ObjectSet(mWeekInfo, OBJPROP_COLOR, CrossHair_Color);
+        ObjectSet(mWeekInfo, OBJPROP_COLOR, gClrPointer);
         ObjectSet(mWeekInfo, OBJPROP_YDISTANCE, CrossHair_DisplayDateInfo ? 25 : 15);
         ObjectSetInteger(0, mWeekInfo, OBJPROP_CORNER , CORNER_LEFT_LOWER);
         ObjectSetString( 0, mWeekInfo, OBJPROP_TOOLTIP,"\n");
@@ -71,7 +70,7 @@ public:
         ObjectCreate(mDateInfo, OBJ_LABEL, 0, 0, 0);
         setTextContent(mDateInfo, "", 10, FONT_BLOCK);
         ObjectSet(mDateInfo, OBJPROP_SELECTABLE, false);
-        ObjectSet(mDateInfo, OBJPROP_COLOR, CrossHair_Color);
+        ObjectSet(mDateInfo, OBJPROP_COLOR, gClrPointer);
         ObjectSet(mDateInfo, OBJPROP_YDISTANCE, CrossHair_DisplayDateInfo ? 15 : 0);
         ObjectSetInteger(0, mDateInfo, OBJPROP_CORNER , CORNER_LEFT_LOWER);
         ObjectSetString( 0, mDateInfo, OBJPROP_TOOLTIP,"\n");
@@ -81,7 +80,7 @@ public:
         ObjectSetInteger(ChartID(), mPriceInfo, OBJPROP_CORNER , CORNER_RIGHT_UPPER);
         ObjectSetInteger(ChartID(), mPriceInfo, OBJPROP_ANCHOR , ANCHOR_RIGHT_UPPER);
         setTextContent(mPriceInfo, "", 8, FONT_BLOCK);
-        ObjectSet(mPriceInfo, OBJPROP_COLOR, CrossHair_Color);
+        ObjectSet(mPriceInfo, OBJPROP_COLOR, gClrPointer);
         ObjectSet(mPriceInfo, OBJPROP_XDISTANCE, 0);
         ObjectSetString( 0, mPriceInfo, OBJPROP_TOOLTIP,"\n");
         ObjectSet(mPriceInfo, OBJPROP_SELECTABLE, false);
@@ -99,7 +98,7 @@ public:
             }
             mIsHided = false;
             ObjectSet(mInfoBkgn, OBJPROP_COLOR, clrWhite);
-            setMultiProp(OBJPROP_COLOR, CrossHair_Color, mDateInfo + mWeekInfo + mPriceInfo
+            setMultiProp(OBJPROP_COLOR, gClrPointer, mDateInfo + mWeekInfo + mPriceInfo
                                                        + mVCrossHair + mHCrossHair);
         }
         else

@@ -45,19 +45,19 @@ string getAltName(string name){
 input string Trend_; // ●  T R E N D  ●
       int        Trend_amount       = 7;            // Trend amount:
 //--------------------------------------------
-input string     Trend_1_Name       = "Flow-";           // → Trend 1
+input string     Trend_1_Name       = "Flow-";          // → Trend 1
 input ETrendText Trend_1_TxtPos     = ETrendTextCenter; // Text Position
 input ELineStyle Trend_1_Style      = eLineDot;         // Style
 input color      Trend_1_Color      = clrNavy;          // Color
 //--------------------------------------------
-input string     Trend_2_Name       = "BoS-TF";            // → Trend 2
+input string     Trend_2_Name       = "BoS-TF";         // → Trend 2
 input ETrendText Trend_2_TxtPos     = ETrendTextCenter; // Text Position
 input ELineStyle Trend_2_Style      = eLineBold;        // Style
 input color      Trend_2_Color      = clrNavy;          // Color
 //--------------------------------------------
 input string     Trend_3_Name       = "Swept- x";          // → Trend 3
 input ETrendText Trend_3_TxtPos     = ETrendTextRight;  // Text Position
-input ELineStyle Trend_3_Style      = eLineSolid;      // Style
+input ELineStyle Trend_3_Style      = eLineSolid;       // Style
 input color      Trend_3_Color      = clrNavy;          // Color
 //--------------------------------------------
 input string     Trend_4_Name       = "Ch";             // → Trend 4
@@ -67,30 +67,30 @@ input color      Trend_4_Color      = clrNavy;          // Color
 //--------------------------------------------
 input string     Trend_5_Name       = "IRL";            // → Trend 5
 input ETrendText Trend_5_TxtPos     = ETrendTextCenter; // Text Position
-input ELineStyle Trend_5_Style      = eLineSolid;      // Style
+input ELineStyle Trend_5_Style      = eLineSolid;       // Style
 input color      Trend_5_Color      = clrGreen;         // Color
 //--------------------------------------------
 input string     Trend_6_Name       = "ERL";            // → Trend 6
 input ETrendText Trend_6_TxtPos     = ETrendTextRight;  // Text Position
-input ELineStyle Trend_6_Style      = eLineBold;      // Style
+input ELineStyle Trend_6_Style      = eLineBold;        // Style
 input color      Trend_6_Color      = clrGreen;         // Color
 //--------------------------------------------
-input string     Trend_7_Name       = "Arw-";            // → Trend 7
-input ETrendText Trend_7_TxtPos     = ETrendTextCenterArr; // Text Position
-input ELineStyle Trend_7_Style      = eLineSolid;      // Style
-input color      Trend_7_Color      = clrNavy;          // Color
+input string     Trend_7_Name       = "Arw-";               // → Trend 7
+input ETrendText Trend_7_TxtPos     = ETrendTextCenterArr;  // Text Position
+input ELineStyle Trend_7_Style      = eLineSolid;           // Style
+input color      Trend_7_Color      = clrNavy;              // Color
 //--------------------------------------------
 
 // --- Reserved ---
-string     Trend_8_Name       = "Reserved";            // → Trend 8
-ETrendText Trend_8_TxtPos     = ETrendTextCenter; // Text Position
-ELineStyle Trend_8_Style      = eLineSolid;      // Style
-color      Trend_8_Color      = clrGreen;         // Color
+string     Trend_8_Name       = "Reserved";         // → Trend 8
+ETrendText Trend_8_TxtPos     = ETrendTextCenter;   // Text Position
+ELineStyle Trend_8_Style      = eLineSolid;         // Style
+color      Trend_8_Color      = clrGreen;           // Color
 //--------------------------------------------
-string     Trend_9_Name       = "Reserved";            // → Trend 9
-ETrendText Trend_9_TxtPos     = ETrendTextCenter; // Text Position
-ELineStyle Trend_9_Style      = eLineSolid;      // Style
-color      Trend_9_Color      = clrNavy;          // Color
+string     Trend_9_Name       = "Reserved";         // → Trend 9
+ETrendText Trend_9_TxtPos     = ETrendTextCenter;   // Text Position
+ELineStyle Trend_9_Style      = eLineSolid;         // Style
+color      Trend_9_Color      = clrNavy;            // Color
 
 enum TrendType
 {
@@ -347,7 +347,7 @@ void Trend::refreshData()
     // Customization
 
     int selected = (int)ObjectGet(cLnM0, OBJPROP_SELECTED);
-    setMultiProp(OBJPROP_COLOR   , selected ? gColorMousePoint : clrNONE, cPt01+cPt02);
+    setMultiProp(OBJPROP_COLOR   , selected ? gClrPointer : clrNONE, cPt01+cPt02);
 }
 
 void Trend::createItem()
@@ -455,7 +455,7 @@ void Trend::onItemClick(const string &itemId, const string &objId)
     int selected = (int)ObjectGet(objId, OBJPROP_SELECTED);
     if (selected && pCommonData.mShiftHold) gContextMenu.openContextMenu(objId, mContextType, mIndexType);
     setCtrlItemSelectState(mAllItem, selected);
-    setMultiProp(OBJPROP_COLOR, selected ? gColorMousePoint : clrNONE, cPt01+cPt02);
+    setMultiProp(OBJPROP_COLOR, selected ? gClrPointer : clrNONE, cPt01+cPt02);
 }
 void Trend::onItemChange(const string &itemId, const string &objId)
 {

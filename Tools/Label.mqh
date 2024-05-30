@@ -1,7 +1,6 @@
 #include "../Base/BaseItem.mqh"
 
-input string Label_; // ●  L A B E L  ●
-input color  Label_Color = clrMidnightBlue; // Color
+// input string Label_; // ●  L A B E L  ●
 
 enum LabelTextType
 {
@@ -91,8 +90,8 @@ void LabelText::createItem()
 void LabelText::updateDefaultProperty()
 {
     ObjectSet(iTxBg, OBJPROP_SELECTABLE, false);
-    setTextContent(cTxtM, getRandStr(), 10, FONT_BLOCK, Label_Color);
-    setTextContent(iTxBg,           "", 20, FONT_BLOCK, clrLightGray);
+    setTextContent(cTxtM, getRandStr(), 10, FONT_BLOCK, gClrForegrnd);
+    setTextContent(iTxBg,           "", 20, FONT_BLOCK, gClrTextBgnd);
 }
 void LabelText::updateTypeProperty(){}
 void LabelText::activateItem(const string& itemId)
@@ -283,6 +282,7 @@ void LabelText::onUserRequest(const string &itemId, const string &objId)
     int anchor  = (int)  ObjectGetInteger(ChartID(), cTxtM, OBJPROP_ANCHOR);
     int corner  = (int)  ObjectGetInteger(ChartID(), cTxtM, OBJPROP_CORNER);
 
+    ObjectSet(objCTxtX, OBJPROP_SELECTED, true);
     ObjectSet(objCTxtX, OBJPROP_XDISTANCE, posX);
     ObjectSet(objCTxtX, OBJPROP_YDISTANCE, posY+(newIdx)*spaceSize);
     setTextContent(objCTxtX, getRandStr(), size, font, c);
@@ -291,10 +291,11 @@ void LabelText::onUserRequest(const string &itemId, const string &objId)
 
     ObjectSet(objiTBgX, OBJPROP_XDISTANCE, posX);
     ObjectSet(objiTBgX, OBJPROP_YDISTANCE, posY+(newIdx)*spaceSize);
-    setTextContent(objiTBgX, getHalfBlock1(StringLen(ObjectDescription(objCTxtX))), size*2, font, clrLightGray);
+    setTextContent(objiTBgX, getHalfBlock1(StringLen(ObjectDescription(objCTxtX))), size*2, font, gClrTextBgnd);
     ObjectSetInteger(ChartID(), objiTBgX, OBJPROP_ANCHOR, anchor);
     ObjectSetInteger(ChartID(), objiTBgX, OBJPROP_CORNER, corner);
     ObjectSet(objiTBgX, OBJPROP_SELECTABLE, false);
 
+    refreshData();
     gContextMenu.clearContextMenu();
 }

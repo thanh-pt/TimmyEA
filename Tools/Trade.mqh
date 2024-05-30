@@ -23,7 +23,6 @@ input e_display       Trd_ShowStats     = OPTION;  //Show Stats
 input e_display       Trd_ShowDollar    = HIDE;    //Show Dollar
 //-------------------------------------------------
 input string          Trd_apperence; //→ Color:
-      color           Trd_TextColor     = clrMidnightBlue;   // Text
       int             Trd_TextSize      = 8;                 // Text Size
 input color           Trd_TpColor       = clrSteelBlue;      // TP Line
 input color           Trd_SlColor       = clrChocolate;      // SL Line
@@ -207,7 +206,7 @@ void Trade::updateDefaultProperty()
     setMultiProp(OBJPROP_RAY       , false, iLnTp+iLnBe+iLnEn+iLnSl);
     setMultiProp(OBJPROP_SELECTABLE, false, iBgTP+iLnTp+iLnBe+iLnEn+iLnSl+iTxT2+iTxE2+iTxS2+iTxtT+iTxtE+iTxtS+iTxtB);
 
-    setMultiProp(OBJPROP_COLOR, gColorMousePoint, cPtTP+cPtSL+cPtEN+cPtWD+cPtBE);
+    setMultiProp(OBJPROP_COLOR, gClrPointer, cPtTP+cPtSL+cPtEN+cPtWD+cPtBE);
     //-------------------------------------------------
     ObjectSet(cBgSl, OBJPROP_COLOR, Trd_SlBkgrdColor);
     ObjectSet(iBgTP, OBJPROP_COLOR, Trd_TpBkgrdColor);
@@ -217,7 +216,7 @@ void Trade::updateDefaultProperty()
     setMultiProp(OBJPROP_COLOR, Trd_TpColor  , iLnTp+iLnBe);
     setMultiProp(OBJPROP_COLOR, Trd_EnColor  , iLnEn);
     setMultiProp(OBJPROP_COLOR, Trd_SlColor  , iLnSl);
-    setMultiProp(OBJPROP_COLOR, Trd_TextColor, iTxtT+iTxtE+iTxtS+iTxtB+iTxT2+iTxE2+iTxS2);
+    setMultiProp(OBJPROP_COLOR, gClrForegrnd   , iTxtT+iTxtE+iTxtS+iTxtB+iTxT2+iTxE2+iTxS2);
     //-------------------------------------------------
     setMultiProp(OBJPROP_WIDTH   , Trd_LineWidth, iLnTp+iLnEn+iLnSl);
     setMultiProp(OBJPROP_FONTSIZE, Trd_TextSize , iTxT2+iTxE2+iTxS2+iTxtT+iTxtE+iTxtS+iTxtB+iTxT2+iTxE2+iTxS2);
@@ -386,7 +385,7 @@ void Trade::refreshData()
     setTextContent(iTxtS, strSlInfo);
     setTextContent(iTxtB, strBeInfo);
     int selected = (int)ObjectGet(cPtWD, OBJPROP_SELECTED);
-    setMultiProp(OBJPROP_COLOR, selected ? gColorMousePoint : clrNONE, cPtTP+cPtSL+cPtEN+cPtWD+cPtBE);
+    setMultiProp(OBJPROP_COLOR, selected ? gClrPointer : clrNONE, cPtTP+cPtSL+cPtEN+cPtWD+cPtBE);
 
 }
 void Trade::finishedJobDone()
@@ -464,7 +463,7 @@ void Trade::onItemClick(const string &itemId, const string &objId)
     }
 #endif
     setCtrlItemSelectState(mAllItem, selected);
-    setMultiProp(OBJPROP_COLOR, selected ? gColorMousePoint : clrNONE, cPtTP+cPtSL+cPtEN+cPtWD+cPtBE);
+    setMultiProp(OBJPROP_COLOR, selected ? gClrPointer : clrNONE, cPtTP+cPtSL+cPtEN+cPtWD+cPtBE);
 }
 void Trade::onItemChange(const string &itemId, const string &objId)
 {

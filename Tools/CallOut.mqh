@@ -1,8 +1,8 @@
 #include "../Base/BaseItem.mqh"
 
-input string CallOut_;                              // ●  C A L L   O U T  ●
-input color  CallOut_Color    = clrMidnightBlue;    // Color
-input int    CallOut_FontSize = 10;                 // Font Size
+// input string CallOut_;                              // ●  C A L L   O U T  ●
+      int    CallOut_FontSize = 10;                 // Font Size
+// input string InpCallOutPreset = "❌";    // Preset
 
 
 string UNDER_LINE = "________________________________________________________________________________________";
@@ -89,11 +89,11 @@ void CallOut::updateDefaultProperty()
 }
 void CallOut::updateTypeProperty()
 {
-    setObjectStyle(cLn01, CallOut_Color, 0, 1);
+    setObjectStyle(cLn01, gClrForegrnd, 0, 1);
     //-------------------------------------------------------------
-    setTextContent(cTxtM, DoubleToString(pCommonData.mMousePrice, 5), CallOut_FontSize  , FONT_BLOCK, CallOut_Color);
-    setTextContent(iTxtU,                                    "_____", CallOut_FontSize  , FONT_BLOCK, CallOut_Color);
-    setTextContent(iTxBg,                           getHalfBlock2(5), CallOut_FontSize*2, FONT_BLOCK, clrLightGray);
+    setTextContent(cTxtM, DoubleToString(pCommonData.mMousePrice, 5), CallOut_FontSize  , FONT_BLOCK, gClrForegrnd);
+    setTextContent(iTxtU,                                    "_____", CallOut_FontSize  , FONT_BLOCK, gClrForegrnd);
+    setTextContent(iTxBg,                           getHalfBlock2(5), CallOut_FontSize*2, FONT_BLOCK, gClrTextBgnd);
     setCtrlItemSelectState(mAllItem, true);
 }
 void CallOut::activateItem(const string& itemId)

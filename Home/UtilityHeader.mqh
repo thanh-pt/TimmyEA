@@ -19,6 +19,11 @@
 #define FONT_BLOCK "Consolas"
 #define FONT_TEXT  "Consolas"
 
+color gClrPointer   = clrSlateGray;
+color gClrForegrnd  = clrMidnightBlue;
+color gClrTextBgnd  = clrLightGray;
+color gClrTextBgHl  = clrMoccasin;
+
 #define MIN(a,b) ((a)<(b)?(a):(b))
 #define MAX(a,b) ((a)>(b)?(a):(b))
 

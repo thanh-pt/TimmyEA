@@ -1,8 +1,6 @@
 #include "../Home/UtilityHeader.mqh"
 
-input string ContexMenu_; // ●  C O N T E X T   M E N U  ●
-input color ContxtMenu_BgColor1  = clrGray;      // Bg Color
-input color ContxtMenu_BgColor2  = clrLightGray; // Selected Color
+// input string ContexMenu_; // ●  C O N T E X T   M E N U  ●
 
 #define MAX_ROW 4
 
@@ -25,7 +23,6 @@ public:
     }
     virtual void onItemClick(const string &objId)
     {
-        // Todo check ContextMenu item or not?
         if (StringFind(objId, "ContextMenu") == -1) return;
 
         string sparamItems[];
@@ -38,12 +35,12 @@ public:
         {
             itemBgnd = "ContextMenuBgnd_"+IntegerToString(i);
             if (i == mActivePos){
-                ObjectSet(itemBgnd, OBJPROP_COLOR, ContxtMenu_BgColor2);
+                ObjectSet(itemBgnd, OBJPROP_COLOR, gClrTextBgHl);
                 string itemName = "ContextMenuName_"+IntegerToString(i);
                 mActiveItemStr = StringTrimLeft(ObjectDescription(itemName));
             }
             else {
-                ObjectSet(itemBgnd, OBJPROP_COLOR, ContxtMenu_BgColor1);
+                ObjectSet(itemBgnd, OBJPROP_COLOR, gClrTextBgnd);
             }
         }
         gController.handleSparamEvent(CHART_EVENT_SELECT_CONTEXTMENU, mActiveObjectId);
@@ -88,8 +85,8 @@ private:
         ObjectCreate(itemName, OBJ_LABEL, 0, 0, 0);
         ObjectSet(itemBgnd, OBJPROP_SELECTABLE, false);
         ObjectSet(itemName, OBJPROP_SELECTABLE, false);
-        setTextContent(itemBgnd, getHalfBlock1(mMaxLength), 20, FONT_BLOCK, ContxtMenu_BgColor1);
-        setTextContent(itemName,                  " "+name, 10, FONT_BLOCK, gForegroundColor);
+        setTextContent(itemBgnd, getHalfBlock1(mMaxLength), 20, FONT_BLOCK, gClrTextBgnd);
+        setTextContent(itemName,                  " "+name, 10, FONT_BLOCK, gClrForegrnd);
         ObjectSetInteger(0, itemName, OBJPROP_ANCHOR, ANCHOR_LEFT_UPPER);
         ObjectSetInteger(0, itemBgnd, OBJPROP_ANCHOR, ANCHOR_LEFT_UPPER);
 
@@ -104,7 +101,7 @@ private:
 
         if (pos == mActivePos)
         {
-            ObjectSet(itemBgnd, OBJPROP_COLOR, ContxtMenu_BgColor2);
+            ObjectSet(itemBgnd, OBJPROP_COLOR, gClrTextBgHl);
         }
     }
     void deleteItem(int pos)

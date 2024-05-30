@@ -239,7 +239,7 @@ void Rectangle::refreshData()
     scanBackgroundOverlap(cBgM0);
     //-------------------------------------------------
     int selected = (int)ObjectGet(cBgM0, OBJPROP_SELECTED);
-    setMultiProp(OBJPROP_COLOR   , selected ? gColorMousePoint : clrNONE, cPtL1+cPtL2+cPtR1+cPtR2+cPtC1+cPtC2);
+    setMultiProp(OBJPROP_COLOR   , selected ? gClrPointer : clrNONE, cPtL1+cPtL2+cPtR1+cPtR2+cPtC1+cPtC2);
 }
 void Rectangle::finishedJobDone(){}
 
@@ -319,7 +319,7 @@ void Rectangle::onItemClick(const string &itemId, const string &objId)
     int selected = (int)ObjectGet(objId, OBJPROP_SELECTED);
     if (selected && pCommonData.mShiftHold) gContextMenu.openContextMenu(objId, mContextType, mIndexType);
     setCtrlItemSelectState(mAllItem, selected);
-    setMultiProp(OBJPROP_COLOR, selected ? gColorMousePoint : clrNONE, cPtL1+cPtL2+cPtR1+cPtR2+cPtC1+cPtC2);
+    setMultiProp(OBJPROP_COLOR, selected ? gClrPointer : clrNONE, cPtL1+cPtL2+cPtR1+cPtR2+cPtC1+cPtC2);
 }
 void Rectangle::onItemChange(const string &itemId, const string &objId)
 {
