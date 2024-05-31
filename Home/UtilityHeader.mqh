@@ -1,31 +1,37 @@
-#ifndef UtilityHeader_mql
-#define UtilityHeader_mql
+#ifndef UtilityHeader_mqh
+#define UtilityHeader_mqh
 
-#define STATIC_TAG          "%"
-#define BG_TAG              "BgOverlapFix"
-// #define TAG_CTRL "_zct" // TODO <- update to this
-#define TAG_CTRM "_cM"
-#define TAG_CTRL "_c"
-#define TAG_INFO "_0i"
-#define EMPTY_STR "‎"
+//// TAG DEFINE
+#define TAG_STATIC  "%"
+#define TAG_BGOVL   "BgOvlFix"
+#define TAG_CTRM    "_cM"
+#define TAG_CTRL    "_c"
+#define TAG_INFO    "_0i"
+
+
 
 #define CTX_MAX 10
-
 #define CHART_EVENT_SELECT_CONTEXTMENU CHARTEVENT_CUSTOM+1
-#define FULL_BLOCK  "██████████████████████████████████████████████████████████████████"
-#define HALF_BLOCK1 "▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀"
-#define HALF_BLOCK2 "▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄"
 
+
+//// HARD TEXT DEFINE
+#define FULL_BL     "█████████████████████████"
+#define HALF_UP_BL  "▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀"
+#define HALF_DW_BL  "▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄"
+#define ULINE_BL    "____________________________________________________________________"
+#define EMPTY_BL    "‎"
+
+
+//// FONT DEFINE
 #define FONT_BLOCK "Consolas"
 #define FONT_TEXT  "Consolas"
 
+
+//// COLOR DEFINE
 color gClrPointer   = clrSlateGray;
 color gClrForegrnd  = clrMidnightBlue;
 color gClrTextBgnd  = clrLightGray;
 color gClrTextBgHl  = clrMoccasin;
-
-#define MIN(a,b) ((a)<(b)?(a):(b))
-#define MAX(a,b) ((a)>(b)?(a):(b))
 
 #include "UtilityStore/SyncItem.mqh"
 #include "UtilityStore/GetAction.mqh"
@@ -75,7 +81,7 @@ void EraseAll()
     {
         string objName = ObjectName(i);
         // if (StringFind(objName, "Trade") != -1) continue;
-        if (StringFind(objName, STATIC_TAG) != -1) continue;
+        if (StringFind(objName, TAG_STATIC) != -1) continue;
         ObjectDelete(objName);
     }
 }
@@ -85,7 +91,7 @@ void EraseLowerTF()
     for(int i=ObjectsTotal() - 1 ;  i >= 0 ;  i--)
     {
         string objName = ObjectName(i);
-        if (StringFind(objName, STATIC_TAG) != -1) continue;
+        if (StringFind(objName, TAG_STATIC) != -1) continue;
         string sparamItems[];
         int k1=StringSplit(objName,'_',sparamItems);
         if (k1 == 3)
@@ -107,7 +113,7 @@ void EraseThisTF()
     {
         string objName = ObjectName(i);
         if (StringFind(objName, "Trade") != -1) continue;
-        if (StringFind(objName, STATIC_TAG) != -1) continue;
+        if (StringFind(objName, TAG_STATIC) != -1) continue;
 
         string sparamItems[];
         int k1=StringSplit(objName,'_',sparamItems);
@@ -140,9 +146,9 @@ void removeBackgroundOverlap(string target)
         if (ObjectFind(ChartID(), objName) != 0) continue;
         if (ObjectType(objName) != OBJ_RECTANGLE) continue;
         if (ObjectGet (objName, OBJPROP_BACK) == false) continue;
-        if (StringFind(objName, BG_TAG) != -1) continue;
+        if (StringFind(objName, TAG_BGOVL) != -1) continue;
         if (objName == target) continue;
-        bgItem = BG_TAG;
+        bgItem = TAG_BGOVL;
         int objId = getObjectTimeId(objName);
         if (targetId > objId) bgItem += (IntegerToString(targetId) +"."+ IntegerToString(objId));
         else bgItem += (IntegerToString(objId) +"."+ IntegerToString(targetId));
@@ -155,7 +161,7 @@ void EraseBgOverlap()
     for(int i=ObjectsTotal() - 1 ;  i >= 0 ;  i--)
     {
         string objName = ObjectName(i);
-        if (StringFind(objName, BG_TAG) != -1) ObjectDelete(objName);
+        if (StringFind(objName, TAG_BGOVL) != -1) ObjectDelete(objName);
     }
 }
 
@@ -179,8 +185,8 @@ color increaseLum(color c)
     r /= 255;
     g /= 255;
     b /= 255;
-    double max = MAX(MAX(r,g),b);
-    double min = MIN(MIN(r,g),b);
+    double max = MathMax(MathMax(r,g),b);
+    double min = MathMin(MathMin(r,g),b);
     h = s = l = (max + min) / 2;
     if (max == min) h = s = 0; // achromatic
     else
@@ -220,8 +226,8 @@ color decreaseLum(color c)
     r /= 255;
     g /= 255;
     b /= 255;
-    double max = MAX(MAX(r,g),b);
-    double min = MIN(MIN(r,g),b);
+    double max = MathMax(MathMax(r,g),b);
+    double min = MathMin(MathMin(r,g),b);
     h = s = l = (max + min) / 2;
     if (max == min) h = s = 0; // achromatic
     else
@@ -283,7 +289,7 @@ void scanBackgroundOverlap(string target)
         if (ObjectType(objName) != OBJ_RECTANGLE) continue;
         if (ObjectGet (objName, OBJPROP_BACK) == false) continue;
         if (ObjectGet (objName, OBJPROP_COLOR) == clrNONE) continue;
-        if (StringFind(objName, BG_TAG) != -1) continue;
+        if (StringFind(objName, TAG_BGOVL) != -1) continue;
         if (StringFind(objName, Rectangle::Tag) == -1) continue;
         if (objName == target) continue;
 
@@ -304,7 +310,7 @@ void scanBackgroundOverlap(string target)
             ctime2 = tempT;
         }
         int objId = getObjectTimeId(objName);
-        bgItem = BG_TAG;
+        bgItem = TAG_BGOVL;
         if (targetId > objId) bgItem += (IntegerToString(targetId) +"."+ IntegerToString(objId));
         else bgItem += (IntegerToString(objId) +"."+ IntegerToString(targetId));
 

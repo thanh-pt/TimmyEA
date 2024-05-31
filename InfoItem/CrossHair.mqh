@@ -20,12 +20,12 @@ private:
 public:
     CrossHair(CommonData* commonData)
     {
-        mVCrossHair = "." + STATIC_TAG + "VCrossHair";
-        mHCrossHair = "." + STATIC_TAG + "HCrossHair";
-        mInfoBkgn   = "." + STATIC_TAG + "0InfoBkgn";
-        mWeekInfo   = "." + STATIC_TAG + "mWeekInfo";
-        mDateInfo   = "." + STATIC_TAG + "mDateInfo";
-        mPriceInfo  = "." + STATIC_TAG + "mPriceInfo";
+        mVCrossHair = "." + TAG_STATIC + "VCrossHair";
+        mHCrossHair = "." + TAG_STATIC + "HCrossHair";
+        mInfoBkgn   = "." + TAG_STATIC + "0InfoBkgn";
+        mWeekInfo   = "." + TAG_STATIC + "mWeekInfo";
+        mDateInfo   = "." + TAG_STATIC + "mDateInfo";
+        mPriceInfo  = "." + TAG_STATIC + "mPriceInfo";
         pCommonData = commonData;
 
         if (ChartPeriod() == PERIOD_MN1) mTimeOffset = ChartPeriod()*60*100;

@@ -147,7 +147,7 @@ void LabelText::refreshData()
         objiTBgX = iTBgX +"#"+ IntegerToString(idx);
     }
     idx--;
-    string bgBlock = getHalfBlock1(maxLen);
+    string bgBlock = getHalfUpBL(maxLen);
     while (idx >= 1){
         objiTBgX = iTBgX +"#"+ IntegerToString(idx--);
         setTextContent(objiTBgX, bgBlock);
@@ -291,7 +291,8 @@ void LabelText::onUserRequest(const string &itemId, const string &objId)
 
     ObjectSet(objiTBgX, OBJPROP_XDISTANCE, posX);
     ObjectSet(objiTBgX, OBJPROP_YDISTANCE, posY+(newIdx)*spaceSize);
-    setTextContent(objiTBgX, getHalfBlock1(StringLen(ObjectDescription(objCTxtX))), size*2, font, gClrTextBgnd);
+    // todo: case bottom left/ bottom right -> getHalfDwBL
+    setTextContent(objiTBgX, getHalfUpBL(StringLen(ObjectDescription(objCTxtX))), size*2, font, gClrTextBgnd);
     ObjectSetInteger(ChartID(), objiTBgX, OBJPROP_ANCHOR, anchor);
     ObjectSetInteger(ChartID(), objiTBgX, OBJPROP_CORNER, corner);
     ObjectSet(objiTBgX, OBJPROP_SELECTABLE, false);

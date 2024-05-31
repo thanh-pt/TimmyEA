@@ -1,3 +1,6 @@
+#ifndef MouseInfo_mqh
+#define MouseInfo_mqh
+
 #include "../Home/CommonData.mqh"
 
 class MouseInfo
@@ -10,8 +13,8 @@ public:
     MouseInfo(CommonData* commonData)
     {
         pCommonData = commonData;
-        mObjMouseInfo = STATIC_TAG+"MouseInfo";
-        mObjMouseBgnd = STATIC_TAG+"mObjMouseBgnd";
+        mObjMouseInfo = TAG_STATIC+"MouseInfo";
+        mObjMouseBgnd = TAG_STATIC+"mObjMouseBgnd";
         initDrawing();
     }
     void initDrawing()
@@ -46,8 +49,10 @@ public:
 public:
     void setText(const string tIcon)
     {
-        setTextContent(mObjMouseInfo, " " + tIcon);
-        if (tIcon != "") setTextContent(mObjMouseBgnd, getHalfBlock2(StringLen(tIcon)));
+        setTextContent(mObjMouseInfo, tIcon);
+        if (tIcon != "") setTextContent(mObjMouseBgnd, getHalfDwBL(StringLen(tIcon)));
         else setTextContent(mObjMouseBgnd, "");
     }
 };
+
+#endif

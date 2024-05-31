@@ -5,7 +5,6 @@
 // input string InpCallOutPreset = "❌";    // Preset
 
 
-string UNDER_LINE = "________________________________________________________________________________________";
 
 class CallOut : public BaseItem
 {
@@ -93,7 +92,7 @@ void CallOut::updateTypeProperty()
     //-------------------------------------------------------------
     setTextContent(cTxtM, DoubleToString(pCommonData.mMousePrice, 5), CallOut_FontSize  , FONT_BLOCK, gClrForegrnd);
     setTextContent(iTxtU,                                    "_____", CallOut_FontSize  , FONT_BLOCK, gClrForegrnd);
-    setTextContent(iTxBg,                           getHalfBlock2(5), CallOut_FontSize*2, FONT_BLOCK, gClrTextBgnd);
+    setTextContent(iTxBg,                           getHalfDwBL(5), CallOut_FontSize*2, FONT_BLOCK, gClrTextBgnd);
     setCtrlItemSelectState(mAllItem, true);
 }
 void CallOut::activateItem(const string& itemId)
@@ -129,8 +128,8 @@ void CallOut::refreshData()
 
     string callOutValue = ObjectDescription(cTxtM);
     int calloutLen = StringLen(callOutValue);
-    setTextContent(iTxtU, StringSubstr(UNDER_LINE, 0, calloutLen));
-    setTextContent(iTxBg, getHalfBlock2(calloutLen));
+    setTextContent(iTxtU, StringSubstr(ULINE_BL, 0, calloutLen));
+    setTextContent(iTxBg, getHalfDwBL(calloutLen));
     if (calloutLen == 7 && StrToDouble(callOutValue) != 0.0)
     {
         setTextContent(cTxtM, DoubleToString(price1,5));

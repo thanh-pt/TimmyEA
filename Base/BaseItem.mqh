@@ -1,3 +1,6 @@
+#ifndef BaseItem_mqh
+#define BaseItem_mqh
+
 #include "../Home/CommonData.mqh"
 #include "../Home/UtilityHeader.mqh"
 #include "../InfoItem/MouseInfo.mqh"
@@ -160,3 +163,4 @@ void BaseItem::onItemDeleted(const string &itemId, const string &objId)
         ObjectDelete("."+mlistItems[i]);
     }
 }
+#endif

@@ -327,7 +327,7 @@ void Rectangle::onItemChange(const string &itemId, const string &objId)
         string description = ObjectDescription(objId);
         if (description != ""){
             setTextContent(objId, "");
-            setTextContent(iTxtC, (description == "-") ? EMPTY_STR : description);
+            setTextContent(iTxtC, (description == "-") ? EMPTY_BL : description);
         }
     }
     onItemDrag(itemId, objId);

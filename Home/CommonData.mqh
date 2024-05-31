@@ -1,3 +1,6 @@
+#ifndef CommonData_mqh
+#define CommonData_mqh
+
 #define SHIFT_HOLD 0x04
 #define CTRL_HOLD  0x08
 
@@ -65,3 +68,5 @@ public:
         ChartTimePriceToXY(ChartID(), 0, mMouseTime, mMousePrice, mMouseX, mMouseY);
     }
 };
+
+#endif

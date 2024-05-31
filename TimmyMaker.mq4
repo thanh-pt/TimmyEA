@@ -4,21 +4,25 @@
 //|                       https://www.youtube.com/@TimmyTraderHamHoc |
 //+------------------------------------------------------------------+
 #property strict
-color gColorMousePoint = clrSlateGray;
+
+#define EA
+// - - - CONFIG BUILD - - - - - - - //
+#ifndef EA                          //
+#property indicator_chart_window    //
+#endif                              //
+// - - - - - - - - - - - - - - -    //
+
 #include "Home/Controller.mqh"
 #include "Home/CommonData.mqh"
 #include "InfoItem/CrossHair.mqh"
 #include "InfoItem/ContextMenu.mqh"
 #include "InfoItem/MouseInfo.mqh"
 
-#define EA
-
 void FinishedJobFunc();
 void detectMouseDraging(const string &sparam);
 
 int    gSymbolDigits= 0;
 double gScaleRange = 0;
-color  gForegroundColor = (color)ChartGetInteger(ChartID(),CHART_COLOR_FOREGROUND,0);
 
 CommonData  gCommonData;
 MouseInfo   gMouseInfo(&gCommonData);

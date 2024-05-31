@@ -85,7 +85,7 @@ private:
         ObjectCreate(itemName, OBJ_LABEL, 0, 0, 0);
         ObjectSet(itemBgnd, OBJPROP_SELECTABLE, false);
         ObjectSet(itemName, OBJPROP_SELECTABLE, false);
-        setTextContent(itemBgnd, getHalfBlock1(mMaxLength), 20, FONT_BLOCK, gClrTextBgnd);
+        setTextContent(itemBgnd, getHalfUpBL(mMaxLength), 20, FONT_BLOCK, gClrTextBgnd);
         setTextContent(itemName,                  " "+name, 10, FONT_BLOCK, gClrForegrnd);
         ObjectSetInteger(0, itemName, OBJPROP_ANCHOR, ANCHOR_LEFT_UPPER);
         ObjectSetInteger(0, itemBgnd, OBJPROP_ANCHOR, ANCHOR_LEFT_UPPER);

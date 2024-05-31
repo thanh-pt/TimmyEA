@@ -42,23 +42,36 @@ void setItemPos(const string& objName, datetime time1, const double price1)
 }
 
 // - - - Begin: Overload Object Set Text
-void setTextContent(string objName, string content){
-    if (content == "" || content == "Text") content = EMPTY_STR;
+void setTextContent(string objName, string content)
+{
+    if (content == "" || content == "Text") {
+        ObjectSetText(objName, EMPTY_BL);
+        return;
+    }
     ObjectSetText(objName, content);
 }
 void setTextContent(string objName, string content, int size)
 {
-    if (content == "" || content == "Text") content = EMPTY_STR;
+    if (content == "" || content == "Text") {
+        ObjectSetText(objName, EMPTY_BL, size);
+        return;
+    }
     ObjectSetText(objName, content, size);
 }
 void setTextContent(string objName, string content, int size, string font)
 {
-    if (content == "" || content == "Text") content = EMPTY_STR;
+    if (content == "" || content == "Text") {
+        ObjectSetText(objName, EMPTY_BL, size, font);
+        return;
+    }
     ObjectSetText(objName, content, size, font);
 }
 void setTextContent(string objName, string content, int size, string font, color clr)
 {
-    if (content == "" || content == "Text") content = EMPTY_STR;
+    if (content == "" || content == "Text") {
+        ObjectSetText(objName, EMPTY_BL, size, font, clr);
+        return;
+    }
     ObjectSetText(objName, content, size, font, clr);
 }
 // - - - End: Overload Object Set Text

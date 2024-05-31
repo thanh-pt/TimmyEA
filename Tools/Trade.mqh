@@ -377,8 +377,8 @@ void Trade::refreshData()
     strRRInfo += "ʀ";
     //-------------------------------------------------
     setTextContent(iTxT2, strTpInfo);
-    setTextContent(iTxE2, EMPTY_STR);
-    setTextContent(iTxS2, EMPTY_STR);
+    setTextContent(iTxE2, EMPTY_BL);
+    setTextContent(iTxS2, EMPTY_BL);
     //-------------------------------------------------
     setTextContent(iTxtT, strRRInfo);
     setTextContent(iTxtE, strEnInfo);
