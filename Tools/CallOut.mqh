@@ -4,7 +4,8 @@
       int    CallOut_FontSize = 10;                 // Font Size
 // input string InpCallOutPreset = "❌";    // Preset
 
-
+#define CTX_LEG  "+Leg"
+#define CTX_XLEG "-Leg"
 
 class CallOut : public BaseItem
 {
@@ -15,6 +16,7 @@ private:
 private:
     string cTxtM;
     string cLn01;
+    string cLn02;
     string iTxtU;
     string iTxBg;
 
@@ -46,7 +48,7 @@ public:
     virtual void onItemDrag(const string &itemId, const string &objId);
     virtual void onItemClick(const string &itemId, const string &objId);
     virtual void onItemChange(const string &itemId, const string &objId);
-    virtual void onItemDeleted(const string &itemId, const string &objId);
+    virtual void onUserRequest(const string &itemId, const string &objId);
 
 public:
     static string getAllItem(string itemId);
@@ -65,6 +67,8 @@ CallOut::CallOut(CommonData* commonData, MouseInfo* mouseInfo)
     mNameType [0] = "CallOut";
     mIndexType = 0;
     mTypeNum = 0;
+
+    mContextType = CTX_LEG + "," + CTX_XLEG;
 }
 
 // Internal Event
@@ -99,10 +103,11 @@ void CallOut::activateItem(const string& itemId)
 {
     cTxtM = itemId + TAG_CTRM + "cTxtM";
     cLn01 = itemId + TAG_CTRL + "cLn01";
+    cLn02 = itemId + TAG_CTRL + "cLn02";
     iTxtU = itemId + TAG_INFO + "iTxtU";
     iTxBg = itemId + TAG_INFO + "iTxBg";
 
-    mAllItem += cTxtM+cLn01+iTxtU+iTxBg;
+    mAllItem += cTxtM+cLn01+cLn02+iTxtU+iTxBg;
 }
 string CallOut::getAllItem(string itemId)
 {
@@ -112,6 +117,7 @@ string CallOut::getAllItem(string itemId)
     //--- Control item ---
     allItem += itemId + TAG_CTRM + "cTxtM";
     allItem += itemId + TAG_CTRL + "cLn01";
+    allItem += itemId + TAG_CTRL + "cLn02";
 
     return allItem;
 }
@@ -122,6 +128,9 @@ void CallOut::refreshData()
     setItemPos(cTxtM, time2, price2);
     setItemPos(iTxtU, time2, price2);
     setItemPos(iTxBg, time2, price2);
+
+    ObjectSet(cLn02, OBJPROP_TIME2 , time2);
+    ObjectSet(cLn02, OBJPROP_PRICE2, price2);
     //-------------------------------------------------------------
     if (time1 > time2) setMultiInts(OBJPROP_ANCHOR, ANCHOR_RIGHT_LOWER, cTxtM+iTxtU+iTxBg);
     else setMultiInts(OBJPROP_ANCHOR, ANCHOR_LEFT_LOWER, cTxtM+iTxtU+iTxBg);
@@ -133,16 +142,6 @@ void CallOut::refreshData()
     if (calloutLen == 7 && StrToDouble(callOutValue) != 0.0)
     {
         setTextContent(cTxtM, DoubleToString(price1,5));
-    }
-    // additional leg
-    int idx = 0;
-    string additionalLeg = cLn01 + IntegerToString(idx);
-    while (ObjectFind(additionalLeg) >= 0)
-    {
-        ObjectSet(additionalLeg, OBJPROP_TIME2 , time2);
-        ObjectSet(additionalLeg, OBJPROP_PRICE2, price2);
-        idx++;
-        additionalLeg = cLn01 + IntegerToString(idx);
     }
 }
 void CallOut::finishedJobDone(){}
@@ -176,17 +175,21 @@ void CallOut::onItemDrag(const string &itemId, const string &objId)
     price1  =           ObjectGet(cLn01, OBJPROP_PRICE1);
     price2  =           ObjectGet(cLn01, OBJPROP_PRICE2);
 
-    if (objId == cTxtM)
-    {
+    if (objId == cTxtM) {
         time2   = (datetime)ObjectGet(cTxtM, OBJPROP_TIME1);
         price2  =           ObjectGet(cTxtM, OBJPROP_PRICE1);
     }
-    else if (pCommonData.mCtrlHold == true)
-    {
+    else if (pCommonData.mCtrlHold == true) {
         double textPrice = ObjectGet(cTxtM, OBJPROP_PRICE1);
-        if (price2 == textPrice)
-        {
+        if (objId == cLn01){
+            price2 = ObjectGet(cTxtM, OBJPROP_PRICE1);
+            time2  = (datetime)ObjectGet(cTxtM, OBJPROP_TIME1);
+
             price1 = pCommonData.mMousePrice;
+            time1  = pCommonData.mMouseTime;
+        }
+        else if (objId == cLn02){
+            setItemPos(objId, pCommonData.mMouseTime, pCommonData.mMousePrice);
         }
     }
 
@@ -197,6 +200,7 @@ void CallOut::onItemClick(const string &itemId, const string &objId)
     if (StringFind(objId, TAG_CTRL) < 0) return;
     int selected = (int)ObjectGet(objId, OBJPROP_SELECTED);
     setCtrlItemSelectState(mAllItem, selected);
+    if (selected && pCommonData.mShiftHold) gContextMenu.openContextMenu(objId, mContextType);
 }
 void CallOut::onItemChange(const string &itemId, const string &objId)
 {
@@ -210,19 +214,17 @@ void CallOut::onItemChange(const string &itemId, const string &objId)
     }
     onItemDrag(itemId, objId);
 }
-void CallOut::onItemDeleted(const string &itemId, const string &objId)
+
+void CallOut::onUserRequest(const string &itemId, const string &objId)
 {
-    if (objId == cTxtM || objId == cLn01 || objId == iTxtU)
-    {
-        BaseItem::onItemDeleted(itemId, objId);
+    touchItem(itemId);
+    if (gContextMenu.mActiveItemStr == CTX_LEG) {
+        ObjectCreate(cLn02, OBJ_TREND, 0, 0, 0);
+        setObjectStyle(cLn02, gClrForegrnd, 0, 1);
+        setItemPos(cLn02, time1+getDistanceBar(10), price1);
+        
+        onItemDrag(itemId, objId);
+    } else if (gContextMenu.mActiveItemStr == CTX_XLEG) {
+        setObjectStyle(cLn02, clrNONE, 0, 0);
     }
-    // additional leg removing
-    int idx = 0;
-    string objName = "";
-    do
-    {
-        objName = cLn01 + IntegerToString(idx);
-        idx++;
-    }
-    while (ObjectDelete(objName) == true);
 }

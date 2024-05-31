@@ -16,8 +16,8 @@ input color             Rect_Dz_Color      = C'209,225,237'; // Dz Color
 input color             Rect_DzLight_Color = C'232,240,247'; // Dz Light Color
 //-----------------------------------------------------------
 
-#define CTX_RANGE   "Range"
-#define CTX_NORANGE "xRange"
+#define CTX_RANGE   "+Range"
+#define CTX_XRANGE  "-Range"
 
 enum RectangleType
 {
@@ -119,7 +119,7 @@ Rectangle::Rectangle(CommonData* commonData, MouseInfo* mouseInfo)
         if (i < mTypeNum-1) mContextType += ",";
     }
     mContextType += "," + CTX_RANGE;
-    mContextType += "," + CTX_NORANGE;
+    mContextType += "," + CTX_XRANGE;
 }
 
 // Internal Event
@@ -356,7 +356,7 @@ void Rectangle::onUserRequest(const string &itemId, const string &objId)
         setObjectStyle(iLn02, clrSilver, 0, 0, true);
         setObjectStyle(iLn03, clrGray, 0, 0, true);
         onItemDrag(itemId, objId);
-    } else if (gContextMenu.mActiveItemStr == CTX_NORANGE) {
+    } else if (gContextMenu.mActiveItemStr == CTX_XRANGE) {
         setObjectStyle(iLn01, clrNONE, 0, 0);
         setObjectStyle(iLn02, clrNONE, 0, 0);
         setObjectStyle(iLn03, clrNONE, 0, 0);

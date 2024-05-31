@@ -204,7 +204,7 @@ void LabelText::onItemClick(const string &itemId, const string &objId)
         idx++;
         objCTxtX = cTxtX +"#"+ IntegerToString(idx);
     }
-    if (selected == true && objId == lastItem && pCommonData.mShiftHold) gContextMenu.openContextMenu(objId, mContextType, -1);
+    if (selected == true && objId == lastItem && pCommonData.mShiftHold) gContextMenu.openContextMenu(objId, mContextType);
 }
 void LabelText::onItemChange(const string &itemId, const string &objId)
 {

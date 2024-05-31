@@ -46,6 +46,10 @@ public:
         gController.handleSparamEvent(CHART_EVENT_SELECT_CONTEXTMENU, mActiveObjectId);
     }
 public:
+    void openContextMenu(const string objId, const string data)
+    {
+        openContextMenu(objId, data, -1);
+    }
     void openContextMenu(const string objId, const string data, const int activePos)
     {
         if (mIsOpen == true) clearContextMenu();

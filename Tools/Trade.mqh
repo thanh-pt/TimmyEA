@@ -457,10 +457,10 @@ void Trade::onItemClick(const string &itemId, const string &objId)
     if (selected && objId == cPtWD && pCommonData.mShiftHold) {
         // onItemDrag(itemId, objId); //=> update lastest data
         if (ObjectDescription(cPtWD) == LIVE_INDI){
-            gContextMenu.openContextMenu(objId, mLiveTradeCtx, -1);
+            gContextMenu.openContextMenu(objId, mLiveTradeCtx);
         }
         else{
-            gContextMenu.openContextMenu(objId, mContextType, -1);
+            gContextMenu.openContextMenu(objId, mContextType);
         }   
     }
     setCtrlItemSelectState(mAllItem, selected);
