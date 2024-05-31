@@ -267,7 +267,7 @@ void Controller::handleSparamEvent(const int id, const string& sparam)
     switch (id)
     {
     case CHARTEVENT_OBJECT_DELETE:
-        if (StringFind(sparam, TAG_CTRL) == -1) return;
+        if (StringFind(sparam, TAG_CTRM) == -1) return;
         mListItem[receiverItem].onItemDeleted(itemId, sparam);
         gContextMenu.clearContextMenu();
         break;

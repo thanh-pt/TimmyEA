@@ -13,6 +13,7 @@ private:
     
 // Component name
 private:
+    string cPtM0;
     string cLnXX;
 // Value define for Item
 private:
@@ -68,6 +69,11 @@ void ZigZag::prepareActive()
 }
 void ZigZag::createItem()
 {
+    if (mLineIndex == 0){
+        ObjectCreate(cPtM0, OBJ_ARROW, 0, pCommonData.mMouseTime, pCommonData.mMousePrice);
+        ObjectSet(cPtM0, OBJPROP_COLOR, clrNONE);
+        ObjectSetString(ChartID(), cPtM0 ,OBJPROP_TOOLTIP,"\n");
+    }
     mTempLine = cLnXX + "#" + IntegerToString(mLineIndex++);
     ObjectCreate(mTempLine, OBJ_TREND, 0, pCommonData.mMouseTime, pCommonData.mMousePrice);
     updateDefaultProperty();
@@ -81,12 +87,21 @@ void ZigZag::updateDefaultProperty()
 void ZigZag::updateTypeProperty(){}
 void ZigZag::activateItem(const string& itemId)
 {
-    cLnXX = itemId + TAG_CTRM + "cLnXX";
+    cPtM0 = itemId + TAG_CTRM + "cPtM0";
+    cLnXX = itemId + TAG_CTRL + "cLnXX";
+    mAllItem += cPtM0;
+    int i = 0;
+    string objName = cLnXX + "#" + IntegerToString(i++);
+    while (ObjectFind(objName) >= 0){
+        mAllItem += objName;
+        objName = cLnXX + "#" + IntegerToString(i++);
+    }
 }
 string ZigZag::getAllItem(string itemId)
 {
     string allItem = itemId + "_mTData";
-    string cLnTag  = itemId + TAG_CTRM + "cLnXX";
+    allItem       += itemId + TAG_CTRM + "cPtM0";
+    string cLnTag  = itemId + TAG_CTRL + "cLnXX";
     int i = 0;
     string objName = cLnTag + "#" + IntegerToString(i++);
     while (ObjectFind(objName) >= 0){
@@ -100,8 +115,7 @@ void ZigZag::updateItemAfterChangeType(){}
 void ZigZag::refreshData(){}
 void ZigZag::finishedJobDone()
 {
-    if (mTempLine != "")
-    {
+    if (mTempLine != "") {
         ObjectDelete(mTempLine);
         mTempLine = "";
     }
@@ -119,52 +133,72 @@ void ZigZag::onMouseClick()
 }
 void ZigZag::onItemDrag(const string &itemId, const string &objId)
 {
+    if (objId == cPtM0) return;
     int i = 0;
     string objName;
-    do
-    {
-        objName = cLnXX + "#" + IntegerToString(i);
-        if (objName == objId)
-        {
+    do {
+        objName = cLnXX + "#" + IntegerToString(i++);
+        if (objName == objId) {
             break;
         }
-        i++;
-    }
-    while (ObjectFind(objName) >= 0);
+    } while (ObjectFind(objName) >= 0);
 
     time1   = (datetime)ObjectGet(objId, OBJPROP_TIME1);
     time2   = (datetime)ObjectGet(objId, OBJPROP_TIME2);
     price1  =           ObjectGet(objId, OBJPROP_PRICE1);
     price2  =           ObjectGet(objId, OBJPROP_PRICE2);
-    if (pCommonData.mCtrlHold == true) {
-        if (pCommonData.mMouseTime == time1){
-            price1 = pCommonData.mMousePrice;
-            ObjectSet(objId, OBJPROP_PRICE1, price1);
-        } else if (pCommonData.mMouseTime == time2){
-            price2 = pCommonData.mMousePrice;
-            ObjectSet(objId, OBJPROP_PRICE2, price2);
-        }
-    }
 
     string nextObj = cLnXX + "#" + IntegerToString(i+1);
     string prevObj = cLnXX + "#" + IntegerToString(i-1);
-    ObjectSet(nextObj, OBJPROP_TIME1,  time2 );
-    ObjectSet(nextObj, OBJPROP_PRICE1, price2);
-    ObjectSet(prevObj, OBJPROP_TIME2,  time1 );
-    ObjectSet(prevObj, OBJPROP_PRICE2, price1);
+
+    if (pCommonData.mShiftHold == true && pCommonData.mMouseTime != time1 && pCommonData.mMouseTime != time2){
+        datetime recentTime;
+        double recentPrice;
+        double offsetPrice;
+        int offsetTime;
+        if (ObjectFind(nextObj) >= 0){
+            recentTime = (datetime)ObjectGet(nextObj, OBJPROP_TIME1);
+            recentPrice = ObjectGet(nextObj, OBJPROP_PRICE1);
+            offsetPrice = price2 - recentPrice;
+            offsetTime = (int)(time2 - recentTime)/(ChartPeriod() * 60);
+        }
+        else {
+            recentTime = (datetime)ObjectGet(prevObj, OBJPROP_TIME2);
+            recentPrice = ObjectGet(prevObj, OBJPROP_PRICE2);
+            offsetPrice = price1 - recentPrice;
+            offsetTime = (int)(time1 - recentTime)/(ChartPeriod() * 60);
+        }
+        i = 0;
+        do {
+            objName = cLnXX + "#" + IntegerToString(i++);
+            if (objName != objId) setItemPos(objName, 
+                                            (datetime)ObjectGet(objName, OBJPROP_TIME1) + getDistanceBar(offsetTime),
+                                            (datetime)ObjectGet(objName, OBJPROP_TIME2) + getDistanceBar(offsetTime),
+                                            ObjectGet(objName, OBJPROP_PRICE1) + offsetPrice,
+                                            ObjectGet(objName, OBJPROP_PRICE2) + offsetPrice);
+        }
+        while (ObjectFind(objName) >= 0);
+    }
+    else {
+        if (pCommonData.mCtrlHold == true) {
+            if (pCommonData.mMouseTime == time1){
+                price1 = pCommonData.mMousePrice;
+                ObjectSet(objId, OBJPROP_PRICE1, price1);
+            } else if (pCommonData.mMouseTime == time2){
+                price2 = pCommonData.mMousePrice;
+                ObjectSet(objId, OBJPROP_PRICE2, price2);
+            }
+        }
+        ObjectSet(nextObj, OBJPROP_TIME1,  time2 );
+        ObjectSet(nextObj, OBJPROP_PRICE1, price2);
+        ObjectSet(prevObj, OBJPROP_TIME2,  time1 );
+        ObjectSet(prevObj, OBJPROP_PRICE2, price1);
+    }
 }
 void ZigZag::onItemClick(const string &itemId, const string &objId)
 {
     int selected = (int)ObjectGet(objId, OBJPROP_SELECTED);
-    int i = 0;
-    string objName;
-    do
-    {
-        objName = cLnXX + "#" + IntegerToString(i);
-        ObjectSet(objName, OBJPROP_SELECTED, selected);
-        i++;
-    }
-    while (ObjectFind(objName) >= 0);
+    setCtrlItemSelectState(mAllItem, selected);
 }
 void ZigZag::onItemChange(const string &itemId, const string &objId)
 {
