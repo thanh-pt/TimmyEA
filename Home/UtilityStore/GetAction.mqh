@@ -80,6 +80,11 @@ datetime getCenterTime(const datetime& time1, const datetime& time2)
     return centerTime;
 }
 
+int getDistanceBar(int bar)
+{
+    return bar * Period() * 60;
+}
+
 string getItemUnderMouse(int posX, int posY)
 {
     for(int i=ObjectsTotal() - 1 ;  i >= 0 ;  i--)

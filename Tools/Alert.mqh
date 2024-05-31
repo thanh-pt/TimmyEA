@@ -30,7 +30,7 @@ string mAlertIndi;
 string mAlertText;
 // handleAlertVariable
 string mListAlertStr;
-string mCurAlertIndi;
+string mCurAlertText;
 string mListAlertArr[];
 int    mAlertNumber;
 bool   mIsAlertReached;
@@ -42,6 +42,7 @@ string mListAlertRemainStr;
 private:
     string cLn01;
     string cPtM0;
+    string iTxtR;
 // Value define for Item
 private:
     datetime time1;
@@ -100,29 +101,55 @@ Alert::Alert(CommonData* commonData, MouseInfo* mouseInfo)
 
 // Internal Event
 void Alert::prepareActive(){}
-void Alert::createItem(){}
-void Alert::updateDefaultProperty(){}
+void Alert::createItem()
+{
+    ObjectCreate(iTxtR, OBJ_TEXT , 0, 0, 0);
+    ObjectCreate(cLn01, OBJ_TREND, 0, 0, 0);
+    ObjectCreate(cPtM0, OBJ_ARROW, 0, 0, 0);
+
+    updateDefaultProperty();
+    // updateTypeProperty();
+}
+void Alert::updateDefaultProperty()
+{
+    setObjectStyle(cLn01, InpAlertColor, InpAlertStyle, 0, true);
+    ObjectSet(cLn01, OBJPROP_RAY  , true);
+    
+    ObjectSet(cPtM0, OBJPROP_COLOR, InpAlertColor);
+    ObjectSet(cPtM0, OBJPROP_ARROWCODE, 2);
+
+    setTextContent(iTxtR, "🔔", 8, FONT_TEXT, InpAlertColor);
+}
 void Alert::updateTypeProperty(){}
 void Alert::activateItem(const string& itemId)
 {
-    cPtM0 = itemId + TAG_CTRM + "cPtM0";
+    iTxtR = itemId + TAG_INFO + "iTxtR";
+
     cLn01 = itemId + TAG_CTRL + "cLn01";
-    mAllItem += cPtM0+cLn01;
+    cPtM0 = itemId + TAG_CTRM + "cPtM0";
+    mAllItem += iTxtR+cPtM0+cLn01;
 }
 string Alert::getAllItem(string itemId)
 {
     string allItem = itemId + "_mTData";
+    allItem += itemId + TAG_INFO + "iTxtR";
+
     allItem += itemId + TAG_CTRM + "cPtM0";
     allItem += itemId + TAG_CTRL + "cLn01";
     return allItem;
 }
 void Alert::updateItemAfterChangeType(){}
 void Alert::refreshData(){
-    setItemPos(cLn01, time1, time1 + 3*Period()*60, price1, price1);
+    setItemPos(cLn01, time1, time1 + getDistanceBar(10), price1, price1);
     setItemPos(cPtM0, time1, price1);
+    setItemPos(iTxtR, Time[0] + getDistanceBar(5), price1);
+
+    int barT1 = iBarShift(ChartSymbol(), ChartPeriod(), time1);
+    bool isUp = (price1 >= High[barT1]);
+    ObjectSetInteger(0, iTxtR, OBJPROP_ANCHOR, isUp ? ANCHOR_LEFT_LOWER : ANCHOR_LEFT_UPPER);
 
     int selected = (int)ObjectGet(cPtM0, OBJPROP_SELECTED);
-    ObjectSet(cLn01, OBJPROP_COLOR, selected ? clrRed : InpAlertColor);
+    setMultiProp(OBJPROP_COLOR, selected ? gClrForegrnd : InpAlertColor, cLn01+cPtM0+iTxtR);
 }
 void Alert::finishedJobDone(){}
 
@@ -134,14 +161,7 @@ void Alert::onMouseClick()
 {
     if (mIndexType == CREATE_ALERT)
     {
-        ObjectCreate(cPtM0, OBJ_ARROW, 0, 0, pCommonData.mMousePrice);
-        ObjectCreate(cLn01, OBJ_TREND, 0, 0, pCommonData.mMousePrice);
-
-        setObjectStyle(cLn01, InpAlertColor, InpAlertStyle, 0, true);
-        ObjectSet(cLn01, OBJPROP_RAY  , true);
-        
-        ObjectSet(cPtM0, OBJPROP_COLOR, clrNONE);
-        ObjectSet(cPtM0, OBJPROP_ARROWCODE  , 4);
+        createItem();
 
         time1  = pCommonData.mMouseTime;
         price1 = pCommonData.mMousePrice;
@@ -159,14 +179,25 @@ void Alert::onMouseClick()
 }
 void Alert::onItemDrag(const string &itemId, const string &objId)
 {
-    time1 = (datetime)ObjectGet(objId, OBJPROP_TIME1);
-    price1 =          ObjectGet(objId, OBJPROP_PRICE1);
     if (pCommonData.mCtrlHold) {
         price1 = pCommonData.mMousePrice;
+        time1  = pCommonData.mMouseTime;
+    }
+    else if (objId == cPtM0) {
+        time1 = (datetime)ObjectGet(objId, OBJPROP_TIME1);
+        price1 =          ObjectGet(objId, OBJPROP_PRICE1);
+    }
+    else if (objId == cLn01) {
+        time1 = (datetime)ObjectGet(objId, OBJPROP_TIME1);
+        price1 =          ObjectGet(objId, OBJPROP_PRICE2);
     }
 
+    mAlertText = ObjectGetString(ChartID(), cPtM0, OBJPROP_TEXT);
+    StringReplace(mAlertText, ALERT_INDI_H, "");
+    StringReplace(mAlertText, ALERT_INDI_L, "");
     mAlertIndi = (price1 > Bid ? ALERT_INDI_H : ALERT_INDI_L);
-    setTextContent(cPtM0, mAlertIndi);
+    mAlertText = mAlertIndi + mAlertText;
+    setTextContent(cPtM0, mAlertText);
 
     if (StringFind(mListAlertStr, cPtM0) == -1) mListAlertStr += cPtM0 + ",";
 
@@ -177,18 +208,29 @@ void Alert::onItemClick(const string &itemId, const string &objId)
     if (StringFind(objId, TAG_CTRL) < 0) return;
     int selected = (int)ObjectGet(objId, OBJPROP_SELECTED);
     setCtrlItemSelectState(mAllItem, selected);
-    ObjectSet(cLn01, OBJPROP_COLOR, selected ? clrRed : InpAlertColor);
+    setMultiProp(OBJPROP_COLOR, selected ? gClrForegrnd : InpAlertColor, cLn01+cPtM0+iTxtR);
 }
 void Alert::onItemChange(const string &itemId, const string &objId)
 {
-    if (objId == cLn01) onItemDrag(itemId, objId);
+    if (objId == cLn01) {
+        string description = ObjectDescription(objId);
+        if (description != ""){
+            setTextContent(objId, "");
+            if (description == "-") description = "";
+            setTextContent(iTxtR, "🔔"+description);
+            price1 = ObjectGet(objId, OBJPROP_PRICE1);
+            mAlertIndi = (price1 > Bid ? ALERT_INDI_H : ALERT_INDI_L);
+            mAlertText = mAlertIndi + description;
+            setTextContent(cPtM0, mAlertText);
+        }
+    }
 }
 // Internal Function
 
 void Alert::initAlarm()
 {
     mListAlertStr = "";
-    mCurAlertIndi = "";
+    mCurAlertText = "";
     mAlertNumber = 0;
     mIsAlertReached = false;
     mIsAlertGoOver  = false;
@@ -218,13 +260,13 @@ void Alert::checkAlert()
         mIsAlertReached = false;
         mIsAlertGoOver  = false;
         mCurAlertPrice = ObjectGet(mListAlertArr[i], OBJPROP_PRICE1);
-        mCurAlertIndi  = ObjectGetString(ChartID(), mListAlertArr[i], OBJPROP_TEXT);
+        mCurAlertText  = ObjectGetString(ChartID(), mListAlertArr[i], OBJPROP_TEXT);
         // Check Alert Price
-        if (mCurAlertIndi == ALERT_INDI_H) {
+        if (StringFind(mCurAlertText,ALERT_INDI_H) != -1) {
             mIsAlertReached = (Bid >= mCurAlertPrice);
             mIsAlertGoOver  = (Bid > mCurAlertPrice);
         }
-        else if (mCurAlertIndi == ALERT_INDI_L) {
+        else if (StringFind(mCurAlertText,ALERT_INDI_L) != -1){
             mIsAlertReached = (Bid <= mCurAlertPrice);
             mIsAlertGoOver  = (Bid < mCurAlertPrice);
         }
@@ -232,7 +274,7 @@ void Alert::checkAlert()
         // Send notification or save remain Alert
         if (mIsAlertReached == true) {
             sendNotification("[" + Symbol() + "/" + getTFString() + "]\n" +
-                            mCurAlertIndi + "\n" +
+                            mCurAlertText + "\n" +
                             DoubleToString(mCurAlertPrice, Digits));
         }
         if (mIsAlertGoOver) ObjectDelete(mListAlertArr[i]);
