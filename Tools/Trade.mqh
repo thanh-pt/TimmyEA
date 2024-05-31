@@ -324,7 +324,7 @@ void Trade::refreshData()
     //            TÍNH TOÁN CÁC THỨ
     //-------------------------------------------------
     // 1. Thông tin lệnh
-    double slPip       = floor(fabs(priceEN-priceSL) * (pow(10, gSymbolDigits)))/10;
+    double slPip       = floor(fabs(priceEN-priceSL) * (pow(10, Digits)))/10;
     if (slPip <= 0.001) return;
 
     double rr          = (priceTP-priceEN) / (priceEN-priceSL);
@@ -535,9 +535,9 @@ void Trade::onUserRequest(const string &itemId, const string &objId)
     // Add Live Trade
     if (gContextMenu.mActiveItemStr == CTX_GOLIVE)
     {
-        priceEN   = NormalizeDouble(priceEN, gSymbolDigits);
-        priceSL   = NormalizeDouble(priceSL, gSymbolDigits);
-        priceTP   = NormalizeDouble(priceTP, gSymbolDigits);
+        priceEN   = NormalizeDouble(priceEN, Digits);
+        priceSL   = NormalizeDouble(priceSL, Digits);
+        priceTP   = NormalizeDouble(priceTP, Digits);
         mTradeLot = NormalizeDouble(mTradeLot, 2);
         int Cmd = ((priceTP > priceEN) ? OP_BUYLIMIT : OP_SELLLIMIT);
     
@@ -567,8 +567,8 @@ void Trade::onUserRequest(const string &itemId, const string &objId)
     {
         onItemDrag(itemId, objId);
         double spread = (double)SymbolInfoInteger(Symbol(), SYMBOL_SPREAD);
-        mStlSpace = (double)Trd_StlSpace / pow(10, gSymbolDigits);
-        spread = spread / pow(10, gSymbolDigits);
+        mStlSpace = (double)Trd_StlSpace / pow(10, Digits);
+        spread = spread / pow(10, Digits);
 
         if (priceEN > priceSL) {
             // Buy order

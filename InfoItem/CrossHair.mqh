@@ -139,7 +139,7 @@ public:
 
         //mPriceInfo
         ObjectSet(mPriceInfo, OBJPROP_YDISTANCE, pCommonData.mMouseY);
-        setTextContent(mPriceInfo, DoubleToString(pCommonData.mMousePrice, gSymbolDigits));
+        setTextContent(mPriceInfo, DoubleToString(pCommonData.mMousePrice, Digits));
 
     }
     void onObjectDeleted(const string& objectName)

@@ -4,6 +4,7 @@ void setChartFree(bool bFree)
     ChartSetInteger(ChartID(),CHART_SCALEFIX,0,bFree);
 }
 
+double gScaleRange   = 0;
 void setScaleChart(bool isUp)
 {
     if (gScaleRange == 0) {

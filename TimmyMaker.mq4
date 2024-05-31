@@ -21,9 +21,6 @@
 void FinishedJobFunc();
 void detectMouseDraging(const string &sparam);
 
-int    gSymbolDigits= 0;
-double gScaleRange = 0;
-
 CommonData  gCommonData;
 MouseInfo   gMouseInfo(&gCommonData);
 Controller  gController(&gCommonData, &gMouseInfo);
@@ -41,10 +38,6 @@ int OnInit()
     
     // Init global variable
     gController.setFinishedJobCB(FinishedJobFunc);
-
-    gSymbolDigits = (int)SymbolInfoInteger(Symbol(), SYMBOL_DIGITS);
-    if (gSymbolDigits == 0) gSymbolDigits = 5;
-
 //---
     return(INIT_SUCCEEDED);
 }
