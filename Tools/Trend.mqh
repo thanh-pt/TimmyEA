@@ -464,7 +464,7 @@ void Trend::onItemChange(const string &itemId, const string &objId)
         string description = ObjectDescription(objId);
         if (description != ""){
             setTextContent(objId, "");
-            setTextContent(iTxtC, (description == "-") ? EMPTY_BL : description);
+            setTextContent(iTxtC, (description == "-") ? STR_EMPTY : description);
         }
     }
     onItemDrag(itemId, objId);

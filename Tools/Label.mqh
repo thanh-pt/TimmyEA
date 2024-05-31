@@ -92,6 +92,7 @@ void LabelText::updateDefaultProperty()
     ObjectSet(iTxBg, OBJPROP_SELECTABLE, false);
     setTextContent(cTxtM, getRandStr(), 10, FONT_BLOCK, gClrForegrnd);
     setTextContent(iTxBg,           "", 20, FONT_BLOCK, gClrTextBgnd);
+    setMultiStrs(OBJPROP_TOOLTIP, "\n", cTxtM+iTxBg);
 }
 void LabelText::updateTypeProperty(){}
 void LabelText::activateItem(const string& itemId)
@@ -296,6 +297,8 @@ void LabelText::onUserRequest(const string &itemId, const string &objId)
     ObjectSetInteger(ChartID(), objiTBgX, OBJPROP_ANCHOR, anchor);
     ObjectSetInteger(ChartID(), objiTBgX, OBJPROP_CORNER, corner);
     ObjectSet(objiTBgX, OBJPROP_SELECTABLE, false);
+
+    setMultiStrs(OBJPROP_TOOLTIP, "\n", objCTxtX+objiTBgX);
 
     refreshData();
     gContextMenu.clearContextMenu();

@@ -46,7 +46,7 @@ void setItemPos(const string& objName, datetime time1, const double price1)
 void setTextContent(string objName, string content)
 {
     if (content == "" || content == "Text") {
-        ObjectSetText(objName, EMPTY_BL);
+        ObjectSetText(objName, STR_EMPTY);
         return;
     }
     ObjectSetText(objName, content);
@@ -54,7 +54,7 @@ void setTextContent(string objName, string content)
 void setTextContent(string objName, string content, int size)
 {
     if (content == "" || content == "Text") {
-        ObjectSetText(objName, EMPTY_BL, size);
+        ObjectSetText(objName, STR_EMPTY, size);
         return;
     }
     ObjectSetText(objName, content, size);
@@ -62,7 +62,7 @@ void setTextContent(string objName, string content, int size)
 void setTextContent(string objName, string content, int size, string font)
 {
     if (content == "" || content == "Text") {
-        ObjectSetText(objName, EMPTY_BL, size, font);
+        ObjectSetText(objName, STR_EMPTY, size, font);
         return;
     }
     ObjectSetText(objName, content, size, font);
@@ -70,7 +70,7 @@ void setTextContent(string objName, string content, int size, string font)
 void setTextContent(string objName, string content, int size, string font, color clr)
 {
     if (content == "" || content == "Text") {
-        ObjectSetText(objName, EMPTY_BL, size, font, clr);
+        ObjectSetText(objName, STR_EMPTY, size, font, clr);
         return;
     }
     ObjectSetText(objName, content, size, font, clr);

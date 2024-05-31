@@ -128,7 +128,7 @@ void CallOut::refreshData()
 
     string callOutValue = ObjectDescription(cTxtM);
     int calloutLen = StringLen(callOutValue);
-    setTextContent(iTxtU, StringSubstr(ULINE_BL, 0, calloutLen));
+    setTextContent(iTxtU, StringSubstr(BL_ULINE, 0, calloutLen));
     setTextContent(iTxBg, getHalfDwBL(calloutLen));
     if (calloutLen == 7 && StrToDouble(callOutValue) != 0.0)
     {

@@ -119,6 +119,7 @@ void Alert::updateDefaultProperty()
     ObjectSet(cPtM0, OBJPROP_ARROWCODE, 2);
 
     setTextContent(iTxtR, "🔔", 8, FONT_TEXT, InpAlertColor);
+    setMultiStrs(OBJPROP_TOOLTIP, "\n", mAllItem);
 }
 void Alert::updateTypeProperty(){}
 void Alert::activateItem(const string& itemId)

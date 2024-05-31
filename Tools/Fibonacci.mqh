@@ -198,9 +198,9 @@ void Fibonacci::updateTypeProperty()
         setMultiProp(OBJPROP_COLOR, clrNONE, iLn03+iLn04+iLn05 + iTxt3+iTxt4+iTxt5);
     }
     if (mIndexType == FIB_RANGE || mIndexType == FIB_RANGE_EXT){
-        setTextContent(iTxt0, EMPTY_BL);
-        setTextContent(iTxt1, EMPTY_BL);
-        setTextContent(iTxt2, EMPTY_BL);
+        setTextContent(iTxt0, STR_EMPTY);
+        setTextContent(iTxt1, STR_EMPTY);
+        setTextContent(iTxt2, STR_EMPTY);
         setMultiProp(OBJPROP_COLOR, clrDarkOrange, iLn02);
         if (mIndexType == FIB_RANGE_EXT) {
             setMultiProp(OBJPROP_RAY, true, iLn00+iLn01);

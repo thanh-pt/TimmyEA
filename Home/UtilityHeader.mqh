@@ -15,11 +15,12 @@
 
 
 //// HARD TEXT DEFINE
-#define FULL_BL     "█████████████████████████"
-#define HALF_UP_BL  "▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀"
-#define HALF_DW_BL  "▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄"
-#define ULINE_BL    "____________________________________________________________________"
-#define EMPTY_BL    "‎"
+#define BL_FULL     "█████████████████████████"
+#define BL_HALF_UP  "▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀"
+#define BL_HALF_DN  "▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄"
+#define BL_ULINE    "____________________________________________________________________"
+#define BL_SPACE    "                                                                    "
+#define STR_EMPTY   "‎"
 
 
 //// FONT DEFINE

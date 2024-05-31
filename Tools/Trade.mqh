@@ -2,7 +2,8 @@
 
 #define LONG_IDX 0
 
-#define CTX_SPREAD      "Spread"
+#define CTX_3R          "3R"
+#define CTX_SPREAD      "+Spr."
 #define CTX_GOLIVE      "Go Live"
 #define CTX_ADDSLTP     "Sl/TP"
 #define CTX_AUTOBE      "Auto BE"
@@ -129,8 +130,11 @@ Trade::Trade(CommonData* commonData, MouseInfo* mouseInfo)
     mIndexType = 0;
     mTypeNum = 2;
 
-    mContextType  =        CTX_SPREAD;
+    mContextType  =        CTX_3R;
+    mContextType +=  "," + CTX_SPREAD;
+#ifdef EA
     mContextType +=  "," + CTX_GOLIVE;
+#endif
 
     mLiveTradeCtx  =        CTX_ADDSLTP;
     mLiveTradeCtx +=  "," + CTX_AUTOBE;
@@ -377,8 +381,8 @@ void Trade::refreshData()
     strRRInfo += "ʀ";
     //-------------------------------------------------
     setTextContent(iTxT2, strTpInfo);
-    setTextContent(iTxE2, EMPTY_BL);
-    setTextContent(iTxS2, EMPTY_BL);
+    setTextContent(iTxE2, STR_EMPTY);
+    setTextContent(iTxS2, STR_EMPTY);
     //-------------------------------------------------
     setTextContent(iTxtT, strRRInfo);
     setTextContent(iTxtE, strEnInfo);
@@ -450,9 +454,7 @@ void Trade::onItemClick(const string &itemId, const string &objId)
 {
     if (StringFind(objId, TAG_CTRL) < 0) return;
     int selected = (int)ObjectGet(objId, OBJPROP_SELECTED);
-#ifdef EA
-    if (selected && objId == cPtWD && pCommonData.mShiftHold && Trd_Cost != 0)
-    {
+    if (selected && objId == cPtWD && pCommonData.mShiftHold) {
         // onItemDrag(itemId, objId); //=> update lastest data
         if (ObjectDescription(cPtWD) == LIVE_INDI){
             gContextMenu.openContextMenu(objId, mLiveTradeCtx, -1);
@@ -461,7 +463,6 @@ void Trade::onItemClick(const string &itemId, const string &objId)
             gContextMenu.openContextMenu(objId, mContextType, -1);
         }   
     }
-#endif
     setCtrlItemSelectState(mAllItem, selected);
     setMultiProp(OBJPROP_COLOR, selected ? gClrPointer : clrNONE, cPtTP+cPtSL+cPtEN+cPtWD+cPtBE);
 }
@@ -533,8 +534,7 @@ void Trade::showHistory(bool isShow)
 void Trade::onUserRequest(const string &itemId, const string &objId)
 {
     // Add Live Trade
-    if (gContextMenu.mActiveItemStr == CTX_GOLIVE)
-    {
+    if (gContextMenu.mActiveItemStr == CTX_GOLIVE) {
         priceEN   = NormalizeDouble(priceEN, Digits);
         priceSL   = NormalizeDouble(priceSL, Digits);
         priceTP   = NormalizeDouble(priceTP, Digits);
@@ -563,8 +563,7 @@ void Trade::onUserRequest(const string &itemId, const string &objId)
         }
     }
     // Add Spread Feature
-    else if (gContextMenu.mActiveItemStr == CTX_SPREAD)
-    {
+    else if (gContextMenu.mActiveItemStr == CTX_SPREAD) {
         onItemDrag(itemId, objId);
         double spread = (double)SymbolInfoInteger(Symbol(), SYMBOL_SPREAD);
         mStlSpace = (double)Trd_StlSpace / pow(10, Digits);
@@ -581,9 +580,15 @@ void Trade::onUserRequest(const string &itemId, const string &objId)
         }
         refreshData();
     }
+    // Auto adjust 3R
+    else if (gContextMenu.mActiveItemStr == CTX_3R) {
+        
+        onItemDrag(itemId, objId);
+        priceEN = (priceTP + 3*priceSL) / 4;
+        refreshData();
+    }
     // Add TP/SL if they don't have
-    else if (gContextMenu.mActiveItemStr == CTX_ADDSLTP)
-    {
+    else if (gContextMenu.mActiveItemStr == CTX_ADDSLTP) {
         string sparamItems[];
         int k=StringSplit(itemId,'#',sparamItems);
         if (k == 2){
@@ -594,8 +599,7 @@ void Trade::onUserRequest(const string &itemId, const string &objId)
                 Print("Error in OrderModify. Error code=",GetLastError());
         }
     }
-    else if (gContextMenu.mActiveItemStr == CTX_AUTOBE)
-    {
+    else if (gContextMenu.mActiveItemStr == CTX_AUTOBE) {
         setTextContent(cPtBE, "be");
         refreshData();
     }
@@ -618,6 +622,9 @@ void Trade::createTrade(int id, datetime _time1, datetime _time2, double _priceE
 
 void Trade::scanLiveTrade()
 {
+#ifdef EA
+    return;
+#endif
     if (Trd_Cost == 0) return;
 
     // First scanning

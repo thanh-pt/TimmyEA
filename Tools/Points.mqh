@@ -109,6 +109,7 @@ void Point::createItem()
 void Point::updateDefaultProperty()
 {
     ObjectSet(cPtM0, OBJPROP_BACK , true);
+    setMultiStrs(OBJPROP_TOOLTIP, "\n", mAllItem);
 }
 void Point::updateTypeProperty()
 {

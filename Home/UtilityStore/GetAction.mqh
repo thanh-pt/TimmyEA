@@ -176,16 +176,19 @@ string getRandStr(){
     return gStrRand[rand()%(ArraySize(gStrRand))];
 }
 
-// string getFullBlock(int size){
-//     return StringSubstr(FULL_BL, 0, size);
-// }
+string getSpaceBL(int size){
+    return StringSubstr(BL_SPACE, 0, size);
+}
+string getFullBL(int size){
+    return StringSubstr(BL_FULL, 0, size);
+}
 string getHalfUpBL(int size){
     if (size % 2 != 0) size++;
-    return StringSubstr(HALF_UP_BL, 0, size/2);
+    return StringSubstr(BL_HALF_UP, 0, size/2);
 }
 string getHalfDwBL(int size){
     if (size % 2 != 0) size++;
-    return StringSubstr(HALF_DW_BL, 0, size/2);
+    return StringSubstr(BL_HALF_DN, 0, size/2);
 }
 
 int getWeekOfYear(datetime date)
