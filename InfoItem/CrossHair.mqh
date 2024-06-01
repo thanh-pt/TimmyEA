@@ -22,10 +22,10 @@ public:
     {
         mVCrossHair = "." + TAG_STATIC + "VCrossHair";
         mHCrossHair = "." + TAG_STATIC + "HCrossHair";
-        mInfoBkgn   = "." + TAG_STATIC + "0InfoBkgn";
-        mWeekInfo   = "." + TAG_STATIC + "mWeekInfo";
-        mDateInfo   = "." + TAG_STATIC + "mDateInfo";
-        mPriceInfo  = "." + TAG_STATIC + "mPriceInfo";
+        mInfoBkgn   = "." + TAG_STATIC + "iInfoBkgn";
+        mWeekInfo   = "." + TAG_STATIC + "zWeekInfo";
+        mDateInfo   = "." + TAG_STATIC + "zDateInfo";
+        mPriceInfo  = "." + TAG_STATIC + "PriceInfo";
         pCommonData = commonData;
 
         if (ChartPeriod() == PERIOD_MN1) mTimeOffset = ChartPeriod()*60*100;

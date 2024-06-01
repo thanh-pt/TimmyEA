@@ -2,7 +2,7 @@
 #define UtilityHeader_mqh
 
 //// TAG DEFINE
-#define TAG_STATIC  "%"
+#define TAG_STATIC  "*"
 #define TAG_BGOVL   "BgOvlFix"
 #define TAG_CTRM    "_cM"
 #define TAG_CTRL    "_c"

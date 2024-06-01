@@ -13,8 +13,8 @@ public:
     MouseInfo(CommonData* commonData)
     {
         pCommonData = commonData;
-        mObjMouseInfo = TAG_STATIC+"MouseInfo";
-        mObjMouseBgnd = TAG_STATIC+"mObjMouseBgnd";
+        mObjMouseInfo = TAG_STATIC+"zMouseInfo";
+        mObjMouseBgnd = TAG_STATIC+"iMouseBgnd";
         initDrawing();
     }
     void initDrawing()
@@ -41,8 +41,7 @@ public:
     }
     void onObjectDeleted(const string& objectName)
     {
-        if (objectName == mObjMouseInfo)
-        {
+        if (objectName == mObjMouseInfo) {
             initDrawing();
         }
     }
