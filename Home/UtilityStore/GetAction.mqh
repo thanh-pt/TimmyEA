@@ -219,3 +219,12 @@ string getDayOfWeekStr(datetime date)
     }
     return retDayOfW;
 }
+
+string getSubStr(string str, int start, int len)
+{
+    string result = "";
+    result = StringSubstr(str, start, len);
+    if (result == "") return StringSubstr(str, 0, len);
+    
+    return result;
+}

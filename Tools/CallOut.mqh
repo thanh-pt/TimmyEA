@@ -2,7 +2,6 @@
 
 // input string CallOut_;                              // ●  C A L L   O U T  ●
       int    CallOut_FontSize = 10;                 // Font Size
-// input string InpCallOutPreset = "❌";    // Preset
 
 #define CTX_LEG  "+Leg"
 #define CTX_XLEG "-Leg"

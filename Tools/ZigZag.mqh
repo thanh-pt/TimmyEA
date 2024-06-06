@@ -137,10 +137,11 @@ void ZigZag::onItemDrag(const string &itemId, const string &objId)
     int i = 0;
     string objName;
     do {
-        objName = cLnXX + "#" + IntegerToString(i++);
+        objName = cLnXX + "#" + IntegerToString(i);
         if (objName == objId) {
             break;
         }
+        i++;
     } while (ObjectFind(objName) >= 0);
 
     time1   = (datetime)ObjectGet(objId, OBJPROP_TIME1);
