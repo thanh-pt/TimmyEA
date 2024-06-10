@@ -43,7 +43,7 @@ string getAltName(string name){
 
 
 input string Trend_; // ●  T R E N D  ●
-      int        Trend_amount       = 7;            // Trend amount:
+input int        Trend_amount       = 7;            // Trend amount:
 //--------------------------------------------
 input string     Trend_1_Name       = "Flow-";          // → Trend 1
 input ETrendText Trend_1_TxtPos     = ETrendTextCenter; // Text Position

@@ -27,11 +27,11 @@ input color      Point_3_Color      = clrMidnightBlue;// Color
 
 enum PointType
 {
-    POINT_3,
     POINT_1,
     POINT_2,
-    // POINT_4,
     POINT_NUM,
+    POINT_3,
+    // POINT_4,
 };
 
 class Point : public BaseItem

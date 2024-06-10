@@ -1,7 +1,6 @@
 string getTFString()
 {
     int period = ChartPeriod();
-    if (period == PERIOD_M1) return "I";
 
     string result = "";
     if (period < PERIOD_H1)
