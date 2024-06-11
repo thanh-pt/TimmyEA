@@ -132,9 +132,7 @@ Trade::Trade(CommonData* commonData, MouseInfo* mouseInfo)
 
     mContextType  =        CTX_3R;
     mContextType +=  "," + CTX_SPREAD;
-#ifdef EA
     mContextType +=  "," + CTX_GOLIVE;
-#endif
 
     mLiveTradeCtx  =        CTX_ADDSLTP;
     mLiveTradeCtx +=  "," + CTX_AUTOBE;
@@ -535,6 +533,7 @@ void Trade::onUserRequest(const string &itemId, const string &objId)
 {
     // Add Live Trade
     if (gContextMenu.mActiveItemStr == CTX_GOLIVE) {
+#ifdef EA
         priceEN   = NormalizeDouble(priceEN, Digits);
         priceSL   = NormalizeDouble(priceSL, Digits);
         priceTP   = NormalizeDouble(priceTP, Digits);
@@ -561,6 +560,16 @@ void Trade::onUserRequest(const string &itemId, const string &objId)
             Print("Order failed with error - ",GetLastError());
             Alert("Order failed with error - "+IntegerToString(GetLastError()));
         }
+#else
+        priceEN   = NormalizeDouble(priceEN, Digits);
+        priceSL   = NormalizeDouble(priceSL, Digits);
+        priceTP   = NormalizeDouble(priceTP, Digits);
+        
+        ObjectSet("sim#3d_visual_sl", OBJPROP_PRICE1, priceSL);
+        ObjectSet("sim#3d_visual_ap", OBJPROP_PRICE1, priceEN);
+        ObjectSet("sim#3d_visual_tp", OBJPROP_PRICE1, priceTP);
+    //
+#endif
     }
     // Add Spread Feature
     else if (gContextMenu.mActiveItemStr == CTX_SPREAD) {
