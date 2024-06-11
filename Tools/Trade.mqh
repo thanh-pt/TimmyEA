@@ -4,7 +4,7 @@
 
 #define CTX_3R          "3R"
 #define CTX_SPREAD      "+Spr."
-#define CTX_GOLIVE      "Go Live"
+#define CTX_GOLIVE      "LIVE"
 #define CTX_ADDSLTP     "Sl/TP"
 #define CTX_AUTOBE      "Auto BE"
 
@@ -290,11 +290,11 @@ void Trade::refreshData()
     setItemPos(iLnSl  , time1, time2, priceSL, priceSL);
     setItemPos(iLnBe  , time1, time2, priceBE, priceBE);
     //-------------------------------------------------
-    setItemPos(cPtTP , time2, priceTP);
-    setItemPos(cPtSL , time2, priceSL);
+    setItemPos(cPtTP , time1, priceTP);
+    setItemPos(cPtSL , time1, priceSL);
     setItemPos(cPtEN , time1, priceEN);
     setItemPos(cPtWD , time2, priceEN);
-    setItemPos(cPtBE , time2, priceBE);
+    setItemPos(cPtBE , time1, priceBE);
     //-------------------------------------------------
     setItemPos(iTxtT  , centerTime, priceTP);
     setItemPos(iTxtE  , centerTime, priceEN);
@@ -412,8 +412,7 @@ void Trade::onItemDrag(const string &itemId, const string &objId)
     priceBE =           ObjectGet(cPtBE, OBJPROP_PRICE1);
     time1   = (datetime)ObjectGet(cBgSl, OBJPROP_TIME1);
     time2   = (datetime)ObjectGet(cPtWD, OBJPROP_TIME1);
-    if (objId == cBgSl)
-    {
+    if (objId == cBgSl) {
         datetime newtime1 = (datetime)ObjectGet(cBgSl, OBJPROP_TIME1);
         datetime newtime2 = (datetime)ObjectGet(cBgSl, OBJPROP_TIME2);
         datetime timeCenter;
@@ -432,18 +431,21 @@ void Trade::onItemDrag(const string &itemId, const string &objId)
             // move edge -> ignore
         }
     }
-    else
-    {
-        if (pCommonData.mCtrlHold == true)
-        {
+    else {
+        if (pCommonData.mCtrlHold == true) {
             if      (objId == cPtTP) priceTP = pCommonData.mMousePrice;
             else if (objId == cPtEN) priceEN = pCommonData.mMousePrice;
             else if (objId == cPtSL) priceSL = pCommonData.mMousePrice;
             else if (objId == cPtBE) priceBE = pCommonData.mMousePrice;
         }
-        if (objId == cPtEN && pCommonData.mShiftHold == true){
-            priceEN =           ObjectGet(cPtWD, OBJPROP_PRICE1);
-            time1   = (datetime)ObjectGet(cPtEN, OBJPROP_TIME1);
+        else if (objId == cPtEN){
+            if (pCommonData.mShiftHold == true){
+                priceEN = ObjectGet(cPtEN, OBJPROP_PRICE1);
+            }
+            else {
+                priceEN =           ObjectGet(cPtWD, OBJPROP_PRICE1);
+                time1   = (datetime)ObjectGet(cPtEN, OBJPROP_TIME1);
+            }
         }
     }
     refreshData();
