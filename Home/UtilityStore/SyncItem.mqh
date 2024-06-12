@@ -142,6 +142,11 @@ void syncTimmyItem()
         if (itemNum >= MAX_SYNC_ITEMS) return;
     }
 
+    if (itemNum == 0) {
+        syncChartPosition();
+        return;
+    }
+
     long curChart = ChartFirst();
     string chartSymbol = ChartSymbol();
     while(curChart > 0)
@@ -222,6 +227,32 @@ void deleteTimmyItem()
     while(curChart > 0)
     {
         ObjectDelete(curChart, mainObj);
+        curChart = ChartNext(curChart);
+    }
+}
+
+void syncChartPosition()
+{
+    // Find current POS
+    int shift = iBarShift(ChartSymbol(), ChartPeriod(), gCommonData.mMouseTime);
+    int distance_m = shift * Period();
+    
+    double fixedMax = ChartGetDouble(ChartID(),CHART_FIXED_MAX);
+    double fixedMin = ChartGetDouble(ChartID(),CHART_FIXED_MIN);
+
+    long curChart = ChartFirst();
+    string chartSymbol = ChartSymbol();
+    int curPeriod;
+    long chartID = ChartID();
+    while(curChart > 0)
+    {
+        if (ChartSymbol(curChart) == chartSymbol && curChart != chartID) {
+            curPeriod = ChartPeriod(curChart);
+            shift = distance_m / curPeriod;
+            ChartNavigate(curChart, CHART_END, -shift);
+            ChartSetDouble(curPeriod,CHART_FIXED_MAX, fixedMax);
+            ChartSetDouble(curPeriod,CHART_FIXED_MIN, fixedMin);
+        }
         curChart = ChartNext(curChart);
     }
 }

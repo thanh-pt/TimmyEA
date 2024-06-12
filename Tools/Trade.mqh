@@ -294,7 +294,7 @@ void Trade::refreshData()
     setItemPos(cPtSL , time1, priceSL);
     setItemPos(cPtEN , time1, priceEN);
     setItemPos(cPtWD , time2, priceEN);
-    setItemPos(cPtBE , time1, priceBE);
+    setItemPos(cPtBE , time2, priceBE);
     //-------------------------------------------------
     setItemPos(iTxtT  , centerTime, priceTP);
     setItemPos(iTxtE  , centerTime, priceEN);
