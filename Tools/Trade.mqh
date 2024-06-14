@@ -454,9 +454,9 @@ void Trade::onItemClick(const string &itemId, const string &objId)
 {
     if (StringFind(objId, TAG_CTRL) < 0) return;
     int selected = (int)ObjectGet(objId, OBJPROP_SELECTED);
-    if (selected && objId == cPtWD && pCommonData.mShiftHold) {
+    if (selected && pCommonData.mShiftHold) {
         // onItemDrag(itemId, objId); //=> update lastest data
-        if (ObjectDescription(cPtWD) == LIVE_INDI){
+        if (objId == cPtWD && ObjectDescription(cPtWD) == LIVE_INDI){
             gContextMenu.openContextMenu(objId, mLiveTradeCtx);
         }
         else{
