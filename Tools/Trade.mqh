@@ -388,6 +388,16 @@ void Trade::refreshData()
     setTextContent(iTxtB, strBeInfo);
     int selected = (int)ObjectGet(cPtWD, OBJPROP_SELECTED);
     setMultiProp(OBJPROP_COLOR, selected ? gClrPointer : clrNONE, cPtTP+cPtSL+cPtEN+cPtWD+cPtBE);
+    if (selected == true){
+        if (ObjectDescription(cPtWD) == LIVE_INDI){
+                gContextMenu.openStaticCtxMenu(cPtWD, mLiveTradeCtx);
+            }
+            else{
+                gContextMenu.openStaticCtxMenu(cPtWD, mContextType);
+            }
+    } else {
+        gContextMenu.clearStaticCtxMenu();
+    }
 
 }
 void Trade::finishedJobDone()
@@ -454,14 +464,24 @@ void Trade::onItemClick(const string &itemId, const string &objId)
 {
     if (StringFind(objId, TAG_CTRL) < 0) return;
     int selected = (int)ObjectGet(objId, OBJPROP_SELECTED);
-    if (selected && pCommonData.mShiftHold) {
-        // onItemDrag(itemId, objId); //=> update lastest data
-        if (objId == cPtWD && ObjectDescription(cPtWD) == LIVE_INDI){
-            gContextMenu.openContextMenu(objId, mLiveTradeCtx);
+    if (selected) {
+        if (pCommonData.mShiftHold){
+            if (objId == cPtWD && ObjectDescription(cPtWD) == LIVE_INDI){
+                gContextMenu.openContextMenu(objId, mLiveTradeCtx);
+            }
+            else{
+                gContextMenu.openContextMenu(objId, mContextType);
+            }
+        }
+        if (ObjectDescription(cPtWD) == LIVE_INDI){
+            gContextMenu.openStaticCtxMenu(cPtWD, mLiveTradeCtx);
         }
         else{
-            gContextMenu.openContextMenu(objId, mContextType);
-        }   
+            gContextMenu.openStaticCtxMenu(cPtWD, mContextType);
+        }
+    }
+    else {
+        gContextMenu.clearStaticCtxMenu();
     }
     setCtrlItemSelectState(mAllItem, selected);
     setMultiProp(OBJPROP_COLOR, selected ? gClrPointer : clrNONE, cPtTP+cPtSL+cPtEN+cPtWD+cPtBE);

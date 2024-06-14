@@ -105,8 +105,8 @@ void OnChartEvent(const int id,
 
     // event need sparam
     case CHARTEVENT_OBJECT_CLICK:
-    case CHARTEVENT_OBJECT_DELETE:
         gContextMenu.onItemClick(sparam);
+    case CHARTEVENT_OBJECT_DELETE:
         gCrossHair.onObjectDeleted(sparam);
         gMouseInfo.onObjectDeleted(sparam);
     case CHARTEVENT_OBJECT_DRAG:
