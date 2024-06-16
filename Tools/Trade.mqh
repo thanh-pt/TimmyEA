@@ -450,11 +450,11 @@ void Trade::onItemDrag(const string &itemId, const string &objId)
         }
         else if (objId == cPtEN){
             if (pCommonData.mShiftHold == true){
-                priceEN = ObjectGet(cPtEN, OBJPROP_PRICE1);
-            }
-            else {
                 priceEN =           ObjectGet(cPtWD, OBJPROP_PRICE1);
                 time1   = (datetime)ObjectGet(cPtEN, OBJPROP_TIME1);
+            }
+            else {
+                priceEN = ObjectGet(cPtEN, OBJPROP_PRICE1);
             }
         }
     }

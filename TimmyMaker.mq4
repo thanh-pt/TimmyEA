@@ -31,7 +31,7 @@ ContextMenu gContextMenu();
 //| Expert initialization function                                   |
 //+------------------------------------------------------------------+
 int OnInit()
-  {
+{
 //---
     ChartSetInteger(ChartID(), CHART_EVENT_MOUSE_MOVE, true);
     ChartSetInteger(ChartID(), CHART_EVENT_OBJECT_DELETE, true);
