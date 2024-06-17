@@ -24,11 +24,11 @@ public:
     virtual void onItemClick(const string &objId)
     {
         string nameTag, bgndTag;
-        if (StringFind(objId, "ContextMenuName") >= 0) {
+        if (StringFind(objId, "ContextMenu") >= 0) {
             nameTag = "ContextMenuName_";
             bgndTag = "ContextMenuBgnd_";
         }
-        else if (StringFind(objId, "StaticCtxMenuName") >= 0) {
+        else if (StringFind(objId, "StaticCtxMenu") >= 0) {
             nameTag = "StaticCtxMenuName_";
             bgndTag = "StaticCtxMenuBgnd_";
         }
