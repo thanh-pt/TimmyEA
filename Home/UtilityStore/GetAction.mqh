@@ -176,6 +176,7 @@ string getRandStr(){
 }
 
 string getSpaceBL(int size){
+    if (size == 0) return "";
     return StringSubstr(BL_SPACE, 0, size);
 }
 string getFullBL(int size){

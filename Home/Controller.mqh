@@ -194,6 +194,11 @@ void Controller::handleKeyEvent(const long &key)
             mbActiveErase = false;
             pMouseInfo.setText("");
         }
+        if (key >= '1' && key <= '9') {
+            if (gContextMenu.mStaticCtxOn == true){
+                gContextMenu.onNumKeyPress((int)key-'1');
+            }
+        }
     }
     else {
         // there is some tool is active

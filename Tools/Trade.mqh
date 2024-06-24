@@ -389,16 +389,10 @@ void Trade::refreshData()
     int selected = (int)ObjectGet(cPtWD, OBJPROP_SELECTED);
     setMultiProp(OBJPROP_COLOR, selected ? gClrPointer : clrNONE, cPtTP+cPtSL+cPtEN+cPtWD+cPtBE);
     if (selected == true){
-        if (ObjectDescription(cPtWD) == LIVE_INDI){
-                gContextMenu.openStaticCtxMenu(cPtWD, mLiveTradeCtx);
-            }
-            else{
-                gContextMenu.openStaticCtxMenu(cPtWD, mContextType);
-            }
-    } else {
-        gContextMenu.clearStaticCtxMenu();
+        if (ObjectDescription(cPtWD) == LIVE_INDI) gContextMenu.openStaticCtxMenu(cPtWD, mLiveTradeCtx);
+        else gContextMenu.openStaticCtxMenu(cPtWD, mContextType);
     }
-
+    else gContextMenu.clearStaticCtxMenu(cPtWD);
 }
 void Trade::finishedJobDone()
 {
@@ -480,9 +474,7 @@ void Trade::onItemClick(const string &itemId, const string &objId)
             gContextMenu.openStaticCtxMenu(cPtWD, mContextType);
         }
     }
-    else {
-        gContextMenu.clearStaticCtxMenu();
-    }
+    else gContextMenu.clearStaticCtxMenu(cPtWD);
     setCtrlItemSelectState(mAllItem, selected);
     setMultiProp(OBJPROP_COLOR, selected ? gClrPointer : clrNONE, cPtTP+cPtSL+cPtEN+cPtWD+cPtBE);
 }
@@ -653,7 +645,7 @@ void Trade::createTrade(int id, datetime _time1, datetime _time2, double _priceE
 
 void Trade::scanLiveTrade()
 {
-#ifdef EA
+#ifndef EA
     return;
 #endif
     if (Trd_Cost == 0) return;

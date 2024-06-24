@@ -160,6 +160,7 @@ void BaseItem::onItemDeleted(const string &itemId, const string &objId)
     for (int i = 0; i < k; i++) {
         if (mlistItems[i] == "") continue;
         ObjectDelete("."+mlistItems[i]);
+        if (StringFind(mlistItems[i], TAG_CTRM) >= 0) gContextMenu.clearStaticCtxMenu("."+mlistItems[i]);
     }
 }
 #endif

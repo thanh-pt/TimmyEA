@@ -18,6 +18,7 @@ input color             Rect_DzLight_Color = C'232,240,247'; // Dz Light Color
 
 #define CTX_RANGE   "+Range"
 #define CTX_XRANGE  "-Range"
+#define CTX_EXTENT  "Extent"
 
 enum RectangleType
 {
@@ -120,6 +121,7 @@ Rectangle::Rectangle(CommonData* commonData, MouseInfo* mouseInfo)
     }
     mContextType += "," + CTX_RANGE;
     mContextType += "," + CTX_XRANGE;
+    mContextType += "," + CTX_EXTENT;
 }
 
 // Internal Event
@@ -240,6 +242,8 @@ void Rectangle::refreshData()
     //-------------------------------------------------
     int selected = (int)ObjectGet(cBgM0, OBJPROP_SELECTED);
     setMultiProp(OBJPROP_COLOR   , selected ? gClrPointer : clrNONE, cPtL1+cPtL2+cPtR1+cPtR2+cPtC1+cPtC2);
+    if (selected) gContextMenu.openStaticCtxMenu(cBgM0, mContextType);
+    else gContextMenu.clearStaticCtxMenu(cBgM0);
 }
 void Rectangle::finishedJobDone(){}
 
@@ -318,6 +322,8 @@ void Rectangle::onItemClick(const string &itemId, const string &objId)
     if (StringFind(objId, TAG_CTRL) < 0) return;
     int selected = (int)ObjectGet(objId, OBJPROP_SELECTED);
     if (selected && pCommonData.mShiftHold) gContextMenu.openContextMenu(objId, mContextType, mIndexType);
+    if (selected) gContextMenu.openStaticCtxMenu(cBgM0, mContextType);
+    else gContextMenu.clearStaticCtxMenu(cBgM0);
     setCtrlItemSelectState(mAllItem, selected);
     setMultiProp(OBJPROP_COLOR, selected ? gClrPointer : clrNONE, cPtL1+cPtL2+cPtR1+cPtR2+cPtC1+cPtC2);
 }
@@ -340,13 +346,13 @@ void Rectangle::onItemDeleted(const string &itemId, const string &objId)
 void Rectangle::onUserRequest(const string &itemId, const string &objId)
 {
     touchItem(itemId);
-    if (gContextMenu.mActivePos < RECT_NUM)
-    {
+    if (gContextMenu.mActivePos < RECT_NUM) {
         mIndexType = gContextMenu.mActivePos;
         storeTData();
         updateTypeProperty();
         onItemDrag(itemId, objId);
-    } else if (gContextMenu.mActiveItemStr == CTX_RANGE) {
+    }
+    else if (gContextMenu.mActiveItemStr == CTX_RANGE) {
         ObjectCreate(iLn01, OBJ_TREND, 0, 0, 0);
         ObjectCreate(iLn02, OBJ_TREND, 0, 0, 0);
         ObjectCreate(iLn03, OBJ_TREND, 0, 0, 0);
@@ -356,9 +362,39 @@ void Rectangle::onUserRequest(const string &itemId, const string &objId)
         setObjectStyle(iLn02, clrSilver, 0, 0, true);
         setObjectStyle(iLn03, clrGray, 0, 0, true);
         onItemDrag(itemId, objId);
-    } else if (gContextMenu.mActiveItemStr == CTX_XRANGE) {
+    }
+    else if (gContextMenu.mActiveItemStr == CTX_XRANGE) {
         setObjectStyle(iLn01, clrNONE, 0, 0);
         setObjectStyle(iLn02, clrNONE, 0, 0);
         setObjectStyle(iLn03, clrNONE, 0, 0);
+    }
+    else if (gContextMenu.mActiveItemStr == CTX_EXTENT) {
+        onItemDrag(itemId, objId);
+
+        int barIdx = 0;
+        barIdx = iBarShift(ChartSymbol(), ChartPeriod(), MathMax(time1, time2));
+        if (time1 == time2) barIdx -= 2;
+        bool isSz = (mIndexType == SZ_LIGHT_TYPE || mIndexType == SZ_POI_TYPE);
+        double price = (isSz ? MathMin(price1, price2) : MathMax(price1, price2));
+        if (isSz) {
+            for (int i = barIdx; i >= 0; i--){
+                if (High[i] >= price) {
+                    time2 = Time[i];
+                    refreshData();
+                    return;
+                }
+            }
+        }
+        else {
+            for (int i = barIdx; i >= 0; i--){
+                if (Low[i] <= price) {
+                    time2 = Time[i];
+                    refreshData();
+                    return;
+                }
+            }
+        }
+        time2 = Time[0];
+        refreshData();
     }
 }

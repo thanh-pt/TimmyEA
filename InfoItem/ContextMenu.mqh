@@ -7,14 +7,15 @@
 class ContextMenu
 {
 private:
-    string mActiveObjectId;
     string mContextMenu[];
     int    mSize;
     int    mMaxLength;
 public:
-    int mActivePos;
+    string mActiveObjectId;
+    int    mActivePos;
     string mActiveItemStr;
     bool   mIsOpen;
+    bool   mStaticCtxOn;
 
 public:
     ContextMenu()
@@ -52,6 +53,14 @@ public:
                 ObjectSet(itemBgnd, OBJPROP_COLOR, gClrTextBgnd);
             }
         }
+        gController.handleSparamEvent(CHART_EVENT_SELECT_CONTEXTMENU, mActiveObjectId);
+    }
+    void onNumKeyPress(int index)
+    {
+        string nameTag = "StaticCtxMenuName_";
+        string itemName = nameTag+IntegerToString(index);
+        mActivePos = index;
+        mActiveItemStr = StringTrimRight(StringTrimLeft(ObjectDescription(itemName)));
         gController.handleSparamEvent(CHART_EVENT_SELECT_CONTEXTMENU, mActiveObjectId);
     }
 public:
@@ -95,11 +104,10 @@ public:
             tempLength = StringLen(mContextMenu[i]);
             if (tempLength > mMaxLength) mMaxLength = tempLength;
         }
-        mMaxLength += 2;
 
         string itemName;
         string itemBgnd;
-        int bottomOffset = 20 + mSize*20;
+        int bottomOffset = 5 + mSize*20;
         int i = 0;
         for (; i < mSize; i++) {
             itemName = "StaticCtxMenuName_"+IntegerToString(i);
@@ -108,7 +116,7 @@ public:
             ObjectCreate(itemName, OBJ_LABEL, 0, 0, 0);
             ObjectSet(itemBgnd, OBJPROP_SELECTABLE, false);
             ObjectSet(itemName, OBJPROP_SELECTABLE, false);
-            setTextContent(itemBgnd, getFullBL(mMaxLength), 10, FONT_BLOCK, gClrTextBgnd);
+            setTextContent(itemBgnd, IntegerToString(i+1) + getFullBL(mMaxLength), 10, FONT_BLOCK, gClrTextBgnd);
             setTextContent(itemName, mContextMenu[i]+getSpaceBL((mMaxLength-StringLen(mContextMenu[i]))/2), 10, FONT_BLOCK, gClrForegrnd);
             ObjectSetString( 0, itemBgnd, OBJPROP_TOOLTIP,"\n");
             ObjectSetString( 0, itemName, OBJPROP_TOOLTIP,"\n");
@@ -116,8 +124,8 @@ public:
             ObjectSetInteger(0, itemBgnd, OBJPROP_ANCHOR, ANCHOR_RIGHT_LOWER);
             ObjectSetInteger(0, itemName, OBJPROP_CORNER, CORNER_RIGHT_LOWER);
             ObjectSetInteger(0, itemBgnd, OBJPROP_CORNER, CORNER_RIGHT_LOWER);
-            ObjectSet(itemName, OBJPROP_XDISTANCE, 10);
-            ObjectSet(itemBgnd, OBJPROP_XDISTANCE, 10);
+            ObjectSet(itemName, OBJPROP_XDISTANCE, 5);
+            ObjectSet(itemBgnd, OBJPROP_XDISTANCE, 5);
 
             bottomOffset -= 20;
             ObjectSet(itemName, OBJPROP_YDISTANCE, bottomOffset);
@@ -134,9 +142,12 @@ public:
             ObjectSet(itemBgnd, OBJPROP_COLOR, clrNONE);
             i++;
         } while (ObjectFind(itemName) >= 0);
+        
+        mStaticCtxOn = true;
     }
-    void clearStaticCtxMenu()
+    void clearStaticCtxMenu(string who)
     {
+        if (who != mActiveObjectId) return;
         string itemName;
         string itemBgnd;
         int i = 0;
@@ -147,6 +158,7 @@ public:
             ObjectSet(itemBgnd, OBJPROP_YDISTANCE, -50);
             i++;
         } while (ObjectFind(itemName) >= 0);
+        mStaticCtxOn = false;
     }
     void clearContextMenu()
     {
