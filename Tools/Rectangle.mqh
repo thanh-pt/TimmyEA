@@ -119,9 +119,9 @@ Rectangle::Rectangle(CommonData* commonData, MouseInfo* mouseInfo)
         mContextType += mNameType[i];
         if (i < mTypeNum-1) mContextType += ",";
     }
+    mContextType += "," + CTX_EXTENT;
     mContextType += "," + CTX_RANGE;
     mContextType += "," + CTX_XRANGE;
-    mContextType += "," + CTX_EXTENT;
 }
 
 // Internal Event
@@ -393,7 +393,7 @@ void Rectangle::onUserRequest(const string &itemId, const string &objId)
                 }
             }
         }
-        time2 = Time[0];
+        time2 = Time[0] + getDistanceBar(10);
         refreshData();
     }
 }
