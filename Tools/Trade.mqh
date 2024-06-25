@@ -461,10 +461,10 @@ void Trade::onItemClick(const string &itemId, const string &objId)
     if (selected) {
         if (pCommonData.mShiftHold){
             if (objId == cPtWD && ObjectDescription(cPtWD) == LIVE_INDI){
-                gContextMenu.openContextMenu(objId, mLiveTradeCtx);
+                gContextMenu.openContextMenu(cPtWD, mLiveTradeCtx);
             }
             else{
-                gContextMenu.openContextMenu(objId, mContextType);
+                gContextMenu.openContextMenu(cPtWD, mContextType);
             }
         }
         if (ObjectDescription(cPtWD) == LIVE_INDI){

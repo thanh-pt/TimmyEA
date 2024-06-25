@@ -199,7 +199,7 @@ void Point::onItemClick(const string &itemId, const string &objId)
 {
     // if (StringFind(objId, TAG_CTRL) < 0) return;
     int selected = (int)ObjectGet(objId, OBJPROP_SELECTED);
-    if (selected && pCommonData.mShiftHold) gContextMenu.openContextMenu(objId, mContextType, mIndexType);
+    if (selected && pCommonData.mShiftHold) gContextMenu.openContextMenu(cPtM0, mContextType, mIndexType);
     // setCtrlItemSelectState(mAllItem, selected);
 }
 void Point::onItemChange(const string &itemId, const string &objId){}

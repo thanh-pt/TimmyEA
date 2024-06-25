@@ -321,7 +321,7 @@ void Rectangle::onItemClick(const string &itemId, const string &objId)
 {
     if (StringFind(objId, TAG_CTRL) < 0) return;
     int selected = (int)ObjectGet(objId, OBJPROP_SELECTED);
-    if (selected && pCommonData.mShiftHold) gContextMenu.openContextMenu(objId, mContextType, mIndexType);
+    if (selected && pCommonData.mShiftHold) gContextMenu.openContextMenu(cBgM0, mContextType, mIndexType);
     if (selected) gContextMenu.openStaticCtxMenu(cBgM0, mContextType);
     else gContextMenu.clearStaticCtxMenu(cBgM0);
     setCtrlItemSelectState(mAllItem, selected);

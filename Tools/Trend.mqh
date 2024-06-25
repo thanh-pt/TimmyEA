@@ -348,6 +348,8 @@ void Trend::refreshData()
 
     int selected = (int)ObjectGet(cLnM0, OBJPROP_SELECTED);
     setMultiProp(OBJPROP_COLOR   , selected ? gClrPointer : clrNONE, cPt01+cPt02);
+    if (selected) gContextMenu.openStaticCtxMenu(cLnM0, mContextType);
+    else gContextMenu.clearStaticCtxMenu(cLnM0);
 }
 
 void Trend::createItem()
@@ -453,9 +455,12 @@ void Trend::onItemClick(const string &itemId, const string &objId)
 {
     if (StringFind(objId, TAG_CTRL) < 0) return;
     int selected = (int)ObjectGet(objId, OBJPROP_SELECTED);
-    if (selected && pCommonData.mShiftHold) gContextMenu.openContextMenu(objId, mContextType, mIndexType);
+    if (selected && pCommonData.mShiftHold) gContextMenu.openContextMenu(cLnM0, mContextType, mIndexType);
     setCtrlItemSelectState(mAllItem, selected);
     setMultiProp(OBJPROP_COLOR, selected ? gClrPointer : clrNONE, cPt01+cPt02);
+    
+    if (selected) gContextMenu.openStaticCtxMenu(cLnM0, mContextType);
+    else gContextMenu.clearStaticCtxMenu(cLnM0);
 }
 void Trend::onItemChange(const string &itemId, const string &objId)
 {

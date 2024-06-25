@@ -199,7 +199,7 @@ void CallOut::onItemClick(const string &itemId, const string &objId)
     if (StringFind(objId, TAG_CTRL) < 0) return;
     int selected = (int)ObjectGet(objId, OBJPROP_SELECTED);
     setCtrlItemSelectState(mAllItem, selected);
-    if (selected && pCommonData.mShiftHold) gContextMenu.openContextMenu(objId, mContextType);
+    if (selected && pCommonData.mShiftHold) gContextMenu.openContextMenu(cTxtM, mContextType);
 }
 void CallOut::onItemChange(const string &itemId, const string &objId)
 {
