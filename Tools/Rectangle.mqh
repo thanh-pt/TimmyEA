@@ -372,7 +372,7 @@ void Rectangle::onUserRequest(const string &itemId, const string &objId)
         onItemDrag(itemId, objId);
 
         int barIdx = 0;
-        barIdx = iBarShift(ChartSymbol(), ChartPeriod(), MathMin(time1, time2)) - 5;
+        barIdx = iBarShift(ChartSymbol(), ChartPeriod(), MathMax(time1, time2))-3;
         bool isSz = (mIndexType == SZ_LIGHT_TYPE || mIndexType == SZ_POI_TYPE);
         double price = (isSz ? MathMin(price1, price2) : MathMax(price1, price2));
         if (isSz) {
