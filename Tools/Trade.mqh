@@ -2,8 +2,9 @@
 
 #define LONG_IDX 0
 
+#define CTX_SPR         "+Spr."
 #define CTX_3R          "3R"
-#define CTX_SPREAD      "+Spr."
+#define CTX_4R          "4R"
 #define CTX_GOLIVE      "LIVE"
 #define CTX_ADDSLTP     "Sl/TP"
 #define CTX_AUTOBE      "Auto BE"
@@ -102,9 +103,11 @@ public:
     virtual void onUserRequest(const string &itemId, const string &objId);
 // Special functional
     void showHistory(bool isShow);
-    void createTrade(int id, datetime _time1, datetime _time2, double _priceEN, double _priceSL, double _priceTP, double _priceBE);
     void scanLiveTrade();
     void restoreBacktestingTrade();
+private:
+    void createTrade(int id, datetime _time1, datetime _time2, double _priceEN, double _priceSL, double _priceTP, double _priceBE);
+    void adjustRR(int rr);
 
 // Alpha feature
     void initData();
@@ -130,12 +133,13 @@ Trade::Trade(CommonData* commonData, MouseInfo* mouseInfo)
     mIndexType = 0;
     mTypeNum = 2;
 
-    mContextType  =        CTX_3R;
-    mContextType +=  "," + CTX_SPREAD;
+    mContextType  =        CTX_SPR;
+    mContextType +=  "," + CTX_3R;
+    mContextType +=  "," + CTX_4R;
     mContextType +=  "," + CTX_GOLIVE;
 
-    mLiveTradeCtx  =        CTX_ADDSLTP;
-    mLiveTradeCtx +=  "," + CTX_AUTOBE;
+    mLiveTradeCtx  =        CTX_AUTOBE;
+    mLiveTradeCtx +=  "," + CTX_ADDSLTP;
 
     // Other initialize
     string strSymbol = Symbol();
@@ -586,7 +590,7 @@ void Trade::onUserRequest(const string &itemId, const string &objId)
 #endif
     }
     // Add Spread Feature
-    else if (gContextMenu.mActiveItemStr == CTX_SPREAD) {
+    else if (gContextMenu.mActiveItemStr == CTX_SPR) {
         onItemDrag(itemId, objId);
         double spread = (double)SymbolInfoInteger(Symbol(), SYMBOL_SPREAD);
         mStlSpace = (double)Trd_StlSpace / pow(10, Digits);
@@ -605,10 +609,13 @@ void Trade::onUserRequest(const string &itemId, const string &objId)
     }
     // Auto adjust 3R
     else if (gContextMenu.mActiveItemStr == CTX_3R) {
-        
         onItemDrag(itemId, objId);
-        priceEN = (priceTP + 3*priceSL) / 4;
-        refreshData();
+        adjustRR(3);
+    }
+    // Auto adjust 4R
+    else if (gContextMenu.mActiveItemStr == CTX_4R) {
+        onItemDrag(itemId, objId);
+        adjustRR(4);
     }
     // Add TP/SL if they don't have
     else if (gContextMenu.mActiveItemStr == CTX_ADDSLTP) {
@@ -781,4 +788,10 @@ void Trade::restoreBacktestingTrade()
         // Step 3: Create Trade
         createTrade(idx, time1, time2, priceEN, priceSL, priceTP, priceBE);
     }
+}
+
+void Trade::adjustRR(int rr)
+{
+    priceEN = (priceTP + rr*priceSL) / (rr+1);
+    refreshData();
 }

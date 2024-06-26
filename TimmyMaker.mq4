@@ -48,6 +48,7 @@ void OnDeinit(const int reason)
 {
 //---
     gContextMenu.clearContextMenu();
+    gContextMenu.clearStaticCtxMenu();
 }
 //+------------------------------------------------------------------+
 //| Expert tick function                                             |

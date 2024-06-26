@@ -145,6 +145,10 @@ public:
         
         mStaticCtxOn = true;
     }
+    void clearStaticCtxMenu()
+    {
+        clearStaticCtxMenu(mActiveObjectId);
+    }
     void clearStaticCtxMenu(string who)
     {
         if (who != mActiveObjectId) return;
