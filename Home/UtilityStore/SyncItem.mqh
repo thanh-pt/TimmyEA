@@ -236,9 +236,6 @@ void syncChartPosition()
     // Find current POS
     int shift = iBarShift(ChartSymbol(), ChartPeriod(), gCommonData.mMouseTime);
     int distance_m = shift * Period();
-    
-    double fixedMax = ChartGetDouble(ChartID(),CHART_FIXED_MAX);
-    double fixedMin = ChartGetDouble(ChartID(),CHART_FIXED_MIN);
 
     long curChart = ChartFirst();
     string chartSymbol = ChartSymbol();
@@ -250,8 +247,7 @@ void syncChartPosition()
             curPeriod = ChartPeriod(curChart);
             shift = distance_m / curPeriod;
             ChartNavigate(curChart, CHART_END, -shift);
-            ChartSetDouble(curPeriod,CHART_FIXED_MAX, fixedMax);
-            ChartSetDouble(curPeriod,CHART_FIXED_MIN, fixedMin);
+            ChartSetInteger(curChart,CHART_SCALEFIX,0,false);
         }
         curChart = ChartNext(curChart);
     }

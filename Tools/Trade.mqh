@@ -3,6 +3,7 @@
 #define LONG_IDX 0
 
 #define CTX_SPR         "+Spr."
+#define CTX_2R          "2R"
 #define CTX_3R          "3R"
 #define CTX_4R          "4R"
 #define CTX_GOLIVE      "LIVE"
@@ -134,6 +135,7 @@ Trade::Trade(CommonData* commonData, MouseInfo* mouseInfo)
     mTypeNum = 2;
 
     mContextType  =        CTX_SPR;
+    mContextType +=  "," + CTX_2R;
     mContextType +=  "," + CTX_3R;
     mContextType +=  "," + CTX_4R;
     mContextType +=  "," + CTX_GOLIVE;
@@ -606,6 +608,11 @@ void Trade::onUserRequest(const string &itemId, const string &objId)
             priceSL += spread+mStlSpace;
         }
         refreshData();
+    }
+    // Auto adjust 2R
+    else if (gContextMenu.mActiveItemStr == CTX_2R) {
+        onItemDrag(itemId, objId);
+        adjustRR(2);
     }
     // Auto adjust 3R
     else if (gContextMenu.mActiveItemStr == CTX_3R) {
