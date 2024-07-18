@@ -1,9 +1,10 @@
-//+------------------------------------------------------------------+
-//|                                             TimmyTradeWorker.mq4 |
-//|                                                    Timmy Ham Hoc |
-//|                       https://www.youtube.com/@TimmyTraderHamHoc |
-//+------------------------------------------------------------------+
+#include "TradeWorker.mqh"
+
 #property strict
+
+input double InpCost = 1.5; // Cost ($)
+
+TradeWorker tradeWorker;
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
 //+------------------------------------------------------------------+
@@ -22,6 +23,7 @@ void OnDeinit(const int reason)
 //+------------------------------------------------------------------+
 void OnTick()
 {
+    tradeWorker.reqManageTrade();
 }
 //+------------------------------------------------------------------+
 //| ChartEvent function                                              |
@@ -31,5 +33,7 @@ void OnChartEvent(const int id,
                   const double &dparam,
                   const string &sparam)
 {
+    if (id == CHARTEVENT_KEYDOWN && lparam == '5') tradeWorker.reqGoLive();
+    if (id == CHARTEVENT_KEYDOWN && lparam == '2') tradeWorker.reqAddSLTP();
 }
 //+------------------------------------------------------------------+

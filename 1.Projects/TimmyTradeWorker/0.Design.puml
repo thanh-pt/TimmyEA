@@ -1,0 +1,47 @@
+@startuml Trade Worker
+actor       User
+participant Worker
+participant Maker
+
+group Tính năng: Go Live
+par
+    User -> Worker : reqGoLive()
+    Worker -> Worker : 1. Scan selected tradeObj
+    Worker -> Worker : 2. Go Live for it
+    opt Go Live success
+        Worker -> Worker : 3. Delete tradeObj
+    end
+    Worker --> User : done!
+else
+    loop foreach tradeId in System
+        alt tradeObjId NOT exits
+            Maker -> Maker : Create Trade
+        else tradeObjId exits
+            Maker -> Maker : Update đúng vị trí
+        end
+    end
+end
+end
+
+
+group Tính năng: Quản lý Trade
+User -> Worker : reqManageTrade()
+loop foreach tradeId in System
+    opt tradeObjId exits
+        opt Is Bid reached BE_line
+            alt beTag is ON
+                alt trade is Pending
+                    Worker -> Worker : Cancel Trade
+                else trade is openning
+                    Worker -> Worker : Moving Break Event
+                end
+            else paTag is ON
+                note over Worker: TODO
+            end
+        end
+    end
+end
+Worker --> User : done!
+end
+
+@enduml
