@@ -392,6 +392,13 @@ void Trade::refreshData()
     setTextContent(iTxtE, strEnInfo);
     setTextContent(iTxtS, strSlInfo);
     setTextContent(iTxtB, strBeInfo);
+    //-----------POINT TOOLTIP-------------------------
+    ObjectSetString(ChartID(), cPtTP, OBJPROP_TOOLTIP, DoubleToString(priceTP, Digits));
+    ObjectSetString(ChartID(), cPtSL, OBJPROP_TOOLTIP, DoubleToString(priceSL, Digits));
+    ObjectSetString(ChartID(), cPtEN, OBJPROP_TOOLTIP, DoubleToString(priceEN, Digits));
+    ObjectSetString(ChartID(), cPtWD, OBJPROP_TOOLTIP, DoubleToString(priceEN, Digits));
+    ObjectSetString(ChartID(), cPtBE, OBJPROP_TOOLTIP, DoubleToString(priceBE, Digits));
+
     int selected = (int)ObjectGet(cPtWD, OBJPROP_SELECTED);
     setMultiProp(OBJPROP_COLOR, selected ? gClrPointer : clrNONE, cPtTP+cPtSL+cPtEN+cPtWD+cPtBE);
     if (selected == true){

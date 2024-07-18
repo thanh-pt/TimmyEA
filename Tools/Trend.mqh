@@ -292,7 +292,7 @@ void Trend::refreshData()
     setItemPos(cLnM0, time1, time2, price1, price2);
     setItemPos(cPt01, time1, price1);
     setItemPos(cPt02, time2, price2);
-    setItemPos(iAng0, time1, time2, price1-price1, price2-price1);
+    setItemPos(iAng0, time1, time2, pCommonData.mTopPrice, pCommonData.mTopPrice + price2 - price1);
     setItemPos(iTxtA, time2, price2);
     double angle=ObjectGet(iAng0, OBJPROP_ANGLE);
     ObjectSet(iTxtA, OBJPROP_ANGLE,  angle-90.0);
