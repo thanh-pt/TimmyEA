@@ -4,9 +4,9 @@
 //// TAG DEFINE
 #define TAG_STATIC  "*"
 #define TAG_BGOVL   "BgOvlFix"
-#define TAG_CTRM    "_cM"
+#define TAG_CTRM    "_cz"
 #define TAG_CTRL    "_c"
-#define TAG_INFO    "_0i"
+#define TAG_INFO    "_I"
 
 
 

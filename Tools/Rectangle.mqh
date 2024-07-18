@@ -355,13 +355,13 @@ void Rectangle::onUserRequest(const string &itemId, const string &objId)
         onItemDrag(itemId, objId);
     }
     else if (gContextMenu.mActiveItemStr == CTX_RANGE) {
-        ObjectCreate(iLn01, OBJ_TREND, 0, 0, 0);
+        // ObjectCreate(iLn01, OBJ_TREND, 0, 0, 0);
         ObjectCreate(iLn02, OBJ_TREND, 0, 0, 0);
-        ObjectCreate(iLn03, OBJ_TREND, 0, 0, 0);
+        // ObjectCreate(iLn03, OBJ_TREND, 0, 0, 0);
         
         setMultiProp(OBJPROP_SELECTABLE, false, iLn01+iLn02+iLn03);
         setObjectStyle(iLn01, clrGray, 0, 0, true);
-        setObjectStyle(iLn02, clrSilver, 0, 0, true);
+        setObjectStyle(iLn02, clrSilver, STYLE_DOT, 0, true);
         setObjectStyle(iLn03, clrGray, 0, 0, true);
         onItemDrag(itemId, objId);
     }
