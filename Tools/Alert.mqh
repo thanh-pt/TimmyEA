@@ -33,7 +33,6 @@ string mListAlertStr;
 string mCurAlertText;
 string mListAlertArr[];
 int    mAlertNumber;
-bool   mIsAlertReached;
 bool   mIsAlertGoOver;
 double mCurAlertPrice;
 string mListAlertRemainStr;
@@ -174,7 +173,7 @@ void Alert::onMouseClick()
         mListAlertStr += cPtM0 + ",";
     }
     else if (mIndexType == TEST_ALERT){
-        sendNotification("Alert OK!");
+        sendNotification("↑﹉" + DoubleToString(gCommonData.mMousePrice, Digits) + "\nThông báo OK!");
     }
     mFinishedJobCb();
 }
@@ -233,7 +232,6 @@ void Alert::initAlarm()
     mListAlertStr = "";
     mCurAlertText = "";
     mAlertNumber = 0;
-    mIsAlertReached = false;
     mIsAlertGoOver  = false;
     mCurAlertPrice = 0;
     mListAlertRemainStr = "";
@@ -253,33 +251,42 @@ void Alert::checkAlert()
 {
     mAlertNumber  = StringSplit(mListAlertStr,',',mListAlertArr);
     mListAlertRemainStr = "";
+    bool isHighAlert = false;
     for (int i = 0; i < mAlertNumber; i++) {
         // Check valid Alert
         if (ObjectFind(mListAlertArr[i]) < 0) continue;
 
         // Get Alert information
-        mIsAlertReached = false;
         mIsAlertGoOver  = false;
         mCurAlertPrice = ObjectGet(mListAlertArr[i], OBJPROP_PRICE1);
         mCurAlertText  = ObjectGetString(ChartID(), mListAlertArr[i], OBJPROP_TEXT);
         // Check Alert Price
         if (StringFind(mCurAlertText,ALERT_INDI_H) != -1) {
-            mIsAlertReached = (Bid >= mCurAlertPrice);
             mIsAlertGoOver  = (Bid > mCurAlertPrice);
+            isHighAlert = true;
         }
         else if (StringFind(mCurAlertText,ALERT_INDI_L) != -1){
-            mIsAlertReached = (Bid <= mCurAlertPrice);
             mIsAlertGoOver  = (Bid < mCurAlertPrice);
+            isHighAlert = false;
         }
 
         // Send notification or save remain Alert
-        if (mIsAlertReached == true) {
-            sendNotification("[" + Symbol() + "/" + getTFString() + "]\n" +
-                            mCurAlertText + "\n" +
-                            DoubleToString(mCurAlertPrice, Digits));
+        if (mIsAlertGoOver) {
+            StringReplace(mAlertText, ALERT_INDI_H, "");
+            StringReplace(mAlertText, ALERT_INDI_L, "");
+            sendNotification(   (isHighAlert ? ALERT_INDI_H : ALERT_INDI_L) + DoubleToString(mCurAlertPrice, Digits) + (mAlertText!="" ? "\n" : "")
+                                + mAlertText);
+            ObjectDelete(mListAlertArr[i]);
         }
-        if (mIsAlertGoOver) ObjectDelete(mListAlertArr[i]);
-        else mListAlertRemainStr += mListAlertArr[i] + ",";
+        else {
+            mListAlertRemainStr += mListAlertArr[i] + ",";
+            if (Bid == mCurAlertPrice) {
+                StringReplace(mAlertText, ALERT_INDI_H, "");
+                StringReplace(mAlertText, ALERT_INDI_L, "");
+                sendNotification(   (isHighAlert ? "↑﹉" : "↓﹍") + DoubleToString(mCurAlertPrice, Digits) + (mAlertText!="" ? "\n" : "")
+                                    + mAlertText);
+            }
+        }
     }
     mListAlertStr = mListAlertRemainStr;
 }
