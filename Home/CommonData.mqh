@@ -9,6 +9,8 @@ class CommonData
 private:
     int      mSubwindow;
 public:
+    datetime mBeginTime;
+    double   mTopPrice;
     datetime mMouseTime;
     double   mMousePrice;
     int      mMouseX;
@@ -25,6 +27,7 @@ public:
         mMouseX = (int) x;
         mMouseY = (int) y;
         ChartXYToTimePrice(ChartID(), (int)mMouseX, (int)mMouseY, mSubwindow, mMouseTime, mMousePrice);
+        ChartXYToTimePrice(ChartID(), 0, 0, mSubwindow, mBeginTime, mTopPrice);
         if(mCtrlHold) {
             controlHold();
         }

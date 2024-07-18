@@ -193,9 +193,6 @@ string Rectangle::getAllItem(string itemId)
     allItem += itemId + TAG_INFO + "iTxtC";
     allItem += itemId + TAG_INFO + "iTxtL";
     allItem += itemId + TAG_INFO + "iTxtR";
-    allItem += itemId + TAG_INFO + "iLn01";
-    allItem += itemId + TAG_INFO + "iLn02";
-    allItem += itemId + TAG_INFO + "iLn03";
     //--- Control item ---
     allItem += itemId + TAG_CTRM + "cBgM0";
     allItem += itemId + TAG_CTRL + "cPtL1";
@@ -204,6 +201,11 @@ string Rectangle::getAllItem(string itemId)
     allItem += itemId + TAG_CTRL + "cPtR2";
     allItem += itemId + TAG_CTRL + "cPtC1";
     allItem += itemId + TAG_CTRL + "cPtC2";
+
+    //--- Special items ---
+    allItem += itemId + TAG_INFO + "iLn01";
+    allItem += itemId + TAG_INFO + "iLn02";
+    allItem += itemId + TAG_INFO + "iLn03";
 
     return allItem;
 }

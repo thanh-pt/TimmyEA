@@ -13,7 +13,6 @@ private:
     string mInfoBkgn;
     string mWeekInfo;
     string mDateInfo;
-    string mPriceInfo;
     uint mTimeOffset;
     bool mIsHided;
     bool mHideState;
@@ -25,7 +24,6 @@ public:
         mInfoBkgn   = "." + TAG_STATIC + "iInfoBkgn";
         mWeekInfo   = "." + TAG_STATIC + "zWeekInfo";
         mDateInfo   = "." + TAG_STATIC + "zDateInfo";
-        mPriceInfo  = "." + TAG_STATIC + "PriceInfo";
         pCommonData = commonData;
 
         if (ChartPeriod() == PERIOD_MN1) mTimeOffset = ChartPeriod()*60*100;
@@ -37,18 +35,19 @@ public:
     void initDrawing()
     {
         ObjectCreate(mVCrossHair, OBJ_RECTANGLE, 0, 0, 0);
-        ObjectCreate(mHCrossHair, OBJ_RECTANGLE, 0, 0, 0);
         setObjectStyle(mVCrossHair, gClrPointer, STYLE_DOT, 0);
-        setObjectStyle(mHCrossHair, gClrPointer, STYLE_DOT, 0);
         ObjectSet(mVCrossHair, OBJPROP_SELECTABLE, false);
-        ObjectSet(mHCrossHair, OBJPROP_SELECTABLE, false);
-
         ObjectSet(mVCrossHair, OBJPROP_TIME2, 0);
-        
-        ObjectSet(mHCrossHair, OBJPROP_TIME2, 0);
-        ObjectSet(mHCrossHair, OBJPROP_PRICE2, 0);
 
-        
+        ObjectCreate(mHCrossHair, OBJ_FIBO, 0, 0, 0);
+        ObjectSet(mHCrossHair, OBJPROP_RAY  , true);
+        ObjectSet(mHCrossHair, OBJPROP_SELECTABLE, false);
+        ObjectSetInteger(0, mHCrossHair,OBJPROP_LEVELS, 1);
+        ObjectSetDouble (0, mHCrossHair,OBJPROP_LEVELVALUE,0, 0);
+        ObjectSetInteger(0, mHCrossHair,OBJPROP_LEVELCOLOR,0, gClrPointer);
+        ObjectSetInteger(0, mHCrossHair,OBJPROP_LEVELSTYLE,0, STYLE_DOT);
+        ObjectSetInteger(0, mHCrossHair,OBJPROP_LEVELWIDTH,0, 1);
+
         // --- Info background ---
         ObjectCreate(mInfoBkgn, OBJ_LABEL, 0, 0, 0);
         setTextContent(mInfoBkgn, "█████", 20, FONT_BLOCK);
@@ -75,53 +74,37 @@ public:
         ObjectSetInteger(0, mDateInfo, OBJPROP_CORNER , CORNER_LEFT_LOWER);
         ObjectSetString( 0, mDateInfo, OBJPROP_TOOLTIP,"\n");
 
-        // mPriceInfo
-        ObjectCreate(mPriceInfo, OBJ_LABEL, 0, 0, 0);
-        ObjectSetInteger(ChartID(), mPriceInfo, OBJPROP_CORNER , CORNER_RIGHT_UPPER);
-        ObjectSetInteger(ChartID(), mPriceInfo, OBJPROP_ANCHOR , ANCHOR_RIGHT_UPPER);
-        setTextContent(mPriceInfo, "", 8, FONT_BLOCK);
-        ObjectSet(mPriceInfo, OBJPROP_COLOR, gClrPointer);
-        ObjectSet(mPriceInfo, OBJPROP_XDISTANCE, 0);
-        ObjectSetString( 0, mPriceInfo, OBJPROP_TOOLTIP,"\n");
-        ObjectSet(mPriceInfo, OBJPROP_SELECTABLE, false);
-
     }
     void onMouseMove()
     {
         mHideState = (pCommonData.mMouseX > ChartGetInteger(0,CHART_WIDTH_IN_PIXELS,0) || pCommonData.mMouseY > ChartGetInteger(0,CHART_HEIGHT_IN_PIXELS,0));
         
-        if (mIsHided == true)
-        {
-            if (mHideState == true)
-            {
-                return;
-            }
+        if (mIsHided == true) {
+            if (mHideState == true) return;
             mIsHided = false;
             ObjectSet(mInfoBkgn, OBJPROP_COLOR, clrWhite);
-            setMultiProp(OBJPROP_COLOR, gClrPointer, mDateInfo + mWeekInfo + mPriceInfo
-                                                       + mVCrossHair + mHCrossHair);
+            setMultiProp(OBJPROP_COLOR, gClrPointer, mDateInfo + mWeekInfo
+                                                + mVCrossHair + mHCrossHair);
         }
-        else
-        {
-            if (mHideState == true)
-            {
+        else {
+            if (mHideState == true) {
                 mIsHided = true;
-                setMultiProp(OBJPROP_COLOR, clrNONE, mDateInfo + mWeekInfo + mPriceInfo
-                                                   + mVCrossHair + mHCrossHair+mInfoBkgn);
+                setMultiProp(OBJPROP_COLOR, clrNONE, mDateInfo + mWeekInfo
+                                            + mVCrossHair + mHCrossHair + mInfoBkgn);
                 return;
             }
         }
+        ObjectSet(mHCrossHair, OBJPROP_TIME1, pCommonData.mBeginTime);
+        ObjectSet(mHCrossHair, OBJPROP_TIME2, pCommonData.mBeginTime);
+        ObjectSet(mHCrossHair, OBJPROP_PRICE1, pCommonData.mMousePrice); // -> Price
+        ObjectSet(mHCrossHair, OBJPROP_PRICE2, pCommonData.mMousePrice); // -> Price
         
-
-        ObjectSet(mHCrossHair, OBJPROP_TIME1, pCommonData.mMouseTime + mTimeOffset);
-        ObjectSet(mHCrossHair, OBJPROP_TIME2, pCommonData.mMouseTime - mTimeOffset);
+        ObjectSetString(0, mHCrossHair,OBJPROP_LEVELTEXT ,0, DoubleToString(pCommonData.mMousePrice, Digits));
 
         ObjectSet(mVCrossHair, OBJPROP_PRICE1, ChartGetDouble(ChartID(),CHART_FIXED_MIN)-10);
         ObjectSet(mVCrossHair, OBJPROP_PRICE2, ChartGetDouble(ChartID(),CHART_FIXED_MAX)+10);
 
-        ObjectSet(mHCrossHair, OBJPROP_PRICE1, pCommonData.mMousePrice); // -> Price
         ObjectSet(mVCrossHair, OBJPROP_TIME1,  pCommonData.mMouseTime);   //-> time
-
         
         // mWeekInfo and mDateInfo
         ObjectSet(mInfoBkgn, OBJPROP_XDISTANCE, pCommonData.mMouseX + 10);
@@ -136,10 +119,6 @@ public:
         }
         else if (ChartPeriod() <= PERIOD_D1) setTextContent(mWeekInfo, getDayOfWeekStr(pCommonData.mMouseTime) + "  ·  " + "W"+IntegerToString(getWeekOfYear(pCommonData.mMouseTime),2,'0'));
         else setTextContent(mWeekInfo, "W"+IntegerToString(TimeDayOfYear(pCommonData.mMouseTime)/7,2,'0') + " · " +IntegerToString(TimeYear(pCommonData.mMouseTime)));
-
-        //mPriceInfo
-        ObjectSet(mPriceInfo, OBJPROP_YDISTANCE, pCommonData.mMouseY);
-        setTextContent(mPriceInfo, DoubleToString(pCommonData.mMousePrice, Digits));
 
     }
     void onObjectDeleted(const string& objectName)
