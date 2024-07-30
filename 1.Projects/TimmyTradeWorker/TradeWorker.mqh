@@ -4,6 +4,7 @@
 #property strict
 
 #define TAG_TRADEID ".TMTrade_1#"
+#define LIVE_INDI   "ʟɪᴠᴇ"
 #define TAG_CTRM    "_cz"
 #define TAG_CTRL    "_c"
 #define TAG_INFO    "_I"
@@ -170,6 +171,8 @@ void TradeWorker::reqAddSLTP()
         objName = ObjectName(i);
         if (ObjectGet(objName, OBJPROP_SELECTED) == false) continue;
         if (StringFind(objName, tag_cPtWD) == -1) continue;
+        if (StringFind(objName, tag_cPtWD) == -1) continue;
+        if (ObjectDescription(objName) != LIVE_INDI) continue;
         StringReplace(objName, tag_cPtWD, "");
         priceTP = NormalizeDouble(ObjectGet(objName + tag_cPtTP, OBJPROP_PRICE1), Digits);
         priceEN = NormalizeDouble(ObjectGet(objName + tag_cPtEN, OBJPROP_PRICE1), Digits);
