@@ -3,6 +3,7 @@
 #property strict
 
 input double InpCost = 1.5; // Cost ($)
+input double InpCom  = 7;   // Comission ($)
 
 TradeWorker tradeWorker;
 //+------------------------------------------------------------------+

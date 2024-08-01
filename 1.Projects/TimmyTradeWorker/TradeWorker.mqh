@@ -79,16 +79,19 @@ void TradeWorker::reqGoLive()
         if (ObjectGet(objName, OBJPROP_SELECTED) == false) continue;
         if (StringFind(objName, tag_cPtWD) == -1) continue;
         StringReplace(objName, tag_cPtWD, "");
-        priceTP = NormalizeDouble(ObjectGet(objName + tag_cPtTP, OBJPROP_PRICE1), Digits);
-        priceEN = NormalizeDouble(ObjectGet(objName + tag_cPtEN, OBJPROP_PRICE1), Digits);
-        priceSL = NormalizeDouble(ObjectGet(objName + tag_cPtSL, OBJPROP_PRICE1), Digits);
+        priceTP = ObjectGet(objName + tag_cPtTP, OBJPROP_PRICE1);
+        priceEN = ObjectGet(objName + tag_cPtEN, OBJPROP_PRICE1);
+        priceSL = ObjectGet(objName + tag_cPtSL, OBJPROP_PRICE1);
         bDataReady = true;
         break;
     }
     //2. Go Live for it
     if (bDataReady == false) return;
-    double slPip = fabs(priceEN-priceSL) * (pow(10, Digits-1));
-    double tradeSize = NormalizeDouble(floor(InpCost / slPip * 10)/100, 2);
+    double point        = floor(fabs(priceEN-priceSL) * (pow(10, Digits)));
+    double tradeSize    = NormalizeDouble(floor(InpCost / (point+InpCom) * 100)/100, 2);
+    priceTP = NormalizeDouble(priceTP, Digits);
+    priceEN = NormalizeDouble(priceEN, Digits);
+    priceSL = NormalizeDouble(priceSL, Digits);
 
     int Cmd = ((priceTP > priceEN) ? OP_BUYLIMIT : OP_SELLLIMIT);
 
