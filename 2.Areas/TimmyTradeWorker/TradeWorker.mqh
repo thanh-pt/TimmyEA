@@ -86,7 +86,7 @@ void TradeWorker::reqGoLive()
     }
     //2. Go Live for it
     if (bDataReady == false) return;
-    double point        = floor(fabs(priceEN-priceSL) * (pow(10, Digits)));
+    double point        = floor(fabs(priceEN-priceSL) * Trd_ContractSize);
     double tradeSize    = NormalizeDouble(floor(InpCost / (point+InpCom) * 100)/100, 2);
     priceTP = NormalizeDouble(priceTP, Digits);
     priceEN = NormalizeDouble(priceEN, Digits);
@@ -143,7 +143,7 @@ void TradeWorker::reqManageTrade()
                 //3.2. If Running trade -> Move Breakevent
                 else if (orderType == OP_BUY || orderType == OP_SELL) {
                     // Tinh toan commission
-                    priceEN = priceEN + (isBUY ? +1 : -1) * fabs(OrderCommission())/OrderLots() / pow(10, Digits);
+                    priceEN = priceEN + (isBUY ? +1 : -1) * fabs(OrderCommission())/OrderLots() / Trd_ContractSize;
                     if(OrderModify(OrderTicket(),OrderOpenPrice(),priceEN,OrderTakeProfit(),0) == true){
                         Print("OrderModify successfully.");
                         ObjectSetText(objId + tag_cPtBE, "");
