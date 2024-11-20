@@ -28,15 +28,39 @@ void revertOrgSetup(int orderType, double& priceEN, double& priceSL, double& pri
 void adjustSetup(int orderType, double& priceEN, double& priceSL, double& priceTP) {
     if (orderType == OP_BUYLIMIT || orderType == OP_BUY){
         priceEN += InpSpread/Trd_ContractSize;
-        if (orderType == OP_BUY && priceSL > priceEN) { // Lệnh này đã khớp và được set BE
+        if (orderType == OP_BUY && priceSL >= priceEN) { // Lệnh này đã khớp và được set BE
             priceSL += InpCom/Trd_ContractSize;
         }
     }
     else if (orderType == OP_SELLLIMIT || orderType == OP_SELL){
         if (priceTP != 0.0) priceTP += InpSpread/Trd_ContractSize;
-        priceSL += InpSpread/Trd_ContractSize;
-        if (orderType == OP_SELL && priceSL < priceEN) { // Lệnh này đã khớp và được set BE
+        if (orderType == OP_SELL && priceSL <= priceEN) { // Lệnh này đã khớp và được set BE
             priceSL -= InpCom/Trd_ContractSize;
         }
+        else {
+            priceSL += InpSpread/Trd_ContractSize;
+        }
     }
+}
+
+string getOrderTypeStr(int orderType)
+{
+    switch (orderType)
+    {
+    case OP_BUYLIMIT:   return "BUYLIMIT";
+    case OP_SELLLIMIT:  return "SELLLIMIT";
+    case OP_BUY:        return "BUYED";
+    case OP_SELL:       return "SELLED";
+    }
+    return "";
+}
+
+int getOrderType(string orderTypeStr)
+{
+
+    if (orderTypeStr == "BUYLIMIT" ) return OP_BUYLIMIT ;
+    if (orderTypeStr == "SELLLIMIT") return OP_SELLLIMIT;
+    if (orderTypeStr == "BUYED"    ) return OP_BUY      ;
+    if (orderTypeStr == "SELLED"   ) return OP_SELL     ;
+    return -1;
 }
