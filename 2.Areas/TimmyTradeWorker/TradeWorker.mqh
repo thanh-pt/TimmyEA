@@ -3,10 +3,15 @@
 #property version   "1.00"
 #property strict
 
+#define TAG_STATIC  "*"
 #define TAG_TRADEID ".TMTrade_1#"
 #define TAG_CTRM    "_cz"
 #define TAG_CTRL    "_c"
 #define TAG_INFO    "_I"
+
+double gCost = 1.5; // Cost ($)
+double gComm = 7;   // Comission ($)
+double gdLotSize = MarketInfo(Symbol(), MODE_LOTSIZE);
 
 class TradeWorker
 {
@@ -67,6 +72,10 @@ TradeWorker::~TradeWorker(){}
 
 void TradeWorker::reqGoLive()
 {
+    //0. Get gCost/ gComm
+    gCost = StrToDouble(ObjectDescription(TAG_STATIC + "Cost"));
+    gComm = StrToDouble(ObjectDescription(TAG_STATIC + "Comm"));
+    if (gCost <= 0) return;
     //1. Scan selected tradeObj and Get Data
     bool bDataReady = false;
     string objName;
@@ -86,8 +95,8 @@ void TradeWorker::reqGoLive()
     }
     //2. Go Live for it
     if (bDataReady == false) return;
-    double point        = floor(fabs(priceEN-priceSL) * Trd_ContractSize);
-    double tradeSize    = NormalizeDouble(floor(InpCost / (point+InpCom) * 100)/100, 2);
+    double point        = floor(fabs(priceEN-priceSL) * gdLotSize);
+    double tradeSize    = NormalizeDouble(floor(gCost / (point+gComm) * 100)/100, 2);
     priceTP = NormalizeDouble(priceTP, Digits);
     priceEN = NormalizeDouble(priceEN, Digits);
     priceSL = NormalizeDouble(priceSL, Digits);
@@ -143,7 +152,7 @@ void TradeWorker::reqManageTrade()
                 //3.2. If Running trade -> Move Breakevent
                 else if (orderType == OP_BUY || orderType == OP_SELL) {
                     // Tinh toan commission
-                    priceEN = priceEN + (isBUY ? +1 : -1) * fabs(OrderCommission())/OrderLots() / Trd_ContractSize;
+                    priceEN = priceEN + (isBUY ? +1 : -1) * fabs(OrderCommission())/OrderLots() / gdLotSize;
                     if(OrderModify(OrderTicket(),OrderOpenPrice(),priceEN,OrderTakeProfit(),0) == true){
                         Print("OrderModify successfully.");
                         ObjectSetText(objId + tag_cPtBE, "");

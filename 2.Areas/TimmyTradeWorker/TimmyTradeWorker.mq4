@@ -2,10 +2,6 @@
 
 #property strict
 
-input double InpCost = 1.5; // Cost ($)
-input double InpCom  = 7;   // Comission ($)
-input int    Trd_ContractSize = 100000;  // Contract Size
-
 TradeWorker tradeWorker;
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
