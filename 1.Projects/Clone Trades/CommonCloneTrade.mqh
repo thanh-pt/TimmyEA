@@ -29,13 +29,14 @@ void adjustSetup(int orderType, double& priceEN, double& priceSL, double& priceT
     if (orderType == OP_BUYLIMIT || orderType == OP_BUY){
         priceEN += InpSpread/Trd_ContractSize;
         if (orderType == OP_BUY && priceSL >= priceEN) { // Lệnh này đã khớp và được set BE
-            priceSL += InpCom/Trd_ContractSize;
+            // TODO: chưa xử lý trường hợp stoploss dương. Mà hệ thống của mình khéo chả cần
+            priceSL = OrderOpenPrice() + InpCom/Trd_ContractSize;
         }
     }
     else if (orderType == OP_SELLLIMIT || orderType == OP_SELL){
         if (priceTP != 0.0) priceTP += InpSpread/Trd_ContractSize;
         if (orderType == OP_SELL && priceSL <= priceEN) { // Lệnh này đã khớp và được set BE
-            priceSL -= InpCom/Trd_ContractSize;
+            priceSL = OrderOpenPrice() - InpCom/Trd_ContractSize;
         }
         else {
             priceSL += InpSpread/Trd_ContractSize;
