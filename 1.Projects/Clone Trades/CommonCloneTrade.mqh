@@ -27,20 +27,15 @@ void revertOrgSetup(int orderType, double& priceEN, double& priceSL, double& pri
 
 void adjustSetup(int orderType, double& priceEN, double& priceSL, double& priceTP) {
     if (orderType == OP_BUYLIMIT || orderType == OP_BUY){
+        if (orderType == OP_BUY && priceSL >= priceEN) priceSL = OrderOpenPrice() + InpCom/Trd_ContractSize;
         priceEN += InpSpread/Trd_ContractSize;
-        if (orderType == OP_BUY && priceSL >= priceEN) { // Lệnh này đã khớp và được set BE
-            // TODO: chưa xử lý trường hợp stoploss dương. Mà hệ thống của mình khéo chả cần
-            priceSL = OrderOpenPrice() + InpCom/Trd_ContractSize;
-        }
     }
     else if (orderType == OP_SELLLIMIT || orderType == OP_SELL){
-        if (priceTP != 0.0) priceTP += InpSpread/Trd_ContractSize;
-        if (orderType == OP_SELL && priceSL <= priceEN) { // Lệnh này đã khớp và được set BE
-            priceSL = OrderOpenPrice() - InpCom/Trd_ContractSize;
-        }
+        if (orderType == OP_SELL && priceSL <= priceEN) priceSL = OrderOpenPrice() - InpCom/Trd_ContractSize;
         else {
             priceSL += InpSpread/Trd_ContractSize;
         }
+        if (priceTP != 0.0) priceTP += InpSpread/Trd_ContractSize;
     }
 }
 
