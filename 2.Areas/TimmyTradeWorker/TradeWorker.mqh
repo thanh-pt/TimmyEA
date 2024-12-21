@@ -4,7 +4,7 @@
 #property strict
 
 #define TAG_STATIC  "*"
-#define TAG_TRADEID ".TMTrade_1#"
+#define TAG_TRADEID ".TMTrade_1440#"
 #define TAG_CTRM    "_cz"
 #define TAG_CTRL    "_c"
 #define TAG_INFO    "_I"
