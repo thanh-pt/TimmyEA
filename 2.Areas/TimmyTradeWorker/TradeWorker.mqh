@@ -75,6 +75,7 @@ void TradeWorker::reqGoLive()
     //0. Get gCost/ gComm
     gCost = StrToDouble(ObjectDescription(TAG_STATIC + "Cost"));
     gComm = StrToDouble(ObjectDescription(TAG_STATIC + "Comm"));
+    gdLotSize = StrToDouble(ObjectDescription(TAG_STATIC + "LotSize"));
     if (gCost <= 0) return;
     //1. Scan selected tradeObj and Get Data
     bool bDataReady = false;
@@ -112,8 +113,15 @@ void TradeWorker::reqGoLive()
     }
     Print("Order ",OrderNumber," open");
         
-    //3. Delete tradeObj
-    ObjectDelete(objName + tag_cPtWD);
+    //3. Create strOrderTicket and mark onTradeTag
+    string strOrderTicket = IntegerToString(OrderNumber);
+    ObjectCreate(strOrderTicket, OBJ_LABEL, 0, 0, 0);
+    ObjectSetText(strOrderTicket, objName);
+    ObjectSet(strOrderTicket, OBJPROP_YDISTANCE, -20);
+
+    objName = objName + tag_cPtEN;
+    ObjectSet(objName, OBJPROP_ARROWCODE, 2);
+    ObjectSet(objName, OBJPROP_COLOR    , clrRed);
 }
 
 void TradeWorker::reqManageTrade()
@@ -123,7 +131,7 @@ void TradeWorker::reqManageTrade()
     for (int i = 0 ; i < OrdersTotal(); i++) {
         if (OrderSelect(i, SELECT_BY_POS) == false) continue;
         if (OrderSymbol() != Symbol()) continue;
-        objId = TAG_TRADEID + IntegerToString(OrderTicket());
+        objId = ObjectDescription(IntegerToString(OrderTicket()));
         if (ObjectFind(objId + tag_cPtWD) < 0) {
             Print("Không tìm thấy TradeObj:", IntegerToString(OrderTicket()));
             continue;
