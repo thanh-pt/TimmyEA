@@ -128,6 +128,10 @@ void TradeWorker::reqManageTrade()
 {
     //1. Scan listTradeObjId
     string objId = "";
+    int orderType;
+    double priceBE;
+    double priceTP;
+    double priceEN;
     for (int i = 0 ; i < OrdersTotal(); i++) {
         if (OrderSelect(i, SELECT_BY_POS) == false) continue;
         if (OrderSymbol() != Symbol()) continue;
@@ -137,43 +141,53 @@ void TradeWorker::reqManageTrade()
             continue;
         }
         //2. Is Bid Reached BE Line
-        double priceBE = NormalizeDouble(ObjectGet(objId + tag_cPtBE, OBJPROP_PRICE1), Digits);
-        double priceTP = NormalizeDouble(ObjectGet(objId + tag_cPtTP, OBJPROP_PRICE1), Digits);
-        double priceEN = NormalizeDouble(ObjectGet(objId + tag_cPtEN, OBJPROP_PRICE1), Digits);
-        bool isBUY = priceTP > priceEN;
-        if ((isBUY && Bid >= priceBE) || (isBUY == false && Bid <= priceBE)) {
-            //3. If BE_tag is on
-            if (ObjectDescription(objId + tag_cPtBE) == "be"){
-                int orderType = OrderType();
-                //3.1. Is Pending trade -> Cancel Trade
-                if (orderType == OP_BUYLIMIT || orderType == OP_SELLLIMIT){
-                    if(OrderDelete(OrderTicket()) == true){
-                        Print("OrderDelete successfully.");
-                        ObjectSetText(objId + tag_cPtBE, "");
-                        ObjectSetText(objId + tag_cPtWD, "");
-                        ObjectSetText(objId + tag_iTxtB, "x");
-                        ObjectSetText(objId + tag_iTxtE, "Canceled");
-                    }
-                    else
-                        Print("Error in OrderDelete. Error code=",GetLastError());
-                }
-                //3.2. If Running trade -> Move Breakevent
-                else if (orderType == OP_BUY || orderType == OP_SELL) {
-                    // Tinh toan commission
-                    priceEN = priceEN + (isBUY ? +1 : -1) * fabs(OrderCommission())/OrderLots() / gdLotSize;
-                    if(OrderModify(OrderTicket(),OrderOpenPrice(),priceEN,OrderTakeProfit(),0) == true){
-                        Print("OrderModify successfully.");
-                        ObjectSetText(objId + tag_cPtBE, "");
-                        ObjectSetText(objId + tag_iTxtB, "");
-                    }
-                    else
-                        Print("Error in OrderModify. Error code=",GetLastError());
-                }
+        priceBE = NormalizeDouble(ObjectGet(objId + tag_cPtBE, OBJPROP_PRICE1), Digits);
+        priceTP = NormalizeDouble(ObjectGet(objId + tag_cPtTP, OBJPROP_PRICE1), Digits);
+        priceEN = NormalizeDouble(ObjectGet(objId + tag_cPtEN, OBJPROP_PRICE1), Digits);
+        orderType = OrderType();
+
+        if (ObjectDescription(objId + tag_cPtBE) == "fa"){
+            if (orderType == OP_BUYLIMIT || orderType == OP_SELLLIMIT) return;
+            // FA is between EN and TP -> return
+            if (priceBE > priceEN && priceBE < priceTP) return;
+            if (priceBE < priceEN && priceBE > priceTP) return;
+            // Fail signal
+            if (orderType == OP_BUY && Bid < priceBE) priceEN += fabs(OrderCommission())/OrderLots() / gdLotSize;
+            else if (orderType == OP_SELL && Bid > priceBE) priceEN -= fabs(OrderCommission())/OrderLots() / gdLotSize;
+            else return; // Don't need to manage
+
+            if(OrderModify(OrderTicket(),OrderOpenPrice(),OrderStopLoss(),priceEN,0) == true){
+                Print("OrderModify successfully.");
+                ObjectSetText(objId + tag_cPtBE, "");
+                ObjectSetText(objId + tag_iTxtB, "");
             }
-            //3. If PA_tag is on
-            else if (ObjectDescription(objId + tag_cPtBE) == "pa"){
-                Print("TODO");
+            else
+                Print("Error in OrderModify. Error code=",GetLastError());
+        }
+        else if (ObjectDescription(objId + tag_cPtBE) == "be"){
+            if ((orderType == OP_BUYLIMIT && Bid >= priceBE) || (orderType == OP_SELLLIMIT && Bid <= priceBE)){
+                if(OrderDelete(OrderTicket()) == true){
+                    Print("OrderDelete successfully.");
+                    ObjectSetText(objId + tag_cPtBE, "");
+                    ObjectSetText(objId + tag_cPtWD, "");
+                    ObjectSetText(objId + tag_iTxtB, "x");
+                    ObjectSetText(objId + tag_iTxtE, "Canceled");
+                }
+                else
+                    Print("Error in OrderDelete. Error code=",GetLastError());
+                return;
             }
+            if (orderType == OP_BUY && Bid >= priceBE) priceEN += fabs(OrderCommission())/OrderLots() / gdLotSize;
+            else if (orderType == OP_SELL && Bid <= priceBE) priceEN -= fabs(OrderCommission())/OrderLots() / gdLotSize;
+            else return; // Don't need to manage
+
+            if(OrderModify(OrderTicket(),OrderOpenPrice(),priceEN,OrderTakeProfit(),0) == true){
+                Print("OrderModify successfully.");
+                ObjectSetText(objId + tag_cPtBE, "");
+                ObjectSetText(objId + tag_iTxtB, "");
+            }
+            else
+                Print("Error in OrderModify. Error code=",GetLastError());
         }
     }
 }
