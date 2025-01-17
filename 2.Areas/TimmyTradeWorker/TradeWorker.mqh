@@ -132,6 +132,7 @@ void TradeWorker::reqManageTrade()
     double priceBE;
     double priceTP;
     double priceEN;
+    double priceSL;
     for (int i = 0 ; i < OrdersTotal(); i++) {
         if (OrderSelect(i, SELECT_BY_POS) == false) continue;
         if (OrderSymbol() != Symbol()) continue;
@@ -144,6 +145,7 @@ void TradeWorker::reqManageTrade()
         priceBE = NormalizeDouble(ObjectGet(objId + tag_cPtBE, OBJPROP_PRICE1), Digits);
         priceTP = NormalizeDouble(ObjectGet(objId + tag_cPtTP, OBJPROP_PRICE1), Digits);
         priceEN = NormalizeDouble(ObjectGet(objId + tag_cPtEN, OBJPROP_PRICE1), Digits);
+        priceSL = NormalizeDouble(ObjectGet(objId + tag_cPtSL, OBJPROP_PRICE1), Digits);
         orderType = OrderType();
 
         if (ObjectDescription(objId + tag_cPtBE) == "fa"){
@@ -177,6 +179,9 @@ void TradeWorker::reqManageTrade()
                     Print("Error in OrderDelete. Error code=",GetLastError());
                 return;
             }
+            // BE is between EN and SL -> return
+            if (priceBE > priceEN && priceBE < priceSL) return;
+            if (priceBE < priceEN && priceBE > priceSL) return;
             if (orderType == OP_BUY && Bid >= priceBE) priceEN += fabs(OrderCommission())/OrderLots() / gdLotSize;
             else if (orderType == OP_SELL && Bid <= priceBE) priceEN -= fabs(OrderCommission())/OrderLots() / gdLotSize;
             else return; // Don't need to manage
