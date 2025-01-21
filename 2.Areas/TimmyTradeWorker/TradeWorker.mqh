@@ -149,14 +149,14 @@ void TradeWorker::reqManageTrade()
         orderType = OrderType();
 
         if (ObjectDescription(objId + tag_cPtBE) == "fa"){
-            if (orderType == OP_BUYLIMIT || orderType == OP_SELLLIMIT) return;
+            if (orderType == OP_BUYLIMIT || orderType == OP_SELLLIMIT) continue;
             // FA is between EN and TP -> return
-            if (priceBE > priceEN && priceBE < priceTP) return;
-            if (priceBE < priceEN && priceBE > priceTP) return;
+            if (priceBE > priceEN && priceBE < priceTP) continue;
+            if (priceBE < priceEN && priceBE > priceTP) continue;
             // Fail signal
             if (orderType == OP_BUY && Bid < priceBE) priceEN += fabs(OrderCommission())/OrderLots() / gdLotSize;
             else if (orderType == OP_SELL && Bid > priceBE) priceEN -= fabs(OrderCommission())/OrderLots() / gdLotSize;
-            else return; // Don't need to manage
+            else continue; // Don't need to manage
 
             if(OrderModify(OrderTicket(),OrderOpenPrice(),OrderStopLoss(),priceEN,0) == true){
                 Print("OrderModify successfully.");
@@ -177,14 +177,14 @@ void TradeWorker::reqManageTrade()
                 }
                 else
                     Print("Error in OrderDelete. Error code=",GetLastError());
-                return;
+                continue;
             }
             // BE is between EN and SL -> return
-            if (priceBE > priceEN && priceBE < priceSL) return;
-            if (priceBE < priceEN && priceBE > priceSL) return;
+            if (priceBE > priceEN && priceBE < priceSL) continue;
+            if (priceBE < priceEN && priceBE > priceSL) continue;
             if (orderType == OP_BUY && Bid >= priceBE) priceEN += fabs(OrderCommission())/OrderLots() / gdLotSize;
             else if (orderType == OP_SELL && Bid <= priceBE) priceEN -= fabs(OrderCommission())/OrderLots() / gdLotSize;
-            else return; // Don't need to manage
+            else continue; // Don't need to manage
 
             if(OrderModify(OrderTicket(),OrderOpenPrice(),priceEN,OrderTakeProfit(),0) == true){
                 Print("OrderModify successfully.");
