@@ -210,29 +210,29 @@ void TradeWorker::reqAddSLTP()
         objName = ObjectName(i);
         if (ObjectGet(objName, OBJPROP_SELECTED) == false) continue;
         if (StringFind(objName, tag_cPtEN) == -1) continue;
-        if (StringFind(objName, tag_cPtEN) == -1) continue;
-        if (ObjectGet(objName, OBJPROP_ARROWCODE) == 2) continue;        
+        if (ObjectGet(objName, OBJPROP_ARROWCODE) != 2) continue;
 
         StringReplace(objName, tag_cPtEN, "");
         priceTP = NormalizeDouble(ObjectGet(objName + tag_cPtTP, OBJPROP_PRICE1), Digits);
         priceEN = NormalizeDouble(ObjectGet(objName + tag_cPtEN, OBJPROP_PRICE1), Digits);
         priceSL = NormalizeDouble(ObjectGet(objName + tag_cPtSL, OBJPROP_PRICE1), Digits);
+        objName = objName + tag_cPtEN;
         bDataReady = true;
         break;
     }
     //2. Add SL/TP
     if (bDataReady == false) return;
-
-    string sparamItems[];
-    int k=StringSplit(objName,'#',sparamItems);
-    if (k == 2){
-        int orderTicket = StrToInteger(sparamItems[1]);
-        if (OrderSelect(orderTicket, SELECT_BY_TICKET) != true) return;
-        if (OrderTakeProfit() > 0 && OrderStopLoss() > 0) return;
-        if(OrderModify(orderTicket,OrderOpenPrice(),priceSL,priceTP,0) == true){
+    string objId = "";
+    for (int i = 0 ; i < OrdersTotal(); i++) {
+        if (OrderSelect(i, SELECT_BY_POS) == false) continue;
+        if (OrderSymbol() != Symbol()) continue;
+        objId = ObjectDescription(IntegerToString(OrderTicket()));
+        if (objId + tag_cPtEN != objName) continue;
+        if(OrderModify(OrderTicket(),OrderOpenPrice(),priceSL,priceTP,0) == true){
             Print("OrderModify successfully.");
         }
         else
             Print("Error in OrderModify. Error code=",GetLastError());
+        break;
     }
 }

@@ -32,6 +32,6 @@ void OnChartEvent(const int id,
                   const string &sparam)
 {
     if (id == CHARTEVENT_KEYDOWN && lparam == '5') tradeWorker.reqGoLive();
-    // if (id == CHARTEVENT_KEYDOWN && lparam == '2') tradeWorker.reqAddSLTP();
+    if (id == CHARTEVENT_KEYDOWN && lparam == '6') tradeWorker.reqAddSLTP();
 }
 //+------------------------------------------------------------------+
