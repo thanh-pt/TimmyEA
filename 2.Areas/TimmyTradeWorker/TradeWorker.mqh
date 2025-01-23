@@ -88,6 +88,7 @@ void TradeWorker::reqGoLive()
         if (ObjectGet(objName, OBJPROP_SELECTED) == false) continue;
         if (StringFind(objName, tag_cPtWD) == -1) continue;
         StringReplace(objName, tag_cPtWD, "");
+        if (ObjectGet(objName + tag_cPtEN, OBJPROP_ARROWCODE) == 2) continue;
         priceTP = ObjectGet(objName + tag_cPtTP, OBJPROP_PRICE1);
         priceEN = ObjectGet(objName + tag_cPtEN, OBJPROP_PRICE1);
         priceSL = ObjectGet(objName + tag_cPtSL, OBJPROP_PRICE1);
