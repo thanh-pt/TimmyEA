@@ -155,8 +155,8 @@ void TradeWorker::reqManageTrade()
             if (priceBE > priceEN && priceBE < priceTP) continue;
             if (priceBE < priceEN && priceBE > priceTP) continue;
             // Fail signal
-            if (orderType == OP_BUY && Bid < priceBE) priceEN += fabs(OrderCommission())/OrderLots() / gdLotSize;
-            else if (orderType == OP_SELL && Bid > priceBE) priceEN -= fabs(OrderCommission())/OrderLots() / gdLotSize;
+            if (orderType == OP_BUY && Bid < priceBE && Close[1] < priceBE) priceEN += fabs(OrderCommission())/OrderLots() / gdLotSize;
+            else if (orderType == OP_SELL && Bid > priceBE && Close[1] > priceBE) priceEN -= fabs(OrderCommission())/OrderLots() / gdLotSize;
             else continue; // Don't need to manage
 
             if(OrderModify(OrderTicket(),OrderOpenPrice(),OrderStopLoss(),priceEN,0) == true){
