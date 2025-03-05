@@ -4,7 +4,7 @@
  * - Daily following
 */
 
-#define APP_TAG "EA_Perry"
+#define APP_TAG "EA_Bắt đáy"
 
 #resource "PerrythePlatypusBG.bmp"
 
@@ -17,40 +17,40 @@ enum eStage {
     eL5      = 5,
     eL6      = 6,
 };
-double InpP1 = 0.0;
-double InpP2 = 0.0;
-double InpP3 = 0.0;
-double InpP4 = 0.0;
-double InpP5 = 0.0;
-double InpP6 = 0.0;
+double gprice1 = 0.0;
+double gprice2 = 0.0;
+double gprice3 = 0.0;
+double gprice4 = 0.0;
+double gprice5 = 0.0;
+double gprice6 = 0.0;
 
-double InpPE1 = 0.0;
-double InpPE2 = 0.0;
-double InpPE3 = 0.0;
-double InpPE4 = 0.0;
-double InpPE5 = 0.0;
-double InpPE6 = 0.0;
+double gpriceE1 = 0.0;
+double gpriceE2 = 0.0;
+double gpriceE3 = 0.0;
+double gpriceE4 = 0.0;
+double gpriceE5 = 0.0;
+double gpriceE6 = 0.0;
 
-double InpStp1 = 12;
-double InpStp2 = 7;
-double InpStp3 = 1;
-double InpStp4 = 1;
-double InpStp5 = 1;
-double InpStp6 = 1;
+input double InpStp1 =  10;
+input double InpStp2 =   7;
+input double InpStp3 = 0.5;
+input double InpStp4 = 0.5;
+input double InpStp5 = 0.5;
+input double InpStp6 = 0.5;
 
-double InpE1 = 10;
-double InpE2 = 20;
-double InpE3 =  2;
-double InpE4 =  2;
-double InpE5 =  2;
-double InpE6 =  2;
+input double InpE1 = 10;
+input double InpE2 =  5;
+input double InpE3 =  1;
+input double InpE4 =  1;
+input double InpE5 =  1;
+input double InpE6 =  1;
 
-double InpSz1 = 0.01;
-double InpSz2 = 0.02;
-double InpSz3 = 0.00;
-double InpSz4 = 0.00;
-double InpSz5 = 0.00;
-double InpSz6 = 0.00;
+input double InpSz1 = 0.01;
+input double InpSz2 = 0.02;
+      double InpSz3 = 0.00;
+      double InpSz4 = 0.00;
+      double InpSz5 = 0.00;
+      double InpSz6 = 0.00;
 
 bool gReadyStage = false;
 
@@ -61,10 +61,10 @@ int OnInit() {
     ChartSetInteger(0, CHART_SHOW_BID_LINE, true);
     ChartSetInteger(0, CHART_MODE, CHART_CANDLES);
 
-    InpSz3 = (InpSz1*(InpStp2+InpStp3                        ) + InpSz2*(InpStp3                        )                                                                                 ) / InpE3  - (InpSz1 + InpSz2                            );
-    InpSz4 = (InpSz1*(InpStp2+InpStp3+InpStp4                ) + InpSz2*(InpStp3+InpStp4                ) + InpSz3*(InpStp4                )                                              ) / InpE4  - (InpSz1 + InpSz2 + InpSz3                   );
-    InpSz5 = (InpSz1*(InpStp2+InpStp3+InpStp4+InpStp5        ) + InpSz2*(InpStp3+InpStp4+InpStp5        ) + InpSz3*(InpStp4+InpStp5        ) + InpSz4*(InpStp5        )                   ) / InpE5  - (InpSz1 + InpSz2 + InpSz3 + InpSz4          );
-    InpSz6 = (InpSz1*(InpStp2+InpStp3+InpStp4+InpStp5+InpStp6) + InpSz2*(InpStp3+InpStp4+InpStp5+InpStp6) + InpSz3*(InpStp4+InpStp5+InpStp6) + InpSz4*(InpStp5+InpStp6) + InpSz5*(InpStp6)) / InpE6  - (InpSz1 + InpSz2 + InpSz3 + InpSz4 + InpSz5 );
+    InpSz3 = 1.7*(InpSz1*(InpStp2+InpStp3                        ) + InpSz2*(InpStp3                        )                                                                                 ) / InpE3  - (InpSz1 + InpSz2                            );
+    InpSz4 = 1.7*(InpSz1*(InpStp2+InpStp3+InpStp4                ) + InpSz2*(InpStp3+InpStp4                ) + InpSz3*(InpStp4                )                                              ) / InpE4  - (InpSz1 + InpSz2 + InpSz3                   );
+    InpSz5 = 1.7*(InpSz1*(InpStp2+InpStp3+InpStp4+InpStp5        ) + InpSz2*(InpStp3+InpStp4+InpStp5        ) + InpSz3*(InpStp4+InpStp5        ) + InpSz4*(InpStp5        )                   ) / InpE5  - (InpSz1 + InpSz2 + InpSz3 + InpSz4          );
+    InpSz6 = 1.7*(InpSz1*(InpStp2+InpStp3+InpStp4+InpStp5+InpStp6) + InpSz2*(InpStp3+InpStp4+InpStp5+InpStp6) + InpSz3*(InpStp4+InpStp5+InpStp6) + InpSz4*(InpStp5+InpStp6) + InpSz5*(InpStp6)) / InpE6  - (InpSz1 + InpSz2 + InpSz3 + InpSz4 + InpSz5 );
     InpSz3 = NormalizeDouble(InpSz3, 2);
     InpSz4 = NormalizeDouble(InpSz4, 2);
     InpSz5 = NormalizeDouble(InpSz5, 2);
@@ -82,6 +82,9 @@ datetime    gCurDt;
 string      gStrCurTime, gStrPreTime;
 eStage      gState;
 
+int     gL6ReachedCount = 0;
+
+
 ulong gTicketL1 = 0;
 ulong gTicketL2 = 0;
 ulong gTicketL3 = 0;
@@ -92,7 +95,6 @@ void OnTick() {
     // if (gReadyStage == false) return; TODO
     Bid=SymbolInfoDouble(_Symbol,SYMBOL_BID);
     Ask=SymbolInfoDouble(_Symbol,SYMBOL_ASK);
-    // Print("Ask-Bid", Ask-Bid);
     gCurDt = iTime(_Symbol, PERIOD_CURRENT, 0);
     TimeToStruct(gCurDt, gStCurTime);
 
@@ -103,76 +105,66 @@ void OnTick() {
 
     if (gStrCurTime != gStrPreTime) {
         // New day handle
-        InpP1 = iOpen(_Symbol, PERIOD_D1, 0) - InpStp1;
+        gprice1 = iOpen(_Symbol, PERIOD_D1, 0) - InpStp1;
         gStrPreTime = gStrCurTime;
-        // Close all trade if have?
-        // if (gState == eL6) {
-        //     gCTrade.PositionClose(gTicketL1);
-        //     gCTrade.PositionClose(gTicketL2);
-        //     gCTrade.PositionClose(gTicketL3);
-        //     gCTrade.PositionClose(gTicketL4);
-        //     gCTrade.PositionClose(gTicketL5);
-        //     gCTrade.PositionClose(gTicketL6);
-        //     gState = eNoTrade;
-        // }
     }
 
     switch (gState)
     {
     case eNoTrade:{
-        if (Bid <= InpP1) {
+        if (Bid <= gprice1) {
             gState = eL1;
             initL1();
         }
     }
         break;
     case eL1     :{
-        if (Bid >= InpPE1) {
+        if (Bid >= gpriceE1) {
             gCTrade.PositionClose(gTicketL1);
             gState = eNoTrade;
         }
-        else if (Bid <= InpP2) {
+        else if (Bid <= gprice2) {
             gState = eL2;
             gCTrade.Buy(InpSz2, NULL, 0, 0, 0, "L2");
             gTicketL2 = gCTrade.ResultOrder();
-            InpPE2 = Ask + InpE2;
-            InpP3 = Bid - InpStp3;
+            gpriceE2 = Ask + InpE2;
+            gprice3 = Bid - InpStp3;
         }
     }
         break;
     case eL2     :{
-        if (Bid >= InpPE2) {
+        if (Bid >= gpriceE2) {
             gCTrade.PositionClose(gTicketL2);
             gState = eL1;
         }
-        else if (Bid <= InpP3) {
+        else if (Bid <= gprice3) {
             gState = eL3;
             gCTrade.Buy(InpSz3, NULL, 0, 0, 0, "L3");
             gTicketL3 = gCTrade.ResultOrder();
-            InpPE3 = Ask + InpE3;
-            InpP4 = Bid - InpStp4;
+            gpriceE3 = Ask + InpE3;
+            gprice4 = Bid - InpStp4;
         }
     }
         break;
     case eL3     :{
-        if (Bid >= InpPE3) {
+        if (Bid >= gpriceE3) {
             gCTrade.PositionClose(gTicketL1);
             gCTrade.PositionClose(gTicketL2);
             gCTrade.PositionClose(gTicketL3);
             initL1();
             gState = eL1;
         }
-        else if (Bid <= InpP4) {
+        else if (Bid <= gprice4) {
             gCTrade.Buy(InpSz4, NULL, 0, 0, 0, "L4");
             gTicketL4 = gCTrade.ResultOrder();
-            InpPE4 = Ask + InpE4;
-            InpP5 = Bid - InpStp5;
+            gpriceE4 = Ask + InpE4;
+            gprice5 = Bid - InpStp5;
             gState = eL4;
         }
     }
         break;
     case eL4     :{
-        if (Bid >= InpPE4) {
+        if (Bid >= gpriceE4) {
             gCTrade.PositionClose(gTicketL1);
             gCTrade.PositionClose(gTicketL2);
             gCTrade.PositionClose(gTicketL3);
@@ -180,17 +172,17 @@ void OnTick() {
             initL1();
             gState = eL1;
         }
-        else if (Bid <= InpP5) {
+        else if (Bid <= gprice5) {
             gCTrade.Buy(InpSz5, NULL, 0, 0, 0, "L5");
             gTicketL5 = gCTrade.ResultOrder();
-            InpPE5 = Ask + InpE5;
-            InpP6 = Bid - InpStp6;
+            gpriceE5 = Ask + InpE5;
+            gprice6 = Bid - InpStp6;
             gState = eL5;
         }
     }
         break;
     case eL5     :{
-        if (Bid >= InpPE5) {
+        if (Bid >= gpriceE5) {
             gCTrade.PositionClose(gTicketL1);
             gCTrade.PositionClose(gTicketL2);
             gCTrade.PositionClose(gTicketL3);
@@ -199,16 +191,18 @@ void OnTick() {
             initL1();
             gState = eL1;
         }
-        else if (Bid <= InpP6) {
+        else if (Bid <= gprice6) {
             gCTrade.Buy(InpSz6, NULL, 0, 0, 0, "L6");
             gTicketL6 = gCTrade.ResultOrder();
-            InpPE6 = Ask + InpE6;
+            gpriceE6 = Ask + InpE6;
             gState = eL6;
+
+            createLabel("L6 Count", "L6 Count: " + IntegerToString(gL6ReachedCount++), 20, 200);
         }
     }
         break;
     case eL6     :{
-        if (Bid >= InpPE6) {
+        if (Bid >= gpriceE6) {
             gCTrade.PositionClose(gTicketL1);
             gCTrade.PositionClose(gTicketL2);
             gCTrade.PositionClose(gTicketL3);
@@ -226,14 +220,14 @@ void OnTick() {
     default:
         break;
     }
-    createLabel(objLabelHL, "*_____________________", 145, 130 - 15*gState);
+    // createLabel(objLabelHL, "*_____________________", 145, 130 - 15*gState);
 }
 
 void initL1() {
     gCTrade.Buy(InpSz1, NULL, 0, 0, 0, "L1");
     gTicketL1 = gCTrade.ResultOrder();
-    InpPE1 = Ask + InpE1;
-    InpP2 = Bid - InpStp2;
+    gpriceE1 = Ask + InpE1;
+    gprice2 = Bid - InpStp2;
 }
 
 bool initEA() {
@@ -267,13 +261,15 @@ void initProfileApprearence() {
     // ObjectSetInteger(0,objBackGround,OBJPROP_YDISTANCE,0);
     // ObjectSetString(0,objBackGround,OBJPROP_BMPFILE,0,"::PerrythePlatypusBG.bmp");
 
-    createLabel(objLabelHD, "    Step  Size  Expect", 145, 130);
-    createLabel(objLabelL1, " L1 " + fixedText(DoubleToString(InpStp1,0),4) + " " +fixedText(DoubleToString(InpSz1,2),5)+" " + fixedText(DoubleToString(InpE1,0),7),  145, 115);
-    createLabel(objLabelL2, " L2 " + fixedText(DoubleToString(InpStp2,0),4) + " " +fixedText(DoubleToString(InpSz2,2),5)+" " + fixedText(DoubleToString(InpE2,0),7),  145, 100);
-    createLabel(objLabelL3, " L3 " + fixedText(DoubleToString(InpStp3,0),4) + " " +fixedText(DoubleToString(InpSz3,2),5)+" " + fixedText(DoubleToString(InpE3,0),7),  145,  85);
-    createLabel(objLabelL4, " L4 " + fixedText(DoubleToString(InpStp4,0),4) + " " +fixedText(DoubleToString(InpSz4,2),5)+" " + fixedText(DoubleToString(InpE4,0),7),  145,  70);
-    createLabel(objLabelL5, " L5 " + fixedText(DoubleToString(InpStp5,0),4) + " " +fixedText(DoubleToString(InpSz5,2),5)+" " + fixedText(DoubleToString(InpE5,0),7),  145,  55);
-    createLabel(objLabelL6, " L6 " + fixedText(DoubleToString(InpStp6,0),4) + " " +fixedText(DoubleToString(InpSz6,2),5)+" " + fixedText(DoubleToString(InpE6,0),7),  145,  40);
+    /*
+    createLabel(objLabelHD, "    Step  Size  Expect"                                                                                                               , 10, 130);
+    createLabel(objLabelL1, " L1 " + fixedText(DoubleToString(InpStp1,0),4) + " " +fixedText(DoubleToString(InpSz1,2),5)+" " + fixedText(DoubleToString(InpE1,0),7), 10, 115);
+    createLabel(objLabelL2, " L2 " + fixedText(DoubleToString(InpStp2,0),4) + " " +fixedText(DoubleToString(InpSz2,2),5)+" " + fixedText(DoubleToString(InpE2,0),7), 10, 100);
+    createLabel(objLabelL3, " L3 " + fixedText(DoubleToString(InpStp3,0),4) + " " +fixedText(DoubleToString(InpSz3,2),5)+" " + fixedText(DoubleToString(InpE3,0),7), 10,  85);
+    createLabel(objLabelL4, " L4 " + fixedText(DoubleToString(InpStp4,0),4) + " " +fixedText(DoubleToString(InpSz4,2),5)+" " + fixedText(DoubleToString(InpE4,0),7), 10,  70);
+    createLabel(objLabelL5, " L5 " + fixedText(DoubleToString(InpStp5,0),4) + " " +fixedText(DoubleToString(InpSz5,2),5)+" " + fixedText(DoubleToString(InpE5,0),7), 10,  55);
+    createLabel(objLabelL6, " L6 " + fixedText(DoubleToString(InpStp6,0),4) + " " +fixedText(DoubleToString(InpSz6,2),5)+" " + fixedText(DoubleToString(InpE6,0),7), 10,  40);
+    */
 }
 
 void handleClick(string sparam)
@@ -291,10 +287,11 @@ void handleClick(string sparam)
 void createLabel(string objName, string text, int posX, int posY)
 {
     ObjectCreate(0,     objName, OBJ_LABEL, 0, 0, 0, 0, 0);
-    ObjectSetInteger(0, objName, OBJPROP_COLOR, clrMidnightBlue);
+    ObjectSetInteger(0, objName, OBJPROP_COLOR, clrLightGray);
     ObjectSetInteger(0, objName, OBJPROP_ANCHOR, ANCHOR_LEFT_LOWER);
     ObjectSetInteger(0, objName, OBJPROP_CORNER, CORNER_LEFT_LOWER);
     ObjectSetInteger(0, objName, OBJPROP_SELECTABLE, true);
+    ObjectSetInteger(0, objName, OBJPROP_BACK, false);
     ObjectSetInteger(0, objName, OBJPROP_FONTSIZE, 10);
     ObjectSetString(0,  objName, OBJPROP_FONT, "Consolas");
     ObjectSetString(0,  objName, OBJPROP_TEXT, text);
