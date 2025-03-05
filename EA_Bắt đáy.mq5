@@ -6,8 +6,6 @@
 
 #define APP_TAG "EA_Bắt đáy"
 
-#resource "PerrythePlatypusBG.bmp"
-
 enum eStage {
     eNoTrade = 0,
     eL1      = 1,
@@ -74,9 +72,7 @@ int OnInit() {
     return INIT_SUCCEEDED;
 }
 
-#include <Trade\Trade.mqh>
-CTrade gCTrade;
-double Bid, Ask;
+#include "PAL.mqh"
 MqlDateTime gStCurTime;
 datetime    gCurDt;
 string      gStrCurTime, gStrPreTime;
@@ -93,8 +89,6 @@ ulong gTicketL5 = 0;
 ulong gTicketL6 = 0;
 void OnTick() {
     // if (gReadyStage == false) return; TODO
-    Bid=SymbolInfoDouble(_Symbol,SYMBOL_BID);
-    Ask=SymbolInfoDouble(_Symbol,SYMBOL_ASK);
     gCurDt = iTime(_Symbol, PERIOD_CURRENT, 0);
     TimeToStruct(gCurDt, gStCurTime);
 
@@ -112,89 +106,89 @@ void OnTick() {
     switch (gState)
     {
     case eNoTrade:{
-        if (Bid <= gprice1) {
+        if (PAL::Bid() <= gprice1) {
             gState = eL1;
             initL1();
         }
     }
         break;
     case eL1     :{
-        if (Bid >= gpriceE1) {
-            gCTrade.PositionClose(gTicketL1);
+        if (PAL::Bid() >= gpriceE1) {
+            PAL::PositionClose(gTicketL1);
             gState = eNoTrade;
         }
-        else if (Bid <= gprice2) {
+        else if (PAL::Bid() <= gprice2) {
             gState = eL2;
-            gCTrade.Buy(InpSz2, NULL, 0, 0, 0, "L2");
-            gTicketL2 = gCTrade.ResultOrder();
-            gpriceE2 = Ask + InpE2;
-            gprice3 = Bid - InpStp3;
+            PAL::Buy(InpSz2, NULL, 0, 0, 0, "L2");
+            gTicketL2 = PAL::ResultOrder();
+            gpriceE2 = PAL::Ask() + InpE2;
+            gprice3 = PAL::Bid() - InpStp3;
         }
     }
         break;
     case eL2     :{
-        if (Bid >= gpriceE2) {
-            gCTrade.PositionClose(gTicketL2);
+        if (PAL::Bid() >= gpriceE2) {
+            PAL::PositionClose(gTicketL2);
             gState = eL1;
         }
-        else if (Bid <= gprice3) {
+        else if (PAL::Bid() <= gprice3) {
             gState = eL3;
-            gCTrade.Buy(InpSz3, NULL, 0, 0, 0, "L3");
-            gTicketL3 = gCTrade.ResultOrder();
-            gpriceE3 = Ask + InpE3;
-            gprice4 = Bid - InpStp4;
+            PAL::Buy(InpSz3, NULL, 0, 0, 0, "L3");
+            gTicketL3 = PAL::ResultOrder();
+            gpriceE3 = PAL::Ask() + InpE3;
+            gprice4 = PAL::Bid() - InpStp4;
         }
     }
         break;
     case eL3     :{
-        if (Bid >= gpriceE3) {
-            gCTrade.PositionClose(gTicketL1);
-            gCTrade.PositionClose(gTicketL2);
-            gCTrade.PositionClose(gTicketL3);
+        if (PAL::Bid() >= gpriceE3) {
+            PAL::PositionClose(gTicketL1);
+            PAL::PositionClose(gTicketL2);
+            PAL::PositionClose(gTicketL3);
             initL1();
             gState = eL1;
         }
-        else if (Bid <= gprice4) {
-            gCTrade.Buy(InpSz4, NULL, 0, 0, 0, "L4");
-            gTicketL4 = gCTrade.ResultOrder();
-            gpriceE4 = Ask + InpE4;
-            gprice5 = Bid - InpStp5;
+        else if (PAL::Bid() <= gprice4) {
+            PAL::Buy(InpSz4, NULL, 0, 0, 0, "L4");
+            gTicketL4 = PAL::ResultOrder();
+            gpriceE4 = PAL::Ask() + InpE4;
+            gprice5 = PAL::Bid() - InpStp5;
             gState = eL4;
         }
     }
         break;
     case eL4     :{
-        if (Bid >= gpriceE4) {
-            gCTrade.PositionClose(gTicketL1);
-            gCTrade.PositionClose(gTicketL2);
-            gCTrade.PositionClose(gTicketL3);
-            gCTrade.PositionClose(gTicketL4);
+        if (PAL::Bid() >= gpriceE4) {
+            PAL::PositionClose(gTicketL1);
+            PAL::PositionClose(gTicketL2);
+            PAL::PositionClose(gTicketL3);
+            PAL::PositionClose(gTicketL4);
             initL1();
             gState = eL1;
         }
-        else if (Bid <= gprice5) {
-            gCTrade.Buy(InpSz5, NULL, 0, 0, 0, "L5");
-            gTicketL5 = gCTrade.ResultOrder();
-            gpriceE5 = Ask + InpE5;
-            gprice6 = Bid - InpStp6;
+        else if (PAL::Bid() <= gprice5) {
+            PAL::Buy(InpSz5, NULL, 0, 0, 0, "L5");
+            gTicketL5 = PAL::ResultOrder();
+            gpriceE5 = PAL::Ask() + InpE5;
+            gprice6 = PAL::Bid() - InpStp6;
             gState = eL5;
         }
     }
         break;
     case eL5     :{
-        if (Bid >= gpriceE5) {
-            gCTrade.PositionClose(gTicketL1);
-            gCTrade.PositionClose(gTicketL2);
-            gCTrade.PositionClose(gTicketL3);
-            gCTrade.PositionClose(gTicketL4);
-            gCTrade.PositionClose(gTicketL5);
+        if (PAL::Bid() >= gpriceE5) {
+            PAL::PositionClose(gTicketL1);
+            PAL::PositionClose(gTicketL2);
+            PAL::PositionClose(gTicketL3);
+            PAL::PositionClose(gTicketL4);
+            PAL::PositionClose(gTicketL5);
             initL1();
             gState = eL1;
         }
-        else if (Bid <= gprice6) {
-            gCTrade.Buy(InpSz6, NULL, 0, 0, 0, "L6");
-            gTicketL6 = gCTrade.ResultOrder();
-            gpriceE6 = Ask + InpE6;
+        else if (PAL::Bid() <= gprice6) {
+            PAL::Buy(InpSz6, NULL, 0, 0, 0, "L6");
+            gTicketL6 = PAL::ResultOrder();
+            gpriceE6 = PAL::Ask() + InpE6;
             gState = eL6;
 
             createLabel("L6 Count", "L6 Count: " + IntegerToString(gL6ReachedCount++), 20, 200);
@@ -202,17 +196,17 @@ void OnTick() {
     }
         break;
     case eL6     :{
-        if (Bid >= gpriceE6) {
-            gCTrade.PositionClose(gTicketL1);
-            gCTrade.PositionClose(gTicketL2);
-            gCTrade.PositionClose(gTicketL3);
-            gCTrade.PositionClose(gTicketL4);
-            gCTrade.PositionClose(gTicketL5);
-            gCTrade.PositionClose(gTicketL6);
+        if (PAL::Bid() >= gpriceE6) {
+            PAL::PositionClose(gTicketL1);
+            PAL::PositionClose(gTicketL2);
+            PAL::PositionClose(gTicketL3);
+            PAL::PositionClose(gTicketL4);
+            PAL::PositionClose(gTicketL5);
+            PAL::PositionClose(gTicketL6);
             initL1();
             gState = eL1;
         }
-        // else if (Bid <= ) {
+        // else if (PAL::Bid() <= ) {
         //     //HOW TO CUT LOSS?
         // }
     }
@@ -224,10 +218,10 @@ void OnTick() {
 }
 
 void initL1() {
-    gCTrade.Buy(InpSz1, NULL, 0, 0, 0, "L1");
-    gTicketL1 = gCTrade.ResultOrder();
-    gpriceE1 = Ask + InpE1;
-    gprice2 = Bid - InpStp2;
+    PAL::Buy(InpSz1, NULL, 0, 0, 0, "L1");
+    gTicketL1 = PAL::ResultOrder();
+    gpriceE1 = PAL::Ask() + InpE1;
+    gprice2 = PAL::Bid() - InpStp2;
 }
 
 bool initEA() {
@@ -254,13 +248,6 @@ string objLabelL4       = APP_TAG + "LabelL4";
 string objLabelL5       = APP_TAG + "LabelL5";
 string objLabelL6       = APP_TAG + "LabelL6";
 void initProfileApprearence() {
-    // ObjectCreate(0,objBackGround,OBJ_BITMAP_LABEL,0,0,0);
-    // ObjectSetInteger(0,objBackGround,OBJPROP_CORNER,CORNER_LEFT_LOWER);
-    // ObjectSetInteger(0,objBackGround,OBJPROP_ANCHOR,ANCHOR_LEFT_LOWER);
-    // ObjectSetInteger(0,objBackGround,OBJPROP_XDISTANCE,0);
-    // ObjectSetInteger(0,objBackGround,OBJPROP_YDISTANCE,0);
-    // ObjectSetString(0,objBackGround,OBJPROP_BMPFILE,0,"::PerrythePlatypusBG.bmp");
-
     /*
     createLabel(objLabelHD, "    Step  Size  Expect"                                                                                                               , 10, 130);
     createLabel(objLabelL1, " L1 " + fixedText(DoubleToString(InpStp1,0),4) + " " +fixedText(DoubleToString(InpSz1,2),5)+" " + fixedText(DoubleToString(InpE1,0),7), 10, 115);
