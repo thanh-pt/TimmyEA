@@ -133,7 +133,7 @@ void drawingCandle(double hi, double lo, double op, double cl, datetime dtOp, da
 void hideUnusedCandle ()
 {
     string candleTag;
-    while (gCandleIdx < 100)
+    while (gCandleIdx < 1000)
     {
         candleTag = APP_TAG + IntegerToString(gCandleIdx++);
         ObjectSetDouble(0,  candleTag + "-Body", OBJPROP_PRICE, 0, 0);
