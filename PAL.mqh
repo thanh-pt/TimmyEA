@@ -23,13 +23,11 @@ ulong PAL::ResultOrder() {
 }
 
 bool PAL::Buy(double size, string symbol, double slippage, double tp, double sl, string cmt) {
-    gCTrade.Buy(size, symbol, slippage, tp, sl, cmt);
-    return false;
+    return gCTrade.Buy(size, symbol, slippage, tp, sl, cmt);
 }
 
 bool PAL::Sell(double size, string symbol, double slippage, double tp, double sl, string cmt) {
-    gCTrade.Sell(size, symbol, slippage, tp, sl, cmt);
-    return false;
+    return gCTrade.Sell(size, symbol, slippage, tp, sl, cmt);
 }
 
 double PAL::Ask() {
