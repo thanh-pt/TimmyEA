@@ -1,5 +1,5 @@
 // #include "Logic_Bắt đáy.mqh"
-#include "Bắt đáy_v2.mqh"
+#include "Batday_v2.mqh"
 
 MtHandler mtHandler;
 
