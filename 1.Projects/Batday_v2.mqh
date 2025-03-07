@@ -17,7 +17,7 @@ double gUpperPrice[MAX_STEP];
 double gTotalLoss[MAX_STEP];
 
 int gDefenseGate = 3;
-double inpHeso = 1.0;
+double inpHeso = 1.5;
 void initValue() {
     gLowerSteps[ 0] = 0.5; gUpperSteps[ 0] =   1;
     gLowerSteps[ 1] = 0.5; gUpperSteps[ 1] =   1;
@@ -133,7 +133,7 @@ void MtHandler::OnTick() {
             gTickets[gCurStep] = PAL::ResultOrder();
             gUpperPrice[gCurStep] = PAL::Ask() + gUpperSteps[gCurStep];
             gLowerPrice[gCurStep] = PAL::Bid() - gLowerSteps[gCurStep];
-            noteStep(gCurStep, Time[0], PAL::Ask(), gUpperPrice[gCurStep], gLowerPrice[gCurStep]);
+            noteStep(gCurStep, TimeCurrent(), PAL::Ask(), gUpperPrice[gCurStep], gLowerPrice[gCurStep]);
         }
     }
 
@@ -164,9 +164,9 @@ void MtHandler::OnTick() {
         gTickets[gCurStep] = PAL::ResultOrder();
         gUpperPrice[gCurStep] = PAL::Ask() + gUpperSteps[gCurStep];
         gLowerPrice[gCurStep] = PAL::Bid() - gLowerSteps[gCurStep];
-        noteStep(gCurStep, Time[0], PAL::Ask(), gUpperPrice[gCurStep], gLowerPrice[gCurStep]);
+        noteStep(gCurStep, TimeCurrent(), PAL::Ask(), gUpperPrice[gCurStep], gLowerPrice[gCurStep]);
     }
-    else if (PAL::Bid() <= gLowerPrice[gCurStep]){
+    else if (PAL::Ask() <= gLowerPrice[gCurStep]){
         // if (gStCurDt.hour >= 19 && gCurStep == 0) {
         //     return;
         // }
@@ -177,7 +177,7 @@ void MtHandler::OnTick() {
         gTickets[gCurStep] = PAL::ResultOrder();
         gUpperPrice[gCurStep] = PAL::Ask() + gUpperSteps[gCurStep];
         gLowerPrice[gCurStep] = PAL::Bid() - gLowerSteps[gCurStep];
-        noteStep(gCurStep, Time[0], PAL::Ask(), gUpperPrice[gCurStep], gLowerPrice[gCurStep]);
+        noteStep(gCurStep, TimeCurrent(), PAL::Ask(), gUpperPrice[gCurStep], gLowerPrice[gCurStep]);
         // TODO: Hide Lower Price...?
         // hideStep(gCurStep);
     }
