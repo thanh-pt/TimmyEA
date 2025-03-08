@@ -17,36 +17,40 @@ double gLowerPrice[MAX_STEP];
 double gUpperPrice[MAX_STEP];
 double gCover[MAX_STEP];
 double gLoad[MAX_STEP];
+double gReward[MAX_STEP];
 
 int gDefenseGate = 3;
-double inpHeso = 1.7;
+double inpHeso = 1.5;
 void initValue() {
-    gLowerSteps[ 0] = 7; gUpperSteps[ 0] =  5;
-    gLowerSteps[ 1] = 5; gUpperSteps[ 1] =  5;
-    gLowerSteps[ 2] = 3; gUpperSteps[ 2] =  3;
-    gLowerSteps[ 3] = 3; gUpperSteps[ 3] =  3;
-    gLowerSteps[ 4] = 1; gUpperSteps[ 4] =  3;
-    gLowerSteps[ 5] = 1; gUpperSteps[ 5] =  3;
-    gLowerSteps[ 6] = 1; gUpperSteps[ 6] =  3;
-    gLowerSteps[ 7] = 1; gUpperSteps[ 7] =  3;
-    gLowerSteps[ 8] = 1; gUpperSteps[ 8] =  3;
-    gLowerSteps[ 9] = 1; gUpperSteps[ 9] =  3;
-    gLowerSteps[10] = 1; gUpperSteps[10] =  3;
-    gLowerSteps[11] = 1; gUpperSteps[11] =  3;
-    gLowerSteps[12] = 1; gUpperSteps[12] =  3;
-    gLowerSteps[13] = 1; gUpperSteps[13] =  3;
-    gLowerSteps[14] = 1; gUpperSteps[14] =  3;
-    gLowerSteps[15] = 1; gUpperSteps[15] =  3;
-    gLowerSteps[16] = 1; gUpperSteps[16] =  3;
-    gLowerSteps[17] = 1; gUpperSteps[17] =  3;
-    gLowerSteps[18] = 1; gUpperSteps[18] =  3;
-    gLowerSteps[19] = 1; gUpperSteps[19] =  3;
+    inpHeso = 1.5;
+    gLowerSteps[ 0] = 0.5; gUpperSteps[ 0] =   1;
+    gLowerSteps[ 1] = 0.5; gUpperSteps[ 1] =   1;
+    gLowerSteps[ 2] = 0.5; gUpperSteps[ 2] =   1;
+    gLowerSteps[ 3] = 0.5; gUpperSteps[ 3] =   1;
+    gLowerSteps[ 4] = 0.5; gUpperSteps[ 4] =   1;
+    gLowerSteps[ 5] = 0.5; gUpperSteps[ 5] =   1;
+    gLowerSteps[ 6] = 0.5; gUpperSteps[ 6] =   1;
+    gLowerSteps[ 7] = 0.5; gUpperSteps[ 7] =   1;
+    gLowerSteps[ 8] = 0.5; gUpperSteps[ 8] =   1;
+    gLowerSteps[ 9] = 0.5; gUpperSteps[ 9] =   1;
+    gLowerSteps[10] = 0.5; gUpperSteps[10] =   1;
+    gLowerSteps[11] = 0.5; gUpperSteps[11] =   1;
+    gLowerSteps[12] = 0.7; gUpperSteps[12] = 1.2;
+    gLowerSteps[13] =   1; gUpperSteps[13] = 1.7;
+    gLowerSteps[14] =   1; gUpperSteps[14] =   2;
+    gLowerSteps[15] =   2; gUpperSteps[15] =   3;
+    gLowerSteps[16] =   2; gUpperSteps[16] =   4;
+    gLowerSteps[17] =   3; gUpperSteps[17] =   6;
+    gLowerSteps[18] =   6; gUpperSteps[18] =10.2;
+    gLowerSteps[19] =  12; gUpperSteps[19] =  20;
     gSize[0] = 0.01;
     gSize[1] = 0.01;
     gCover[0] = 0;
     gCover[1] = gLowerSteps[0];
     gLoad[0] = 0;
     gLoad[1] = gSize[0] * gLowerSteps[0] * 100;
+    gReward[0] = gSize[0] * gUpperSteps[0] * 100;
+    gReward[1] = gSize[1] * gUpperSteps[1] * 100;
     updateSizeOfStep();
 }
 
@@ -70,6 +74,12 @@ double calculateSize(int n) {
     }
     gLoad[n] = total * 100;
     total -= gUpperSteps[n] * S_sum;
+    if (n >= gDefenseGate) {
+        gReward[n] = total;
+    }
+    else {
+        gReward[n] = gSize[n] * gUpperPrice[n];
+    }
     
     return MathCeil(total/gUpperSteps[n] * 100)/100;
 }
@@ -236,18 +246,23 @@ void refreshDashBoard()
     string strIndex;
     string strLotCoverLoad;
 
-    int lenOfLastCol = StringLen(DoubleToString(gLoad[MAX_STEP-1], 2));
+    int loadsLength = StringLen(DoubleToString(gLoad[MAX_STEP-1], 2));
+    int rewardsLength = StringLen(DoubleToString(gReward[MAX_STEP-1], 2));
 
     createLabel("objSetup"      , "         THÔNG SỐ HỆ THỐNG"          , 10, 30);
     createLabel("objHeso"       , "- Hệ Số:"+DoubleToString(inpHeso, 1) , 10, 45);
-    createLabel("objTableHeader", "ST Lower Upper  Lot   Cover   Load"  , 10, 60);
+    createLabel("objDefenseGate", "- Defense Gate:"+IntegerToString(gDefenseGate) , 160, 45);
+    createLabel("objTableHeader", "ST Lower Upper"  , 10, 60);
+    createLabel("objLtCovLoadHeader", fixedText("Lot",5) + " "+ fixedText("Cover", 5) + " " +
+                                      fixedText("Load", loadsLength) + " " + fixedText("Reward", rewardsLength), 115, 60);
     for (int i = 0; i < MAX_STEP; i++){
         strIndex = IntegerToString(i);
         objIndex            = "objIndex"        + strIndex;
         objLowerStep        = "objLowerStep"    + strIndex;
         objUpperStep        = "objUpperStep"    + strIndex;
         objLtCovLoad        = "objLtCovLoad" + strIndex;
-        strLotCoverLoad = fixedText(gSize[i], 2, 5) + " " + fixedText(gCover[i], 1, 5) + " " + fixedText(gLoad[i], 2, lenOfLastCol);
+        strLotCoverLoad = fixedText(gSize[i], 2, 5) + " " + fixedText(gCover[i], 1, 5) + " " + 
+                          fixedText(gLoad[i], 2, loadsLength) + " " + fixedText(gReward[i], 2, rewardsLength);
 
         createLabel(objIndex    , fixedText(strIndex, 2)            ,  10, 75 + 15*i);
         createLabel(objLowerStep, fixedText(gLowerSteps[i], 1, 5)   ,  35, 75 + 15*i);
@@ -255,10 +270,10 @@ void refreshDashBoard()
         createLabel(objLtCovLoad, strLotCoverLoad                   , 115, 75 + 15*i);
     }
     // Feature:
-    createLabel("objFeature",       "      TÍNH NĂNG"                                           , 315, 30);
-    createLabel("objIsRunning",     "- Chạy BOT:     " +   (gIsRunning ? " [ON]"   : "[OFF]")   , 315, 45);
-    createLabel("objIsCreateNewS0", "- Tạo mới S0: " + (gDoCreateNewS0 ? " [TRUE]" : "[FALSE]") , 315, 60);
-    createLabel("objBtnCloseAll",   "- Đóng tất cả:[Close]"                                     , 315, 75);
+    createLabel("objFeature",       "      TÍNH NĂNG"                                           , 330, 30);
+    createLabel("objIsRunning",     "- Chạy BOT:     " +   (gIsRunning ? " [ON]"   : "[OFF]")   , 330, 45);
+    createLabel("objIsCreateNewS0", "- Tạo mới S0: " + (gDoCreateNewS0 ? " [TRUE]" : "[FALSE]") , 330, 60);
+    createLabel("objBtnCloseAll",   "- Đóng tất cả:[Close]"                                     , 330, 75);
 }
 void dashBoardOnObjClick(string sparam) {
     if (StringFind(sparam, "objIsCreateNewS0") != -1) {
@@ -288,6 +303,10 @@ void dashBoardOnObjChange(string sparam) {
         inpHeso = StringToDouble(ObjectGetString(0, sparam, OBJPROP_TEXT));
         updateSizeOfStep();
     }
+    else if (StringFind(sparam, "objDefenseGate") != -1) {
+        gDefenseGate = (int)StringToInteger(ObjectGetString(0, sparam, OBJPROP_TEXT));
+        updateSizeOfStep();
+    }
     else {
         return;
     }
@@ -300,6 +319,9 @@ void updateSizeOfStep(){
     }
     for (i = 0; i < MAX_STEP; i++) {
         gSize[i] = NormalizeDouble(gSize[i], 2);
+        if (i >= gDefenseGate) {
+            gReward[i] += gSize[i] * gUpperSteps[i];
+        }
     }
     refreshDashBoard();
 }
