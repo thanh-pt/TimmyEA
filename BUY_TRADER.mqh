@@ -95,6 +95,8 @@ double gCover[MAX_STEP];
 double gLoad[MAX_STEP];
 double gReward[MAX_STEP];
 
+double gStoploss;
+
 int     gDefenseGate = 3;
 double  gHeso = 1.0;
 void initValue() {
@@ -184,9 +186,6 @@ void MtHandler::OnTick() {
     gCurDt = iTime(_Symbol, PERIOD_CURRENT, 0);
     TimeToStruct(gCurDt, gStCurDt);
 
-    
-
-    
     // Specific time to trade
     // Exclude sunday
     if (gStCurDt.day_of_week == 0) return;
@@ -215,10 +214,11 @@ void MtHandler::OnTick() {
         if (gDoCreateNewS0 == false) return;
         
         gCurStep++;
-        PAL::Buy(gSize[gCurStep], NULL, 0, 0, 0, "S"+IntegerToString(gCurStep));
-        gTickets[gCurStep] = PAL::ResultOrder();
         gUpperPrice[gCurStep] = PAL::Ask() + gUpperSteps[gCurStep];
         gLowerPrice[gCurStep] = PAL::Bid() - gLowerSteps[gCurStep];
+        gStoploss = PAL::Bid() - gCover[MAX_STEP-1] - 20;
+        PAL::Buy(gSize[gCurStep], NULL, 0, gStoploss, gUpperPrice[gCurStep], "S"+IntegerToString(gCurStep));
+        gTickets[gCurStep] = PAL::ResultOrder();
         noteStep(gCurStep, TimeCurrent(), PAL::Ask(), gUpperPrice[gCurStep], gLowerPrice[gCurStep]);
     }
 
@@ -247,20 +247,22 @@ void MtHandler::OnTick() {
         // }
         if (gDoCreateNewS0 == false) return;
         gCurStep++;
-        PAL::Buy(gSize[gCurStep], NULL, 0, 0, 0, "S"+IntegerToString(gCurStep));
-        gTickets[gCurStep] = PAL::ResultOrder();
         gUpperPrice[gCurStep] = PAL::Ask() + gUpperSteps[gCurStep];
         gLowerPrice[gCurStep] = PAL::Bid() - gLowerSteps[gCurStep];
+        gStoploss = PAL::Bid() - gCover[MAX_STEP-1] - 20;
+        PAL::Buy(gSize[gCurStep], NULL, 0, gStoploss, gUpperPrice[gCurStep], "S"+IntegerToString(gCurStep));
+        gTickets[gCurStep] = PAL::ResultOrder();
         noteStep(gCurStep, TimeCurrent(), PAL::Ask(), gUpperPrice[gCurStep], gLowerPrice[gCurStep]);
+        
     }
     else if (PAL::Ask() <= gLowerPrice[gCurStep]){
         Print("Reach gLowerPrice[", gCurStep, "] = ", gLowerPrice[gCurStep]);
         
         gCurStep++;
-        PAL::Buy(gSize[gCurStep], NULL, 0, 0, 0, "S"+IntegerToString(gCurStep));
-        gTickets[gCurStep] = PAL::ResultOrder();
         gUpperPrice[gCurStep] = PAL::Ask() + gUpperSteps[gCurStep];
         gLowerPrice[gCurStep] = PAL::Bid() - gLowerSteps[gCurStep];
+        PAL::Buy(gSize[gCurStep], NULL, 0, gStoploss, gUpperPrice[gCurStep], "S"+IntegerToString(gCurStep));
+        gTickets[gCurStep] = PAL::ResultOrder();
         noteStep(gCurStep, TimeCurrent(), PAL::Ask(), gUpperPrice[gCurStep], gLowerPrice[gCurStep]);
         // TODO: Hide Lower Price...?
         // hideStep(gCurStep);

@@ -4,8 +4,8 @@ class PAL
 public:
     static bool PositionClose(ulong ticket);
     static ulong ResultOrder();
-    static bool Buy(double size, string symbol = NULL, double slippage = 0, double tp=0, double sl=0, string cmt = NULL);
-    static bool Sell(double size, string symbol = NULL, double slippage = 0, double tp=0, double sl=0, string cmt = NULL);
+    static bool Buy(double size, string symbol = NULL, double slippage = 0, double sl=0, double tp=0, string cmt = NULL);
+    static bool Sell(double size, string symbol = NULL, double slippage = 0, double sl=0, double tp=0, string cmt = NULL);
     static double Ask();
     static double Bid();
 };
@@ -22,12 +22,12 @@ ulong PAL::ResultOrder() {
     return gCTrade.ResultOrder();
 }
 
-bool PAL::Buy(double size, string symbol, double slippage, double tp, double sl, string cmt) {
-    return gCTrade.Buy(size, symbol, slippage, tp, sl, cmt);
+bool PAL::Buy(double size, string symbol, double slippage, double sl, double tp, string cmt) {
+    return gCTrade.Buy(size, symbol, slippage, sl, tp, cmt);
 }
 
-bool PAL::Sell(double size, string symbol, double slippage, double tp, double sl, string cmt) {
-    return gCTrade.Sell(size, symbol, slippage, tp, sl, cmt);
+bool PAL::Sell(double size, string symbol, double slippage, double sl, double tp, string cmt) {
+    return gCTrade.Sell(size, symbol, slippage, sl, tp, cmt);
 }
 
 double PAL::Ask() {
