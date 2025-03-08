@@ -1,5 +1,4 @@
-// #include "Logic_Bắt đáy.mqh"
-#include "Batday_v2.mqh"
+#include "BUY_TRADER.mqh"
 
 MtHandler mtHandler;
 
