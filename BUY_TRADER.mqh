@@ -39,6 +39,52 @@ void MtHandler::OnChartEvent(const int id, const long &lparam, const double &dpa
 //////////////////////////////////////////////////////////////////////////////////////
 #define MAX_STEP 20
 
+input double InpInitLot = 0.01;
+input double InpLotMultiplier = 1.4;
+input int    InpDefenseGate = 3;
+
+input double InpLowerStep00 = 0.5;
+input double InpLowerStep01 = 0.5;
+input double InpLowerStep02 = 0.5;
+input double InpLowerStep03 = 0.5;
+input double InpLowerStep04 = 0.5;
+input double InpLowerStep05 = 0.5;
+input double InpLowerStep06 = 0.5;
+input double InpLowerStep07 = 0.5;
+input double InpLowerStep08 = 0.5;
+input double InpLowerStep09 = 0.5;
+input double InpLowerStep10 = 0.5;
+input double InpLowerStep11 = 0.5;
+input double InpLowerStep12 = 0.7;
+input double InpLowerStep13 =   1;
+input double InpLowerStep14 =   1;
+input double InpLowerStep15 =   2;
+input double InpLowerStep16 =   2;
+input double InpLowerStep17 =   3;
+input double InpLowerStep18 =   6;
+input double InpLowerStep19 =  12;
+
+input double InpUpperStep00 =    1;
+input double InpUpperStep01 =    1;
+input double InpUpperStep02 =    1;
+input double InpUpperStep03 =    1;
+input double InpUpperStep04 =    1;
+input double InpUpperStep05 =    1;
+input double InpUpperStep06 =    1;
+input double InpUpperStep07 =    1;
+input double InpUpperStep08 =    1;
+input double InpUpperStep09 =    1;
+input double InpUpperStep10 =    1;
+input double InpUpperStep11 =    1;
+input double InpUpperStep12 =  1.2;
+input double InpUpperStep13 =  1.7;
+input double InpUpperStep14 =    2;
+input double InpUpperStep15 =    3;
+input double InpUpperStep16 =    4;
+input double InpUpperStep17 =    6;
+input double InpUpperStep18 = 10.2;
+input double InpUpperStep19 =   20;
+
 double gLowerSteps[MAX_STEP];
 double gUpperSteps[MAX_STEP];
 double gSize[MAX_STEP];
@@ -51,34 +97,34 @@ double gReward[MAX_STEP];
 
 int     gDefenseGate = 3;
 double  gHeso = 1.0;
-double  gInitLot = 0.01;
 void initValue() {
-    gHeso = 1.5;
-    gLowerSteps[ 0] = 0.5; gUpperSteps[ 0] =   1;
-    gLowerSteps[ 1] = 0.5; gUpperSteps[ 1] =   1;
-    gLowerSteps[ 2] = 0.5; gUpperSteps[ 2] =   1;
-    gLowerSteps[ 3] = 0.5; gUpperSteps[ 3] =   1;
-    gLowerSteps[ 4] = 0.5; gUpperSteps[ 4] =   1;
-    gLowerSteps[ 5] = 0.5; gUpperSteps[ 5] =   1;
-    gLowerSteps[ 6] = 0.5; gUpperSteps[ 6] =   1;
-    gLowerSteps[ 7] = 0.5; gUpperSteps[ 7] =   1;
-    gLowerSteps[ 8] = 0.5; gUpperSteps[ 8] =   1;
-    gLowerSteps[ 9] = 0.5; gUpperSteps[ 9] =   1;
-    gLowerSteps[10] = 0.5; gUpperSteps[10] =   1;
-    gLowerSteps[11] = 0.5; gUpperSteps[11] =   1;
-    gLowerSteps[12] = 0.7; gUpperSteps[12] = 1.2;
-    gLowerSteps[13] =   1; gUpperSteps[13] = 1.7;
-    gLowerSteps[14] =   1; gUpperSteps[14] =   2;
-    gLowerSteps[15] =   2; gUpperSteps[15] =   3;
-    gLowerSteps[16] =   2; gUpperSteps[16] =   4;
-    gLowerSteps[17] =   3; gUpperSteps[17] =   6;
-    gLowerSteps[18] =   6; gUpperSteps[18] =10.2;
-    gLowerSteps[19] =  12; gUpperSteps[19] =  20;
+    gHeso = InpLotMultiplier;
+    gDefenseGate = InpDefenseGate;
+    gLowerSteps[ 0] = InpLowerStep00; gUpperSteps[ 0] = InpUpperStep00;
+    gLowerSteps[ 1] = InpLowerStep01; gUpperSteps[ 1] = InpUpperStep01;
+    gLowerSteps[ 2] = InpLowerStep02; gUpperSteps[ 2] = InpUpperStep02;
+    gLowerSteps[ 3] = InpLowerStep03; gUpperSteps[ 3] = InpUpperStep03;
+    gLowerSteps[ 4] = InpLowerStep04; gUpperSteps[ 4] = InpUpperStep04;
+    gLowerSteps[ 5] = InpLowerStep05; gUpperSteps[ 5] = InpUpperStep05;
+    gLowerSteps[ 6] = InpLowerStep06; gUpperSteps[ 6] = InpUpperStep06;
+    gLowerSteps[ 7] = InpLowerStep07; gUpperSteps[ 7] = InpUpperStep07;
+    gLowerSteps[ 8] = InpLowerStep08; gUpperSteps[ 8] = InpUpperStep08;
+    gLowerSteps[ 9] = InpLowerStep09; gUpperSteps[ 9] = InpUpperStep09;
+    gLowerSteps[10] = InpLowerStep10; gUpperSteps[10] = InpUpperStep10;
+    gLowerSteps[11] = InpLowerStep11; gUpperSteps[11] = InpUpperStep11;
+    gLowerSteps[12] = InpLowerStep12; gUpperSteps[12] = InpUpperStep12;
+    gLowerSteps[13] = InpLowerStep13; gUpperSteps[13] = InpUpperStep13;
+    gLowerSteps[14] = InpLowerStep14; gUpperSteps[14] = InpUpperStep14;
+    gLowerSteps[15] = InpLowerStep15; gUpperSteps[15] = InpUpperStep15;
+    gLowerSteps[16] = InpLowerStep16; gUpperSteps[16] = InpUpperStep16;
+    gLowerSteps[17] = InpLowerStep17; gUpperSteps[17] = InpUpperStep17;
+    gLowerSteps[18] = InpLowerStep18; gUpperSteps[18] = InpUpperStep18;
+    gLowerSteps[19] = InpLowerStep19; gUpperSteps[19] = InpUpperStep19;
     updateSizeOfStep();
 }
 void updateSizeOfStep(){
     int i;
-    gSize[0] = NormalizeDouble(gInitLot,2);
+    gSize[0] = NormalizeDouble(InpInitLot,2);
     gCover[0] = 0;
     gLoad[0] = 0;
     gReward[0] = gSize[0] * gUpperSteps[i] * 100;
@@ -112,7 +158,7 @@ double calculateSize(int n) {
     }
     else {
         gReward[n] = 0;
-        return gInitLot;
+        return InpInitLot;
     }
     
     return MathCeil(total/gUpperSteps[n] * 100)/100;
@@ -289,8 +335,8 @@ void refreshDashBoard()
                           fixedText(gLoad[i], 2, loadsLength) + " " + fixedText(gReward[i], 2, rewardsLength);
 
         createLabel(objIndex    , fixedText(strIndex, 2)            ,  10, 75 + 15*i);
-        createLabel(objLowerStep, fixedText(gLowerSteps[i], 1, 5)   ,  35, 75 + 15*i);
-        createLabel(objUpperStep, fixedText(gUpperSteps[i], 1, 5)   ,  75, 75 + 15*i);
+        createLabel(objLowerStep, fixedText(gLowerSteps[i], 1, 5)   ,  30, 75 + 15*i);
+        createLabel(objUpperStep, fixedText(gUpperSteps[i], 1, 5)   ,  70, 75 + 15*i);
         createLabel(objLtCovLoad, strLotCoverLoad                   , 115, 75 + 15*i);
     }
     // Feature:
