@@ -6,7 +6,37 @@
 #include "IMtHandler.mqh"
 #define APP_TAG "BUY_TRADER"
 #resource "BUY_TRADER_BG.bmp"
+class MtHandler: public IMtHandler
+{
+public:
+    virtual void OnChartEvent(const int id, const long &lparam, const double &dparam, const string &sparam);
+    virtual void OnTick();
+    virtual int OnInit();
+};
+int MtHandler::OnInit() {
+    ChartSetInteger(0, CHART_SHOW_GRID, false);
+    // ChartSetInteger(0, CHART_SHOW_PERIOD_SEP, true);
+    ChartSetInteger(0, CHART_SHOW_ASK_LINE, true);
+    ChartSetInteger(0, CHART_SHOW_BID_LINE, true);
+    ChartSetInteger(0, CHART_MODE, CHART_CANDLES);
+    
+    initValue();
+    return INIT_SUCCEEDED;
+}
+void MtHandler::OnChartEvent(const int id, const long &lparam, const double &dparam, const string &sparam) {
+    if (id == CHARTEVENT_OBJECT_CHANGE) {
+        dashBoardOnObjChange(sparam);
+    }
+    else if (id == CHARTEVENT_OBJECT_CLICK) {
+        dashBoardOnObjClick(sparam);
+    }
+}
 
+//////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////// INIT - TINH TOAN
+//////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
 #define MAX_STEP 20
 
 double gLowerSteps[MAX_STEP];
@@ -19,10 +49,11 @@ double gCover[MAX_STEP];
 double gLoad[MAX_STEP];
 double gReward[MAX_STEP];
 
-int gDefenseGate = 3;
-double inpHeso = 1.5;
+int     gDefenseGate = 3;
+double  gHeso = 1.0;
+double  gInitLot = 0.01;
 void initValue() {
-    inpHeso = 1.5;
+    gHeso = 1.5;
     gLowerSteps[ 0] = 0.5; gUpperSteps[ 0] =   1;
     gLowerSteps[ 1] = 0.5; gUpperSteps[ 1] =   1;
     gLowerSteps[ 2] = 0.5; gUpperSteps[ 2] =   1;
@@ -43,18 +74,20 @@ void initValue() {
     gLowerSteps[17] =   3; gUpperSteps[17] =   6;
     gLowerSteps[18] =   6; gUpperSteps[18] =10.2;
     gLowerSteps[19] =  12; gUpperSteps[19] =  20;
-    gSize[0] = 0.01;
-    gSize[1] = 0.01;
-    gCover[0] = 0;
-    gCover[1] = gLowerSteps[0];
-    gLoad[0] = 0;
-    gLoad[1] = gSize[0] * gLowerSteps[0] * 100;
-    gReward[0] = gSize[0] * gUpperSteps[0] * 100;
-    gReward[1] = gSize[1] * gUpperSteps[1] * 100;
     updateSizeOfStep();
 }
-
-
+void updateSizeOfStep(){
+    int i;
+    gSize[0] = NormalizeDouble(gInitLot,2);
+    gCover[0] = 0;
+    gLoad[0] = 0;
+    gReward[0] = gSize[0] * gUpperSteps[i] * 100;
+    for (i = 1; i < MAX_STEP; i++) {
+        gSize[i] = NormalizeDouble(gHeso * calculateSize(i), 2);
+        gReward[i] += gSize[i] * gUpperSteps[i] * 100;
+    }
+    refreshDashBoard();
+}
 double calculateSize(int n) {
     double outputSize = 0;
     double total = 0;
@@ -75,44 +108,21 @@ double calculateSize(int n) {
     gLoad[n] = total * 100;
     total -= gUpperSteps[n] * S_sum;
     if (n >= gDefenseGate) {
-        gReward[n] = total;
+        gReward[n] = -total * 100;
     }
     else {
-        gReward[n] = gSize[n] * gUpperPrice[n];
+        gReward[n] = 0;
+        return gInitLot;
     }
     
     return MathCeil(total/gUpperSteps[n] * 100)/100;
 }
 
-
-class MtHandler: public IMtHandler
-{
-public:
-    virtual void OnChartEvent(const int id, const long &lparam, const double &dparam, const string &sparam);
-    virtual void OnTick();
-    virtual int OnInit();
-};
-
-
-int MtHandler::OnInit() {
-    ChartSetInteger(0, CHART_SHOW_GRID, false);
-    // ChartSetInteger(0, CHART_SHOW_PERIOD_SEP, true);
-    ChartSetInteger(0, CHART_SHOW_ASK_LINE, true);
-    ChartSetInteger(0, CHART_SHOW_BID_LINE, true);
-    ChartSetInteger(0, CHART_MODE, CHART_CANDLES);
-    
-    initValue();
-    return INIT_SUCCEEDED;
-}
-void MtHandler::OnChartEvent(const int id, const long &lparam, const double &dparam, const string &sparam) {
-    if (id == CHARTEVENT_OBJECT_CHANGE) {
-        dashBoardOnObjChange(sparam);
-    }
-    else if (id == CHARTEVENT_OBJECT_CLICK) {
-        dashBoardOnObjClick(sparam);
-    }
-}
-
+//////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////// ON_TICK - LOGIC XỬ LÝ
+//////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
 int         gCurStep = -1;
 double      gDailyOpen;
 double      gPreHi;
@@ -120,34 +130,50 @@ double      gPreLo;
 
 MqlDateTime gStCurDt;
 datetime    gCurDt;
-string      gStrCurTime, gStrPreTime;
 
 bool        gDoCreateNewS0  = true;
 bool        gIsRunning      = true;
 void MtHandler::OnTick() {
-    return;
-
+    if (gIsRunning == false) return;
     gCurDt = iTime(_Symbol, PERIOD_CURRENT, 0);
     TimeToStruct(gCurDt, gStCurDt);
 
+    
+
+    
+    // Specific time to trade
     // Exclude sunday
     if (gStCurDt.day_of_week == 0) return;
-    // Cannot open trade in 22 EST hour
+    // Monday
+    if (gStCurDt.day_of_week == 1) {
+        // Morning Monday
+        if (gStCurDt.hour < 12) {
+            gDoCreateNewS0 = false;
+            refreshDashBoard();
+        }
+        // Start trading from afternoon
+        else {
+            gDoCreateNewS0 = true;
+            refreshDashBoard();
+        }
+    }
+    // After noon friday
+    else if (gStCurDt.day_of_week == 5 && gStCurDt.hour > 12) {
+        gDoCreateNewS0 = false;
+        refreshDashBoard();
+    }
+    // Cannot open trade in 22 EST hour - Maintain time of broker
     if (gStCurDt.hour == 22) return;
 
-    gStrCurTime = TimeToString(gCurDt, TIME_DATE);
-    if (gStrCurTime != gStrPreTime) {
-        // New day handle
-        gDailyOpen = iOpen(_Symbol, PERIOD_D1, 0);
-        gStrPreTime = gStrCurTime;
-        if (gCurStep == -1 && gDoCreateNewS0 == true) {
-            gCurStep++;
-            PAL::Buy(gSize[gCurStep], NULL, 0, 0, 0, "S"+IntegerToString(gCurStep));
-            gTickets[gCurStep] = PAL::ResultOrder();
-            gUpperPrice[gCurStep] = PAL::Ask() + gUpperSteps[gCurStep];
-            gLowerPrice[gCurStep] = PAL::Bid() - gLowerSteps[gCurStep];
-            noteStep(gCurStep, TimeCurrent(), PAL::Ask(), gUpperPrice[gCurStep], gLowerPrice[gCurStep]);
-        }
+    if (gCurStep == -1) {
+        if (gDoCreateNewS0 == false) return;
+        
+        gCurStep++;
+        PAL::Buy(gSize[gCurStep], NULL, 0, 0, 0, "S"+IntegerToString(gCurStep));
+        gTickets[gCurStep] = PAL::ResultOrder();
+        gUpperPrice[gCurStep] = PAL::Ask() + gUpperSteps[gCurStep];
+        gLowerPrice[gCurStep] = PAL::Bid() - gLowerSteps[gCurStep];
+        noteStep(gCurStep, TimeCurrent(), PAL::Ask(), gUpperPrice[gCurStep], gLowerPrice[gCurStep]);
     }
 
     if (PAL::Bid() >= gUpperPrice[gCurStep]) {
@@ -168,9 +194,6 @@ void MtHandler::OnTick() {
             gCurStep--;
         }
         // Open new L1
-        // if (gStCurDt.hour >= 19) {
-        //     return;
-        // }
         if (gCurStep >= 0) return;
         // if (PAL::Bid() < gDailyOpen) {
         //     Print("Nen DO - Khong mo them lenh!");
@@ -184,10 +207,7 @@ void MtHandler::OnTick() {
         gLowerPrice[gCurStep] = PAL::Bid() - gLowerSteps[gCurStep];
         noteStep(gCurStep, TimeCurrent(), PAL::Ask(), gUpperPrice[gCurStep], gLowerPrice[gCurStep]);
     }
-    else if (gCurStep >= 0 && PAL::Ask() <= gLowerPrice[gCurStep]){
-        // if (gStCurDt.hour >= 19 && gCurStep == 0) {
-        //     return;
-        // }
+    else if (PAL::Ask() <= gLowerPrice[gCurStep]){
         Print("Reach gLowerPrice[", gCurStep, "] = ", gLowerPrice[gCurStep]);
         
         gCurStep++;
@@ -202,7 +222,11 @@ void MtHandler::OnTick() {
 }
 
 
-
+//////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////// GIAO DIỆN - HIỂN THỊ
+//////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
 /// @brief Apprearence and Action
 void createLabel(string objName, string text, int posX, int posY)
 {
@@ -250,7 +274,7 @@ void refreshDashBoard()
     int rewardsLength = StringLen(DoubleToString(gReward[MAX_STEP-1], 2));
 
     createLabel("objSetup"      , "         THÔNG SỐ HỆ THỐNG"          , 10, 30);
-    createLabel("objHeso"       , "- Hệ Số:"+DoubleToString(inpHeso, 1) , 10, 45);
+    createLabel("objHeso"       , "- Hệ Số:"+DoubleToString(gHeso, 1) , 10, 45);
     createLabel("objDefenseGate", "- Defense Gate:"+IntegerToString(gDefenseGate) , 160, 45);
     createLabel("objTableHeader", "ST Lower Upper"  , 10, 60);
     createLabel("objLtCovLoadHeader", fixedText("Lot",5) + " "+ fixedText("Cover", 5) + " " +
@@ -300,7 +324,7 @@ void dashBoardOnObjChange(string sparam) {
         updateSizeOfStep();
     }
     else if (StringFind(sparam, "objHeso") != -1) {
-        inpHeso = StringToDouble(ObjectGetString(0, sparam, OBJPROP_TEXT));
+        gHeso = StringToDouble(ObjectGetString(0, sparam, OBJPROP_TEXT));
         updateSizeOfStep();
     }
     else if (StringFind(sparam, "objDefenseGate") != -1) {
@@ -310,20 +334,6 @@ void dashBoardOnObjChange(string sparam) {
     else {
         return;
     }
-}
-
-void updateSizeOfStep(){
-    int i;
-    for (i = 2; i < MAX_STEP; i++) {
-        gSize[i] = inpHeso * calculateSize(i);
-    }
-    for (i = 0; i < MAX_STEP; i++) {
-        gSize[i] = NormalizeDouble(gSize[i], 2);
-        if (i >= gDefenseGate) {
-            gReward[i] += gSize[i] * gUpperSteps[i];
-        }
-    }
-    refreshDashBoard();
 }
 
 void hideStep(int step) {
@@ -357,7 +367,7 @@ void noteStep(int step, datetime curTime, double curPrice, double upperPrice, do
     ObjectSetInteger(0, objLowerStep, OBJPROP_BACK, false);
     ObjectSetInteger(0, objLowerStep, OBJPROP_FONTSIZE, 10);
     ObjectSetString(0,  objLowerStep, OBJPROP_FONT, "Consolas");
-    ObjectSetString(0,  objLowerStep, OBJPROP_TEXT, "---");
+    ObjectSetString(0,  objLowerStep, OBJPROP_TEXT, "---"+"L"+ IntegerToString(step));
     ObjectSetDouble(0,  objLowerStep, OBJPROP_PRICE, 0, lowerPrice);
     ObjectSetInteger(0, objLowerStep, OBJPROP_TIME, 0, curTime + 5*PeriodSeconds(_Period));
 
@@ -368,10 +378,15 @@ void noteStep(int step, datetime curTime, double curPrice, double upperPrice, do
     ObjectSetInteger(0, objUpperStep, OBJPROP_BACK, false);
     ObjectSetInteger(0, objUpperStep, OBJPROP_FONTSIZE, 10);
     ObjectSetString(0,  objUpperStep, OBJPROP_FONT, "Consolas");
-    ObjectSetString(0,  objUpperStep, OBJPROP_TEXT, "---");
+    ObjectSetString(0,  objUpperStep, OBJPROP_TEXT, "---"+"U"+ IntegerToString(step));
     ObjectSetDouble(0,  objUpperStep, OBJPROP_PRICE, 0, upperPrice);
     ObjectSetInteger(0, objUpperStep, OBJPROP_TIME, 0, curTime + 5*PeriodSeconds(_Period));
     // if (gCurStep >= gDefenseGate) {
     // }
     //
 }
+//////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
