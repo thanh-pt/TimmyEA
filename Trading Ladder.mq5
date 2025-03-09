@@ -33,16 +33,18 @@ datetime time1;
 datetime time2;
 
 bool    gIndiOn = true;
+double  gContractSize = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_CONTRACT_SIZE);
 
 int OnCalculate(const int rates_total, const int prev_calculated, const int begin, const double& price[] ){return rates_total;}
 
 int OnInit() {
     time0 = iTime(_Symbol, PERIOD_CURRENT, 0);
-    priceL0        = iOpen(_Symbol, PERIOD_CURRENT, 0);
-    priceL1        = priceL0 + 3 * 1;
-    priceL2        = priceL0 + 3 * 2;
-    priceL3        = priceL0 + 3 * 3;
-    priceSL        = priceL0 + 3 * 5;
+    double quangGia = (iHigh(_Symbol, PERIOD_CURRENT, 1) - iLow(_Symbol, PERIOD_CURRENT, 1)) / 4;
+    priceL0  = iOpen(_Symbol, PERIOD_CURRENT, 0);
+    priceL1  = priceL0 + quangGia * 1;
+    priceL2  = priceL0 + quangGia * 2;
+    priceL3  = priceL0 + quangGia * 3;
+    priceSL  = priceL0 + quangGia * 5;
     createObj();
     refreshLadder();
     return INIT_SUCCEEDED;
@@ -77,11 +79,12 @@ void OnChartEvent(const int id, const long &lparam, const double &dparam, const 
         }
         else {
             time0 = iTime(_Symbol, PERIOD_CURRENT, 0);
-            priceL0        = iOpen(_Symbol, PERIOD_CURRENT, 0);
-            priceL1        = priceL0 + 3 * 1;
-            priceL2        = priceL0 + 3 * 2;
-            priceL3        = priceL0 + 3 * 3;
-            priceSL        = priceL0 + 3 * 5;
+            double quangGia = (iHigh(_Symbol, PERIOD_CURRENT, 1) - iLow(_Symbol, PERIOD_CURRENT, 1)) / 4;
+            priceL0  = iOpen(_Symbol, PERIOD_CURRENT, 0);
+            priceL1  = priceL0 + quangGia * 1;
+            priceL2  = priceL0 + quangGia * 2;
+            priceL3  = priceL0 + quangGia * 3;
+            priceSL  = priceL0 + quangGia * 5;
             createObj();
         }
         refreshLadder();
@@ -140,10 +143,10 @@ void refreshLadder()
     string textL2 = "L2 "        + DoubleToString(lotL2,2) + " " + DoubleToString(MathAbs(priceL2-priceL1),1);
     string textL3 = "L3 "        + DoubleToString(lotL3,2) + " " + DoubleToString(MathAbs(priceL3-priceL2),1);
     string textSL = "SL -";
-    double totalLoss = lotL0 * MathAbs(priceL0-priceSL) * 100;
-    totalLoss += lotL1 * MathAbs(priceL1-priceSL) * 100;
-    totalLoss += lotL2 * MathAbs(priceL2-priceSL) * 100;
-    totalLoss += lotL3 * MathAbs(priceL3-priceSL) * 100;
+    double totalLoss = lotL0 * MathAbs(priceL0-priceSL) * gContractSize;
+    totalLoss += lotL1 * MathAbs(priceL1-priceSL) * gContractSize;
+    totalLoss += lotL2 * MathAbs(priceL2-priceSL) * gContractSize;
+    totalLoss += lotL3 * MathAbs(priceL3-priceSL) * gContractSize;
     textSL += DoubleToString(totalLoss, 2) + "$" + " " + DoubleToString(MathAbs(priceL0-priceSL),1);
 
     double priceE1 = (lotL0 * priceL0 + lotL1 * priceL1) / (lotL0 + lotL1);
