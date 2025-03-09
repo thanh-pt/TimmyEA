@@ -6,6 +6,7 @@ public:
     static ulong ResultOrder();
     static bool Buy(double size, string symbol = NULL, double slippage = 0, double sl=0, double tp=0, string cmt = NULL);
     static bool Sell(double size, string symbol = NULL, double slippage = 0, double sl=0, double tp=0, string cmt = NULL);
+    static bool  PositionModify(const ulong ticket,double sl,double tp);
     static double Ask();
     static double Bid();
 };
@@ -36,4 +37,8 @@ double PAL::Ask() {
 
 double PAL::Bid() {
     return SymbolInfoDouble(_Symbol,SYMBOL_BID);
+}
+
+bool PAL::PositionModify(const ulong ticket, double sl, double tp) {
+    return gCTrade.PositionModify(ticket, sl, tp);
 }

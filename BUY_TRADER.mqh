@@ -39,51 +39,57 @@ void MtHandler::OnChartEvent(const int id, const long &lparam, const double &dpa
 //////////////////////////////////////////////////////////////////////////////////////
 #define MAX_STEP 20
 
-input double InpInitLot = 0.01;
-input double InpLotMultiplier = 1.4;
-input int    InpDefenseGate = 3;
+input string THONG_SO_HE_THONG="";
+input double InpInitLot=0.01;
+input double InpLotMultiplier=1.4;
+input int    InpDefenseGate=5;
+input int    InpMaxStep=MAX_STEP;
 
-input double InpLowerStep00 = 0.5;
-input double InpLowerStep01 = 0.5;
-input double InpLowerStep02 = 0.5;
-input double InpLowerStep03 = 0.5;
-input double InpLowerStep04 = 0.5;
-input double InpLowerStep05 = 0.5;
-input double InpLowerStep06 = 0.5;
-input double InpLowerStep07 = 0.5;
-input double InpLowerStep08 = 0.5;
-input double InpLowerStep09 = 0.5;
-input double InpLowerStep10 = 0.5;
-input double InpLowerStep11 = 0.5;
-input double InpLowerStep12 = 0.7;
-input double InpLowerStep13 =   1;
-input double InpLowerStep14 =   1;
-input double InpLowerStep15 =   2;
-input double InpLowerStep16 =   2;
-input double InpLowerStep17 =   3;
-input double InpLowerStep18 =   6;
-input double InpLowerStep19 =  12;
+input string LOWER_LEVER_STEP="";
+input double InpLowerStep00=0.5;
+input double InpLowerStep01=0.5;
+input double InpLowerStep02=0.5;
+input double InpLowerStep03=0.5;
+input double InpLowerStep04=0.5;
+input double InpLowerStep05=0.5;
+input double InpLowerStep06=0.5;
+input double InpLowerStep07=0.5;
+input double InpLowerStep08=0.5;
+input double InpLowerStep09=0.5;
+input double InpLowerStep10=0.5;
+input double InpLowerStep11=0.5;
+input double InpLowerStep12=0.7;
+input double InpLowerStep13=1.0;
+input double InpLowerStep14=1.0;
+input double InpLowerStep15=2.0;
+input double InpLowerStep16=3.0;
+input double InpLowerStep17=3.0;
+input double InpLowerStep18=6.0;
+input double InpLowerStep19=12.0;
 
-input double InpUpperStep00 =    1;
-input double InpUpperStep01 =    1;
-input double InpUpperStep02 =    1;
-input double InpUpperStep03 =    1;
-input double InpUpperStep04 =    1;
-input double InpUpperStep05 =    1;
-input double InpUpperStep06 =    1;
-input double InpUpperStep07 =    1;
-input double InpUpperStep08 =    1;
-input double InpUpperStep09 =    1;
-input double InpUpperStep10 =    1;
-input double InpUpperStep11 =    1;
-input double InpUpperStep12 =  1.2;
-input double InpUpperStep13 =  1.7;
-input double InpUpperStep14 =    2;
-input double InpUpperStep15 =    3;
-input double InpUpperStep16 =    4;
-input double InpUpperStep17 =    6;
-input double InpUpperStep18 = 10.2;
-input double InpUpperStep19 =   20;
+input string UPPER_LEVER_STEP="";
+input double InpUpperStep00=2.0;
+input double InpUpperStep01=2.0;
+input double InpUpperStep02=2.0;
+input double InpUpperStep03=2.0;
+input double InpUpperStep04=2.0;
+input double InpUpperStep05=1.0;
+input double InpUpperStep06=1.0;
+input double InpUpperStep07=1.0;
+input double InpUpperStep08=1.0;
+input double InpUpperStep09=1.0;
+input double InpUpperStep10=1.0;
+input double InpUpperStep11=1.0;
+input double InpUpperStep12=1.2;
+input double InpUpperStep13=1.8;
+input double InpUpperStep14=2.4;
+input double InpUpperStep15=3.6;
+input double InpUpperStep16=5.5;
+input double InpUpperStep17=7.5;
+input double InpUpperStep18=11.5;
+input double InpUpperStep19=20.5;
+
+string gSetFile = "config.set";
 
 double gLowerSteps[MAX_STEP];
 double gUpperSteps[MAX_STEP];
@@ -97,11 +103,13 @@ double gReward[MAX_STEP];
 
 double gStoploss;
 
-int     gDefenseGate = 3;
-double  gHeso = 1.0;
+double  gHeso        = 0;
+int     gMaxStep     = 0;
+int     gDefenseGate = 0;
 void initValue() {
-    gHeso = InpLotMultiplier;
-    gDefenseGate = InpDefenseGate;
+    gHeso           = InpLotMultiplier;
+    gMaxStep        = InpMaxStep;
+    gDefenseGate    = InpDefenseGate;
     gLowerSteps[ 0] = InpLowerStep00; gUpperSteps[ 0] = InpUpperStep00;
     gLowerSteps[ 1] = InpLowerStep01; gUpperSteps[ 1] = InpUpperStep01;
     gLowerSteps[ 2] = InpLowerStep02; gUpperSteps[ 2] = InpUpperStep02;
@@ -216,10 +224,10 @@ void MtHandler::OnTick() {
         gCurStep++;
         gUpperPrice[gCurStep] = PAL::Ask() + gUpperSteps[gCurStep];
         gLowerPrice[gCurStep] = PAL::Bid() - gLowerSteps[gCurStep];
-        gStoploss = PAL::Bid() - gCover[MAX_STEP-1] - 20;
+        gStoploss = PAL::Bid() - gCover[gMaxStep-1] - 20;
         PAL::Buy(gSize[gCurStep], NULL, 0, gStoploss, gUpperPrice[gCurStep], "S"+IntegerToString(gCurStep));
         gTickets[gCurStep] = PAL::ResultOrder();
-        noteStep(gCurStep, TimeCurrent(), PAL::Ask(), gUpperPrice[gCurStep], gLowerPrice[gCurStep]);
+        openStep(gCurStep, TimeCurrent(), PAL::Ask(), gUpperPrice[gCurStep], gLowerPrice[gCurStep]);
     }
 
     if (PAL::Bid() >= gUpperPrice[gCurStep]) {
@@ -227,16 +235,13 @@ void MtHandler::OnTick() {
         if (gCurStep >= gDefenseGate) {
             Print("Reach gDefenseGate:", gDefenseGate);
             for (int i = gCurStep; i >= 0; i--) {
-                Print("Close ticket:", gTickets[i]);
-                PAL::PositionClose(gTickets[i]);
-                hideStep(i);
+                closeStep(i);
             }
             gCurStep = -1;
         }
         else {
-            Print("Close Last Trade Upper Step");
-            PAL::PositionClose(gTickets[gCurStep]);
-            hideStep(gCurStep);
+            Print("Step Upper -> gCurStep:", gCurStep);
+            closeStep(gCurStep);
             gCurStep--;
         }
         // Open new L1
@@ -249,23 +254,27 @@ void MtHandler::OnTick() {
         gCurStep++;
         gUpperPrice[gCurStep] = PAL::Ask() + gUpperSteps[gCurStep];
         gLowerPrice[gCurStep] = PAL::Bid() - gLowerSteps[gCurStep];
-        gStoploss = PAL::Bid() - gCover[MAX_STEP-1] - 20;
+        gStoploss = PAL::Bid() - gCover[gMaxStep-1] - 20;
         PAL::Buy(gSize[gCurStep], NULL, 0, gStoploss, gUpperPrice[gCurStep], "S"+IntegerToString(gCurStep));
         gTickets[gCurStep] = PAL::ResultOrder();
-        noteStep(gCurStep, TimeCurrent(), PAL::Ask(), gUpperPrice[gCurStep], gLowerPrice[gCurStep]);
+        openStep(gCurStep, TimeCurrent(), PAL::Ask(), gUpperPrice[gCurStep], gLowerPrice[gCurStep]);
         
     }
     else if (PAL::Ask() <= gLowerPrice[gCurStep]){
         Print("Reach gLowerPrice[", gCurStep, "] = ", gLowerPrice[gCurStep]);
-        
         gCurStep++;
         gUpperPrice[gCurStep] = PAL::Ask() + gUpperSteps[gCurStep];
         gLowerPrice[gCurStep] = PAL::Bid() - gLowerSteps[gCurStep];
         PAL::Buy(gSize[gCurStep], NULL, 0, gStoploss, gUpperPrice[gCurStep], "S"+IntegerToString(gCurStep));
         gTickets[gCurStep] = PAL::ResultOrder();
-        noteStep(gCurStep, TimeCurrent(), PAL::Ask(), gUpperPrice[gCurStep], gLowerPrice[gCurStep]);
-        // TODO: Hide Lower Price...?
-        // hideStep(gCurStep);
+        openStep(gCurStep, TimeCurrent(), PAL::Ask(), gUpperPrice[gCurStep], gLowerPrice[gCurStep]);
+        if (gCurStep >= gDefenseGate) {
+            for (int i = 0; i < gCurStep; i++) {
+                Print("MODIFY ticket:", gTickets[i]);
+                PAL::PositionModify(gTickets[i], gStoploss, gUpperPrice[gCurStep]);
+                modifyStep(i, gUpperPrice[gCurStep], gStoploss);
+            }
+        }
     }
 }
 
@@ -318,34 +327,54 @@ void refreshDashBoard()
     string strIndex;
     string strLotCoverLoad;
 
-    int loadsLength = StringLen(DoubleToString(gLoad[MAX_STEP-1], 2));
-    int rewardsLength = StringLen(DoubleToString(gReward[MAX_STEP-1], 2));
+    int loadsLength = StringLen(DoubleToString(gLoad[gMaxStep-1], 2));
+    int rewardsLength = StringLen(DoubleToString(gReward[gMaxStep-1], 2));
 
     createLabel("objSetup"      , "         THÔNG SỐ HỆ THỐNG"          , 10, 30);
-    createLabel("objHeso"       , "- Hệ Số:"+DoubleToString(gHeso, 1) , 10, 45);
-    createLabel("objDefenseGate", "- Defense Gate:"+IntegerToString(gDefenseGate) , 160, 45);
-    createLabel("objTableHeader", "ST Lower Upper"  , 10, 60);
-    createLabel("objLtCovLoadHeader", fixedText("Lot",5) + " "+ fixedText("Cover", 5) + " " +
-                                      fixedText("Load", loadsLength) + " " + fixedText("Reward", rewardsLength), 115, 60);
-    for (int i = 0; i < MAX_STEP; i++){
+    createLabel("objHeso"       , "●Hệ Số:"+DoubleToString(gHeso, 1)             ,  10, 45);
+    createLabel("objDefenseGate", "●Defense Gate:"+IntegerToString(gDefenseGate) , 105, 45);
+    createLabel("objMaxStep"    , "●Max Step:"+IntegerToString(gMaxStep)         , 230, 45);
+    createLabel("objTableHeader", "STT Lower Upper"  , 10, 60);
+    createLabel("objLtCovLoadHeader", fixedText("Lot",5) + " "
+                                    + fixedText("Cover", 5) + " "
+                                    +  fixedText("Load", loadsLength) + " "
+                                    + fixedText("Reward", rewardsLength), 120, 60);
+    int i;
+    for (i = 0; i < gMaxStep; i++){
         strIndex = IntegerToString(i);
         objIndex            = "objIndex"        + strIndex;
         objLowerStep        = "objLowerStep"    + strIndex;
         objUpperStep        = "objUpperStep"    + strIndex;
         objLtCovLoad        = "objLtCovLoad" + strIndex;
-        strLotCoverLoad = fixedText(gSize[i], 2, 5) + " " + fixedText(gCover[i], 1, 5) + " " + 
-                          fixedText(gLoad[i], 2, loadsLength) + " " + fixedText(gReward[i], 2, rewardsLength);
-
-        createLabel(objIndex    , fixedText(strIndex, 2)            ,  10, 75 + 15*i);
-        createLabel(objLowerStep, fixedText(gLowerSteps[i], 1, 5)   ,  30, 75 + 15*i);
-        createLabel(objUpperStep, fixedText(gUpperSteps[i], 1, 5)   ,  70, 75 + 15*i);
-        createLabel(objLtCovLoad, strLotCoverLoad                   , 115, 75 + 15*i);
+        strLotCoverLoad = fixedText(gSize[i], 2, 5) + " "
+                        + fixedText(gCover[i], 1, 5) + " "
+                        + fixedText(gLoad[i], 2, loadsLength) + " "
+                        + fixedText(gReward[i], 2, rewardsLength);
+        createLabel(objIndex    , fixedText(strIndex, 3)            ,  10, 75 + 15*i);
+        createLabel(objLowerStep, fixedText(gLowerSteps[i], 1, 5)   ,  40, 75 + 15*i);
+        createLabel(objUpperStep, fixedText(gUpperSteps[i], 1, 5)   ,  80, 75 + 15*i);
+        createLabel(objLtCovLoad, strLotCoverLoad                   , 120, 75 + 15*i);
+    }
+    strIndex = IntegerToString(gDefenseGate);
+    ObjectSetString(0, "objIndex" + strIndex, OBJPROP_TEXT, fixedText("►"+strIndex,3));
+    for (i = gMaxStep; i < MAX_STEP; i++) {
+        strIndex     = IntegerToString(i);
+        objIndex     = "objIndex"     + strIndex;
+        objLowerStep = "objLowerStep" + strIndex;
+        objUpperStep = "objUpperStep" + strIndex;
+        objLtCovLoad = "objLtCovLoad" + strIndex;
+        ObjectDelete(0, objIndex    );
+        ObjectDelete(0, objLowerStep);
+        ObjectDelete(0, objUpperStep);
+        ObjectDelete(0, objLtCovLoad);
     }
     // Feature:
     createLabel("objFeature",       "      TÍNH NĂNG"                                           , 330, 30);
-    createLabel("objIsRunning",     "- Chạy BOT:     " +   (gIsRunning ? " [ON]"   : "[OFF]")   , 330, 45);
-    createLabel("objIsCreateNewS0", "- Tạo mới S0: " + (gDoCreateNewS0 ? " [TRUE]" : "[FALSE]") , 330, 60);
-    createLabel("objBtnCloseAll",   "- Đóng tất cả:[Close]"                                     , 330, 75);
+    createLabel("objIsRunning",     "● Chạy BOT:     " +   (gIsRunning ? " [ON]"   : "[OFF]")   , 330, 45);
+    createLabel("objIsCreateNewS0", "● Tạo mới S0: " + (gDoCreateNewS0 ? " [TRUE]" : "[FALSE]") , 330, 60);
+    createLabel("objBtnCloseAll",   "● Đóng tất cả:[Close]"                                     , 330, 75);
+    createLabel("objConfigFile",    "● Conf::" + gSetFile                                       , 330, 90);
+    createLabel("objBtnSaveSetup",  "          ---> [Save]"                                     , 330, 105);
 }
 void dashBoardOnObjClick(string sparam) {
     if (StringFind(sparam, "objIsCreateNewS0") != -1) {
@@ -355,6 +384,9 @@ void dashBoardOnObjClick(string sparam) {
     else if (StringFind(sparam, "objIsRunning") != -1) {
         gIsRunning = !gIsRunning;
         updateSizeOfStep();
+    } 
+    else if (StringFind(sparam, "objBtnSaveSetup") != -1) {
+        saveSetup();
     } 
 }
 void dashBoardOnObjChange(string sparam) {
@@ -379,12 +411,54 @@ void dashBoardOnObjChange(string sparam) {
         gDefenseGate = (int)StringToInteger(ObjectGetString(0, sparam, OBJPROP_TEXT));
         updateSizeOfStep();
     }
+    else if (StringFind(sparam, "objMaxStep") != -1) {
+        gMaxStep = (int)StringToInteger(ObjectGetString(0, sparam, OBJPROP_TEXT));
+        updateSizeOfStep();
+    }
+    else if (StringFind(sparam, "objConfigFile") != -1) {
+        gSetFile = ObjectGetString(0, sparam, OBJPROP_TEXT);
+        updateSizeOfStep();
+    }
     else {
         return;
     }
 }
 
-void hideStep(int step) {
+void saveSetup() {
+    int file_handle=FileOpen(gSetFile,FILE_READ|FILE_WRITE|FILE_TXT);
+    if(file_handle!=INVALID_HANDLE)
+    {
+        PrintFormat("File path: %s\\Files\\",TerminalInfoString(TERMINAL_DATA_PATH));
+        FileWrite(file_handle,"InpInitLot=" + DoubleToString(InpInitLot));
+        FileWrite(file_handle,"InpLotMultiplier=" + DoubleToString(gHeso));
+        FileWrite(file_handle,"InpDefenseGate=" + IntegerToString(gDefenseGate));
+        for (int i = 0; i < MAX_STEP; i++) {
+            if (i < 10) {
+                FileWrite(file_handle,"InpLowerStep0" + IntegerToString(i) + "="+ DoubleToString(gLowerSteps[i]));
+                FileWrite(file_handle,"InpUpperStep0" + IntegerToString(i) + "="+ DoubleToString(gUpperSteps[i]));
+            }
+            else {
+                FileWrite(file_handle,"InpLowerStep" + IntegerToString(i) + "="+ DoubleToString(gLowerSteps[i]));
+                FileWrite(file_handle,"InpUpperStep" + IntegerToString(i) + "="+ DoubleToString(gUpperSteps[i]));
+            }
+        }
+
+        //--- close the file
+        FileClose(file_handle);
+    }
+    else
+        PrintFormat("Failed to open Setup file, Error code = %d",GetLastError());
+}
+
+void modifyStep(int step, double upperPrice, double lowerPrice) {
+    string objCurStep   = "objCurStep" + IntegerToString(step);
+    string objLowerStep = objCurStep + "Lower";
+    string objUpperStep = objCurStep + "Upper";
+    ObjectSetDouble(0, objLowerStep, OBJPROP_PRICE, 0, lowerPrice);
+    ObjectSetDouble(0, objUpperStep, OBJPROP_PRICE, 0, upperPrice);
+}
+
+void closeStep(int step) {
     string objCurStep   = "objCurStep" + IntegerToString(step);
     string objLowerStep = objCurStep + "Lower";
     string objUpperStep = objCurStep + "Upper";
@@ -392,7 +466,7 @@ void hideStep(int step) {
     ObjectSetInteger(0, objLowerStep, OBJPROP_TIME, 0, 0);
     ObjectSetInteger(0, objUpperStep, OBJPROP_TIME, 0, 0);
 }
-void noteStep(int step, datetime curTime, double curPrice, double upperPrice, double lowerPrice)
+void openStep(int step, datetime curTime, double curPrice, double upperPrice, double lowerPrice)
 {
     string objCurStep = "objCurStep" + IntegerToString(step);
     string objLowerStep = objCurStep + "Lower";
