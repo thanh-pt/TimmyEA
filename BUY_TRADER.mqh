@@ -186,6 +186,8 @@ double      gPreLo;
 
 MqlDateTime gStCurDt;
 datetime    gCurDt;
+string      gStrCurDate = "";
+string      gStrPreDate = "";
 
 bool        gDoCreateNewS0  = true;
 bool        gIsRunning      = true;
@@ -193,6 +195,11 @@ void MtHandler::OnTick() {
     if (gIsRunning == false) return;
     gCurDt = iTime(_Symbol, PERIOD_CURRENT, 0);
     TimeToStruct(gCurDt, gStCurDt);
+    gStrCurDate = TimeToString(gCurDt, TIME_DATE);
+    if (gStrCurDate != gStrPreDate) {
+        DayProfit(gStrCurDate, gStrPreDate);
+        gStrPreDate = gStrCurDate;
+    }
 
     // Specific time to trade
     // Exclude sunday
@@ -231,26 +238,27 @@ void MtHandler::OnTick() {
     }
 
     if (PAL::Bid() >= gUpperPrice[gCurStep]) {
-        Print("Reach gUpperPrice[", gCurStep, "] = ", gUpperPrice[gCurStep]);
+        Print(APP_TAG, + "Reach gUpperPrice[", gCurStep, "] = ", gUpperPrice[gCurStep]);
         if (gCurStep >= gDefenseGate) {
-            Print("Reach gDefenseGate:", gDefenseGate);
+            Print(APP_TAG, + "TP at\t", gCurStep);
             for (int i = gCurStep; i >= 0; i--) {
                 closeStep(i);
             }
             gCurStep = -1;
         }
         else {
-            Print("Step Upper -> gCurStep:", gCurStep);
+            Print(APP_TAG, "TP Up Stair:", gCurStep);
             closeStep(gCurStep);
             gCurStep--;
         }
         // Open new L1
         if (gCurStep >= 0) return;
         // if (PAL::Bid() < gDailyOpen) {
-        //     Print("Nen DO - Khong mo them lenh!");
+        //     Print(APP_TAG, "Nen DO - Khong mo them lenh!");
         //     return;
         // }
         if (gDoCreateNewS0 == false) return;
+        Print(APP_TAG, "New S0 Time:", gStCurDt.hour);
         gCurStep++;
         gUpperPrice[gCurStep] = PAL::Ask() + gUpperSteps[gCurStep];
         gLowerPrice[gCurStep] = PAL::Bid() - gLowerSteps[gCurStep];
@@ -261,21 +269,45 @@ void MtHandler::OnTick() {
         
     }
     else if (PAL::Ask() <= gLowerPrice[gCurStep]){
-        Print("Reach gLowerPrice[", gCurStep, "] = ", gLowerPrice[gCurStep]);
-        gCurStep++;
-        gUpperPrice[gCurStep] = PAL::Ask() + gUpperSteps[gCurStep];
-        gLowerPrice[gCurStep] = PAL::Bid() - gLowerSteps[gCurStep];
-        PAL::Buy(gSize[gCurStep], NULL, 0, gStoploss, gUpperPrice[gCurStep], "S"+IntegerToString(gCurStep));
-        gTickets[gCurStep] = PAL::ResultOrder();
-        openStep(gCurStep, TimeCurrent(), PAL::Ask(), gUpperPrice[gCurStep], gLowerPrice[gCurStep]);
-        if (gCurStep >= gDefenseGate) {
-            for (int i = 0; i < gCurStep; i++) {
-                Print("MODIFY ticket:", gTickets[i]);
-                PAL::PositionModify(gTickets[i], gStoploss, gUpperPrice[gCurStep]);
-                modifyStep(i, gUpperPrice[gCurStep], gStoploss);
+        Print(APP_TAG, "Reach gLowerPrice[", gCurStep, "] = ", gLowerPrice[gCurStep]);
+        if (gCurStep < gMaxStep-1) {
+            gCurStep++;
+            gUpperPrice[gCurStep] = PAL::Ask() + gUpperSteps[gCurStep];
+            gLowerPrice[gCurStep] = PAL::Bid() - gLowerSteps[gCurStep];
+            PAL::Buy(gSize[gCurStep], NULL, 0, gStoploss, gUpperPrice[gCurStep], "S"+IntegerToString(gCurStep));
+            gTickets[gCurStep] = PAL::ResultOrder();
+            openStep(gCurStep, TimeCurrent(), PAL::Ask(), gUpperPrice[gCurStep], gLowerPrice[gCurStep]);
+            if (gCurStep >= gDefenseGate) {
+                for (int i = 0; i < gCurStep; i++) {
+                    PAL::PositionModify(gTickets[i], gStoploss, gUpperPrice[gCurStep]);
+                    modifyStep(i, gUpperPrice[gCurStep], gStoploss);
+                }
             }
         }
+        else {
+            Print(APP_TAG, "CRASH SYSTEM!!!");
+        }
     }
+}
+
+void DayProfit(string endDate, string startDate)
+{
+    if (startDate == "") return;
+    double dayprof = 0.0;
+    datetime end = StringToTime(endDate);
+    datetime start = StringToTime(startDate);
+
+    HistorySelect(start,end);
+    int TotalDeals = HistoryDealsTotal();
+
+    for(int i = 0; i < TotalDeals; i++) {
+        ulong Ticket = HistoryDealGetTicket(i);
+        if(HistoryDealGetInteger(Ticket,DEAL_ENTRY) == DEAL_ENTRY_OUT) {
+            double LatestProfit = HistoryDealGetDouble(Ticket, DEAL_PROFIT);
+            dayprof += LatestProfit;
+        }
+    }
+    Print(APP_TAG, "DayProfit " + startDate + " ", TotalDeals," ", dayprof);
 }
 
 
@@ -428,10 +460,10 @@ void saveSetup() {
     int file_handle=FileOpen(gSetFile,FILE_READ|FILE_WRITE|FILE_TXT);
     if(file_handle!=INVALID_HANDLE)
     {
-        PrintFormat("File path: %s\\Files\\",TerminalInfoString(TERMINAL_DATA_PATH));
         FileWrite(file_handle,"InpInitLot=" + DoubleToString(InpInitLot));
         FileWrite(file_handle,"InpLotMultiplier=" + DoubleToString(gHeso));
         FileWrite(file_handle,"InpDefenseGate=" + IntegerToString(gDefenseGate));
+        FileWrite(file_handle,"InpMaxStep=" + IntegerToString(gMaxStep));
         for (int i = 0; i < MAX_STEP; i++) {
             if (i < 10) {
                 FileWrite(file_handle,"InpLowerStep0" + IntegerToString(i) + "="+ DoubleToString(gLowerSteps[i]));
@@ -442,12 +474,9 @@ void saveSetup() {
                 FileWrite(file_handle,"InpUpperStep" + IntegerToString(i) + "="+ DoubleToString(gUpperSteps[i]));
             }
         }
-
-        //--- close the file
         FileClose(file_handle);
+        Alert("Writen to:\n" + TerminalInfoString(TERMINAL_DATA_PATH) + "\\MQL5\\Files\\" + gSetFile);
     }
-    else
-        PrintFormat("Failed to open Setup file, Error code = %d",GetLastError());
 }
 
 void modifyStep(int step, double upperPrice, double lowerPrice) {
@@ -503,9 +532,6 @@ void openStep(int step, datetime curTime, double curPrice, double upperPrice, do
     ObjectSetString(0,  objUpperStep, OBJPROP_TEXT, "---"+"U"+ IntegerToString(step));
     ObjectSetDouble(0,  objUpperStep, OBJPROP_PRICE, 0, upperPrice);
     ObjectSetInteger(0, objUpperStep, OBJPROP_TIME, 0, curTime + 5*PeriodSeconds(_Period));
-    // if (gCurStep >= gDefenseGate) {
-    // }
-    //
 }
 //////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
