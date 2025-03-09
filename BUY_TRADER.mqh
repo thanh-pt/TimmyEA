@@ -337,7 +337,7 @@ void refreshDashBoard()
     createLabel("objTableHeader", "STT Lower Upper"  , 10, 60);
     createLabel("objLtCovLoadHeader", fixedText("Lot",5) + " "
                                     + fixedText("Cover", 5) + " "
-                                    +  fixedText("Load", loadsLength) + " "
+                                    + fixedText("Load", loadsLength) + " "
                                     + fixedText("Reward", rewardsLength), 120, 60);
     int i;
     for (i = 0; i < gMaxStep; i++){
