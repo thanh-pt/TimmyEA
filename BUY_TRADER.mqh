@@ -197,7 +197,7 @@ void MtHandler::OnTick() {
     TimeToStruct(gCurDt, gStCurDt);
     gStrCurDate = TimeToString(gCurDt, TIME_DATE);
     if (gStrCurDate != gStrPreDate) {
-        DayProfit(gStrCurDate, gStrPreDate);
+        DailyReport(gStrCurDate, gStrPreDate);
         gStrPreDate = gStrCurDate;
     }
 
@@ -238,9 +238,9 @@ void MtHandler::OnTick() {
     }
 
     if (PAL::Bid() >= gUpperPrice[gCurStep]) {
-        Print(APP_TAG, + "Reach gUpperPrice[", gCurStep, "] = ", gUpperPrice[gCurStep]);
+        Print(APP_TAG, "Reach gUpperPrice[", gCurStep, "] = ", gUpperPrice[gCurStep]);
         if (gCurStep >= gDefenseGate) {
-            Print(APP_TAG, + "TP at\t", gCurStep);
+            Print(APP_TAG, "TP at\t", gCurStep);
             for (int i = gCurStep; i >= 0; i--) {
                 closeStep(i);
             }
@@ -290,24 +290,42 @@ void MtHandler::OnTick() {
     }
 }
 
-void DayProfit(string endDate, string startDate)
+void DailyReport(string endDate, string startDate)
 {
     if (startDate == "") return;
-    double dayprof = 0.0;
     datetime end = StringToTime(endDate);
     datetime start = StringToTime(startDate);
-
     HistorySelect(start,end);
-    int TotalDeals = HistoryDealsTotal();
-
-    for(int i = 0; i < TotalDeals; i++) {
-        ulong Ticket = HistoryDealGetTicket(i);
-        if(HistoryDealGetInteger(Ticket,DEAL_ENTRY) == DEAL_ENTRY_OUT) {
-            double LatestProfit = HistoryDealGetDouble(Ticket, DEAL_PROFIT);
-            dayprof += LatestProfit;
+    int totalDeals = HistoryDealsTotal();
+    if (totalDeals == 0) return;
+    double  totalProfit = 0.0;
+    string  lowestStep = "-";
+    double  profit;
+    ulong   ticket;
+    string  comment;
+    int     dealEntry;
+    int     dealCount=0;
+    for(int i = 0; i < totalDeals; i++) {
+        ticket = HistoryDealGetTicket(i);
+        dealEntry = (int)HistoryDealGetInteger(ticket,DEAL_ENTRY);
+        if(dealEntry == DEAL_ENTRY_OUT) {
+            profit = HistoryDealGetDouble(ticket, DEAL_PROFIT);
+            totalProfit += profit;
+        }
+        else if (dealEntry == DEAL_ENTRY_IN) {
+            comment = HistoryDealGetString(ticket, DEAL_COMMENT);
+            if (comment > lowestStep) lowestStep = comment;
+            dealCount++;
         }
     }
-    Print(APP_TAG, "DayProfit " + startDate + " ", TotalDeals," ", dayprof);
+    
+    int file_handle=FileOpen("StrategyTesterReport.csv",FILE_READ|FILE_WRITE|FILE_CSV);
+    if(file_handle!=INVALID_HANDLE)
+    {
+        FileSeek(file_handle,0,SEEK_END);
+        FileWrite(file_handle, startDate, dealCount, lowestStep, totalProfit);
+        FileClose(file_handle);
+    }
 }
 
 
