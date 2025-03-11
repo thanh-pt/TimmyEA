@@ -37,110 +37,110 @@ void MtHandler::OnChartEvent(const int id, const long &lparam, const double &dpa
 /////////////////////////////// INIT - TINH TOAN
 //////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-#define MAX_STEP 20
+#define DCA_LIMIT 20
 
 input string THONG_SO_HE_THONG="";
-input double InpInitLot=0.01;
-input double InpLotMultiplier=1.4;
-input int    InpDefenseGate=5;
-input int    InpMaxStep=MAX_STEP;
+input double InpInitVol=0.01;
+input double InpVolMultiplier=1.4;
+input int    InpTpAllGate=5;
+input int    InpDcaLimit=DCA_LIMIT;
 
-input string LOWER_LEVER_STEP="";
-input double InpLowerStep00=0.5;
-input double InpLowerStep01=0.5;
-input double InpLowerStep02=0.5;
-input double InpLowerStep03=0.5;
-input double InpLowerStep04=0.5;
-input double InpLowerStep05=0.5;
-input double InpLowerStep06=0.5;
-input double InpLowerStep07=0.5;
-input double InpLowerStep08=0.5;
-input double InpLowerStep09=0.5;
-input double InpLowerStep10=0.5;
-input double InpLowerStep11=0.5;
-input double InpLowerStep12=0.7;
-input double InpLowerStep13=1.0;
-input double InpLowerStep14=1.0;
-input double InpLowerStep15=2.0;
-input double InpLowerStep16=3.0;
-input double InpLowerStep17=3.0;
-input double InpLowerStep18=6.0;
-input double InpLowerStep19=12.0;
+input string DCA_DISTANCES="";
+input double InpDcaDistances0 =0.5;
+input double InpDcaDistances1 =0.5;
+input double InpDcaDistances2 =0.5;
+input double InpDcaDistances3 =0.5;
+input double InpDcaDistances4 =0.5;
+input double InpDcaDistances5 =0.5;
+input double InpDcaDistances6 =0.5;
+input double InpDcaDistances7 =0.5;
+input double InpDcaDistances8 =0.5;
+input double InpDcaDistances9 =0.5;
+input double InpDcaDistances10=0.5;
+input double InpDcaDistances11=0.5;
+input double InpDcaDistances12=0.5;
+input double InpDcaDistances13=0.5;
+input double InpDcaDistances14=0.5;
+input double InpDcaDistances15=0.5;
+input double InpDcaDistances16=0.5;
+input double InpDcaDistances17=0.5;
+input double InpDcaDistances18=0.5;
+input double InpDcaDistances19=0.5;
 
-input string UPPER_LEVER_STEP="";
-input double InpUpperStep00=2.0;
-input double InpUpperStep01=2.0;
-input double InpUpperStep02=2.0;
-input double InpUpperStep03=2.0;
-input double InpUpperStep04=2.0;
-input double InpUpperStep05=1.0;
-input double InpUpperStep06=1.0;
-input double InpUpperStep07=1.0;
-input double InpUpperStep08=1.0;
-input double InpUpperStep09=1.0;
-input double InpUpperStep10=1.0;
-input double InpUpperStep11=1.0;
-input double InpUpperStep12=1.2;
-input double InpUpperStep13=1.8;
-input double InpUpperStep14=2.4;
-input double InpUpperStep15=3.6;
-input double InpUpperStep16=5.5;
-input double InpUpperStep17=7.5;
-input double InpUpperStep18=11.5;
-input double InpUpperStep19=20.5;
+input string TAKE_PROFIT_DISTANCES="";
+input double InpTpDistances0 =1.5;
+input double InpTpDistances1 =1.5;
+input double InpTpDistances2 =1.5;
+input double InpTpDistances3 =1.5;
+input double InpTpDistances4 =1.5;
+input double InpTpDistances5 =1.5;
+input double InpTpDistances6 =1.5;
+input double InpTpDistances7 =1.5;
+input double InpTpDistances8 =1.5;
+input double InpTpDistances9 =1.5;
+input double InpTpDistances10=1.5;
+input double InpTpDistances11=1.5;
+input double InpTpDistances12=1.5;
+input double InpTpDistances13=1.5;
+input double InpTpDistances14=1.5;
+input double InpTpDistances15=1.5;
+input double InpTpDistances16=1.5;
+input double InpTpDistances17=1.5;
+input double InpTpDistances18=1.5;
+input double InpTpDistances19=1.5;
 
 string gSetFile = "config.set";
 
-double gLowerSteps[MAX_STEP];
-double gUpperSteps[MAX_STEP];
-double gSize[MAX_STEP];
-ulong  gTickets[MAX_STEP];
-double gLowerPrice[MAX_STEP];
-double gUpperPrice[MAX_STEP];
-double gCover[MAX_STEP];
-double gLoad[MAX_STEP];
-double gReward[MAX_STEP];
+double gDcaDistances[DCA_LIMIT];
+double gTpDistances[DCA_LIMIT];
+double gVols[DCA_LIMIT];
+ulong  gTickets[DCA_LIMIT];
+double gDcaPrices[DCA_LIMIT];
+double gTpPrices[DCA_LIMIT];
+double gCovers[DCA_LIMIT];
+double gLoads[DCA_LIMIT];
+double gRewards[DCA_LIMIT];
 
 double gStoploss;
 
-double  gHeso        = 0;
-int     gMaxStep     = 0;
+double  gMultiplier        = 0;
+int     gDcaLimit     = 0;
 int     gDefenseGate = 0;
 void initValue() {
-    gHeso           = InpLotMultiplier;
-    gMaxStep        = InpMaxStep;
-    gDefenseGate    = InpDefenseGate;
-    gLowerSteps[ 0] = InpLowerStep00; gUpperSteps[ 0] = InpUpperStep00;
-    gLowerSteps[ 1] = InpLowerStep01; gUpperSteps[ 1] = InpUpperStep01;
-    gLowerSteps[ 2] = InpLowerStep02; gUpperSteps[ 2] = InpUpperStep02;
-    gLowerSteps[ 3] = InpLowerStep03; gUpperSteps[ 3] = InpUpperStep03;
-    gLowerSteps[ 4] = InpLowerStep04; gUpperSteps[ 4] = InpUpperStep04;
-    gLowerSteps[ 5] = InpLowerStep05; gUpperSteps[ 5] = InpUpperStep05;
-    gLowerSteps[ 6] = InpLowerStep06; gUpperSteps[ 6] = InpUpperStep06;
-    gLowerSteps[ 7] = InpLowerStep07; gUpperSteps[ 7] = InpUpperStep07;
-    gLowerSteps[ 8] = InpLowerStep08; gUpperSteps[ 8] = InpUpperStep08;
-    gLowerSteps[ 9] = InpLowerStep09; gUpperSteps[ 9] = InpUpperStep09;
-    gLowerSteps[10] = InpLowerStep10; gUpperSteps[10] = InpUpperStep10;
-    gLowerSteps[11] = InpLowerStep11; gUpperSteps[11] = InpUpperStep11;
-    gLowerSteps[12] = InpLowerStep12; gUpperSteps[12] = InpUpperStep12;
-    gLowerSteps[13] = InpLowerStep13; gUpperSteps[13] = InpUpperStep13;
-    gLowerSteps[14] = InpLowerStep14; gUpperSteps[14] = InpUpperStep14;
-    gLowerSteps[15] = InpLowerStep15; gUpperSteps[15] = InpUpperStep15;
-    gLowerSteps[16] = InpLowerStep16; gUpperSteps[16] = InpUpperStep16;
-    gLowerSteps[17] = InpLowerStep17; gUpperSteps[17] = InpUpperStep17;
-    gLowerSteps[18] = InpLowerStep18; gUpperSteps[18] = InpUpperStep18;
-    gLowerSteps[19] = InpLowerStep19; gUpperSteps[19] = InpUpperStep19;
+    gMultiplier      = InpVolMultiplier;
+    gDcaLimit        = InpDcaLimit;
+    gDefenseGate     = InpTpAllGate;
+    gDcaDistances[ 0] = InpDcaDistances0;  gTpDistances[ 0] = InpTpDistances0;
+    gDcaDistances[ 1] = InpDcaDistances1;  gTpDistances[ 1] = InpTpDistances1;
+    gDcaDistances[ 2] = InpDcaDistances2;  gTpDistances[ 2] = InpTpDistances2;
+    gDcaDistances[ 3] = InpDcaDistances3;  gTpDistances[ 3] = InpTpDistances3;
+    gDcaDistances[ 4] = InpDcaDistances4;  gTpDistances[ 4] = InpTpDistances4;
+    gDcaDistances[ 5] = InpDcaDistances5;  gTpDistances[ 5] = InpTpDistances5;
+    gDcaDistances[ 6] = InpDcaDistances6;  gTpDistances[ 6] = InpTpDistances6;
+    gDcaDistances[ 7] = InpDcaDistances7;  gTpDistances[ 7] = InpTpDistances7;
+    gDcaDistances[ 8] = InpDcaDistances8;  gTpDistances[ 8] = InpTpDistances8;
+    gDcaDistances[ 9] = InpDcaDistances9;  gTpDistances[ 9] = InpTpDistances9;
+    gDcaDistances[10] = InpDcaDistances10; gTpDistances[10] = InpTpDistances10;
+    gDcaDistances[11] = InpDcaDistances11; gTpDistances[11] = InpTpDistances11;
+    gDcaDistances[12] = InpDcaDistances12; gTpDistances[12] = InpTpDistances12;
+    gDcaDistances[13] = InpDcaDistances13; gTpDistances[13] = InpTpDistances13;
+    gDcaDistances[14] = InpDcaDistances14; gTpDistances[14] = InpTpDistances14;
+    gDcaDistances[15] = InpDcaDistances15; gTpDistances[15] = InpTpDistances15;
+    gDcaDistances[16] = InpDcaDistances16; gTpDistances[16] = InpTpDistances16;
+    gDcaDistances[17] = InpDcaDistances17; gTpDistances[17] = InpTpDistances17;
+    gDcaDistances[18] = InpDcaDistances18; gTpDistances[18] = InpTpDistances18;
+    gDcaDistances[19] = InpDcaDistances19; gTpDistances[19] = InpTpDistances19;
     updateSizeOfStep();
 }
 void updateSizeOfStep(){
     int i;
-    gSize[0] = NormalizeDouble(InpInitLot,2);
-    gCover[0] = 0;
-    gLoad[0] = 0;
-    gReward[0] = gSize[0] * gUpperSteps[i] * 100;
-    for (i = 1; i < MAX_STEP; i++) {
-        gSize[i] = NormalizeDouble(gHeso * calculateSize(i), 2);
-        gReward[i] += gSize[i] * gUpperSteps[i] * 100;
+    gVols[0] = NormalizeDouble(InpInitVol,2);
+    gCovers[0] = 0;
+    gLoads[0] = 0;
+    gRewards[0] = gVols[0] * gTpDistances[i] * 100;
+    for (i = 1; i < DCA_LIMIT; i++) {
+        gVols[i] = NormalizeDouble(gMultiplier * calculateSize(i), 2);
+        gRewards[i] += gVols[i] * gTpDistances[i] * 100;
     }
     refreshDashBoard();
 }
@@ -152,26 +152,26 @@ double calculateSize(int n) {
     int i;
 
     for (i = 0; i <= n; i++) {
-        suffix_sum += gLowerSteps[i];
+        suffix_sum += gDcaDistances[i];
     }
-    gCover[n] = suffix_sum;
+    gCovers[n] = suffix_sum;
 
     for (i = 0; i < n; i++) {
-        total += gSize[i] * suffix_sum;
-        suffix_sum -= gLowerSteps[i];
-        S_sum += gSize[i];
+        total += gVols[i] * suffix_sum;
+        suffix_sum -= gDcaDistances[i];
+        S_sum += gVols[i];
     }
-    gLoad[n] = total * 100;
-    total -= gUpperSteps[n] * S_sum;
+    gLoads[n] = total * 100;
+    total -= gTpDistances[n] * S_sum;
     if (n >= gDefenseGate) {
-        gReward[n] = -total * 100;
+        gRewards[n] = -total * 100;
     }
     else {
-        gReward[n] = 0;
-        return InpInitLot;
+        gRewards[n] = 0;
+        return InpInitVol;
     }
     
-    return MathCeil(total/gUpperSteps[n] * 100)/100;
+    return MathCeil(total/gTpDistances[n] * 100)/100;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -179,113 +179,102 @@ double calculateSize(int n) {
 /////////////////////////////// ON_TICK - LOGIC XỬ LÝ
 //////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-int         gCurStep = -1;
-double      gDailyOpen;
-double      gPreHi;
-double      gPreLo;
+int         gCurLayer = -1;
 
 MqlDateTime gStCurDt;
 datetime    gCurDt;
 string      gStrCurDate = "";
 string      gStrPreDate = "";
 
-bool        gDoCreateNewS0  = true;
+bool        gbCreateNewL0  = true;
 bool        gIsRunning      = true;
 void MtHandler::OnTick() {
     if (gIsRunning == false) return;
+
+    // LOGIC CHECK NEW DAY
     gCurDt = iTime(_Symbol, PERIOD_CURRENT, 0);
     TimeToStruct(gCurDt, gStCurDt);
     gStrCurDate = TimeToString(gCurDt, TIME_DATE);
     if (gStrCurDate != gStrPreDate) {
         DailyReport(gStrCurDate, gStrPreDate);
         gStrPreDate = gStrCurDate;
+        createL0();
     }
 
-    // Specific time to trade
+    // LOGIC SELECT TIME TO TRADE - SHOULD REMOVE IN FUTURE - OR HAVE INPUT FOR IT
     // Exclude sunday
     if (gStCurDt.day_of_week == 0) return;
     // Monday
     if (gStCurDt.day_of_week == 1) {
         // Morning Monday
         if (gStCurDt.hour < 12) {
-            gDoCreateNewS0 = false;
+            gbCreateNewL0 = false;
             refreshDashBoard();
         }
         // Start trading from afternoon
         else {
-            gDoCreateNewS0 = true;
+            gbCreateNewL0 = true;
             refreshDashBoard();
         }
     }
     // After noon friday
     else if (gStCurDt.day_of_week == 5 && gStCurDt.hour > 12) {
-        gDoCreateNewS0 = false;
+        gbCreateNewL0 = false;
         refreshDashBoard();
     }
+
     // Cannot open trade in 22 EST hour - Maintain time of broker
     if (gStCurDt.hour == 22) return;
 
-    if (gCurStep == -1) {
-        if (gDoCreateNewS0 == false) return;
-        
-        gCurStep++;
-        gUpperPrice[gCurStep] = PAL::Ask() + gUpperSteps[gCurStep];
-        gLowerPrice[gCurStep] = PAL::Bid() - gLowerSteps[gCurStep];
-        gStoploss = PAL::Bid() - gCover[gMaxStep-1] - 20;
-        PAL::Buy(gSize[gCurStep], NULL, 0, gStoploss, gUpperPrice[gCurStep], "S"+IntegerToString(gCurStep));
-        gTickets[gCurStep] = PAL::ResultOrder();
-        openStep(gCurStep, TimeCurrent(), PAL::Ask(), gUpperPrice[gCurStep], gLowerPrice[gCurStep]);
-    }
+    // No running trade
+    if (gCurLayer < 0) return;
 
-    if (PAL::Bid() >= gUpperPrice[gCurStep]) {
-        Print(APP_TAG, "Reach gUpperPrice[", gCurStep, "] = ", gUpperPrice[gCurStep]);
-        if (gCurStep >= gDefenseGate) {
-            Print(APP_TAG, "TP at\t", gCurStep);
-            for (int i = gCurStep; i >= 0; i--) {
-                closeStep(i);
-            }
-            gCurStep = -1;
+    // ROBOT LOGIC - BUY LOGIC - TODO: develop SELL logic
+    if (PAL::Bid() >= gTpPrices[gCurLayer]) {
+        if (gCurLayer >= gDefenseGate) {
+            for (int i = gCurLayer; i >= 0; i--) closeStep(i);
+            gCurLayer = -1;
         }
         else {
-            Print(APP_TAG, "TP Up Stair:", gCurStep);
-            closeStep(gCurStep);
-            gCurStep--;
+            closeStep(gCurLayer);
+            gCurLayer--;
         }
-        // Open new L1
-        if (gCurStep >= 0) return;
-        // if (PAL::Bid() < gDailyOpen) {
-        //     Print(APP_TAG, "Nen DO - Khong mo them lenh!");
-        //     return;
-        // }
-        if (gDoCreateNewS0 == false) return;
-        Print(APP_TAG, "New S0 Time:", gStCurDt.hour);
-        gCurStep++;
-        gUpperPrice[gCurStep] = PAL::Ask() + gUpperSteps[gCurStep];
-        gLowerPrice[gCurStep] = PAL::Bid() - gLowerSteps[gCurStep];
-        gStoploss = PAL::Bid() - gCover[gMaxStep-1] - 20;
-        PAL::Buy(gSize[gCurStep], NULL, 0, gStoploss, gUpperPrice[gCurStep], "S"+IntegerToString(gCurStep));
-        gTickets[gCurStep] = PAL::ResultOrder();
-        openStep(gCurStep, TimeCurrent(), PAL::Ask(), gUpperPrice[gCurStep], gLowerPrice[gCurStep]);
-        
+        createL0();
     }
-    else if (PAL::Ask() <= gLowerPrice[gCurStep]){
-        Print(APP_TAG, "Reach gLowerPrice[", gCurStep, "] = ", gLowerPrice[gCurStep]);
-        if (gCurStep < gMaxStep-1) {
-            gCurStep++;
-            gUpperPrice[gCurStep] = PAL::Ask() + gUpperSteps[gCurStep];
-            gLowerPrice[gCurStep] = PAL::Bid() - gLowerSteps[gCurStep];
-            PAL::Buy(gSize[gCurStep], NULL, 0, gStoploss, gUpperPrice[gCurStep], "S"+IntegerToString(gCurStep));
-            gTickets[gCurStep] = PAL::ResultOrder();
-            openStep(gCurStep, TimeCurrent(), PAL::Ask(), gUpperPrice[gCurStep], gLowerPrice[gCurStep]);
-            if (gCurStep >= gDefenseGate) {
-                for (int i = 0; i < gCurStep; i++) {
-                    PAL::PositionModify(gTickets[i], gStoploss, gUpperPrice[gCurStep]);
-                    modifyStep(i, gUpperPrice[gCurStep], gStoploss);
-                }
-            }
-        }
-        else {
-            Print(APP_TAG, "CRASH SYSTEM!!!");
+    else if (PAL::Ask() <= gDcaPrices[gCurLayer]){
+        createDCA();
+    }
+}
+
+void createL0()
+{
+    if (gCurLayer >= 0) return;
+    if (gbCreateNewL0 == false) return;
+
+    Print(APP_TAG, "New L0 | Time:", gStCurDt.hour);
+    gCurLayer++;
+    gTpPrices[gCurLayer] = PAL::Ask() + gTpDistances[gCurLayer];
+    gDcaPrices[gCurLayer] = PAL::Bid() - gDcaDistances[gCurLayer];
+    gStoploss = PAL::Bid() - gCovers[gDcaLimit-1] - 20;
+    PAL::Buy(gVols[gCurLayer], NULL, 0, gStoploss, gTpPrices[gCurLayer], "L"+IntegerToString(gCurLayer));
+    gTickets[gCurLayer] = PAL::ResultOrder();
+    openStep(gCurLayer, TimeCurrent(), PAL::Ask(), gTpPrices[gCurLayer], gDcaPrices[gCurLayer]);
+}
+
+void createDCA()
+{
+    if (gCurLayer >= gDcaLimit-1) return;
+
+    gCurLayer++;
+    gTpPrices[gCurLayer] = PAL::Ask() + gTpDistances[gCurLayer];
+    gDcaPrices[gCurLayer] = PAL::Bid() - gDcaDistances[gCurLayer];
+    PAL::Buy(gVols[gCurLayer], NULL, 0, gStoploss, gTpPrices[gCurLayer], "L"+IntegerToString(gCurLayer));
+    gTickets[gCurLayer] = PAL::ResultOrder();
+    openStep(gCurLayer, TimeCurrent(), PAL::Ask(), gTpPrices[gCurLayer], gDcaPrices[gCurLayer]);
+    if (gCurLayer >= gDefenseGate) {
+        for (int i = 0; i < gCurLayer; i++) {
+            PAL::PositionModify(gTickets[i], gStoploss, gTpPrices[gCurLayer]);
+            modifyStep(i, gTpPrices[gCurLayer], gStoploss);
         }
     }
 }
@@ -377,37 +366,37 @@ void refreshDashBoard()
     string strIndex;
     string strLotCoverLoad;
 
-    int loadsLength = StringLen(DoubleToString(gLoad[gMaxStep-1], 2));
-    int rewardsLength = StringLen(DoubleToString(gReward[gMaxStep-1], 2));
+    int loadsLength = StringLen(DoubleToString(gLoads[gDcaLimit-1], 2));
+    int rewardsLength = StringLen(DoubleToString(gRewards[gDcaLimit-1], 2));
 
     createLabel("objSetup"      , "         THÔNG SỐ HỆ THỐNG"          , 10, 30);
-    createLabel("objHeso"       , "●Hệ Số:"+DoubleToString(gHeso, 1)             ,  10, 45);
+    createLabel("objHeso"       , "●Hệ Số:"+DoubleToString(gMultiplier, 1)             ,  10, 45);
     createLabel("objDefenseGate", "●Defense Gate:"+IntegerToString(gDefenseGate) , 105, 45);
-    createLabel("objMaxStep"    , "●Max Step:"+IntegerToString(gMaxStep)         , 230, 45);
+    createLabel("objMaxStep"    , "●Max Step:"+IntegerToString(gDcaLimit)         , 230, 45);
     createLabel("objTableHeader", "STT Lower Upper"  , 10, 60);
     createLabel("objLtCovLoadHeader", fixedText("Lot",5) + " "
                                     + fixedText("Cover", 5) + " "
                                     + fixedText("Load", loadsLength) + " "
                                     + fixedText("Reward", rewardsLength), 120, 60);
     int i;
-    for (i = 0; i < gMaxStep; i++){
+    for (i = 0; i < gDcaLimit; i++){
         strIndex = IntegerToString(i);
         objIndex            = "objIndex"        + strIndex;
         objLowerStep        = "objLowerStep"    + strIndex;
         objUpperStep        = "objUpperStep"    + strIndex;
         objLtCovLoad        = "objLtCovLoad" + strIndex;
-        strLotCoverLoad = fixedText(gSize[i], 2, 5) + " "
-                        + fixedText(gCover[i], 1, 5) + " "
-                        + fixedText(gLoad[i], 2, loadsLength) + " "
-                        + fixedText(gReward[i], 2, rewardsLength);
+        strLotCoverLoad = fixedText(gVols[i], 2, 5) + " "
+                        + fixedText(gCovers[i], 1, 5) + " "
+                        + fixedText(gLoads[i], 2, loadsLength) + " "
+                        + fixedText(gRewards[i], 2, rewardsLength);
         createLabel(objIndex    , fixedText(strIndex, 3)            ,  10, 75 + 15*i);
-        createLabel(objLowerStep, fixedText(gLowerSteps[i], 1, 5)   ,  40, 75 + 15*i);
-        createLabel(objUpperStep, fixedText(gUpperSteps[i], 1, 5)   ,  80, 75 + 15*i);
+        createLabel(objLowerStep, fixedText(gDcaDistances[i], 1, 5) ,  40, 75 + 15*i);
+        createLabel(objUpperStep, fixedText(gTpDistances[i], 1, 5)  ,  80, 75 + 15*i);
         createLabel(objLtCovLoad, strLotCoverLoad                   , 120, 75 + 15*i);
     }
     strIndex = IntegerToString(gDefenseGate);
     ObjectSetString(0, "objIndex" + strIndex, OBJPROP_TEXT, fixedText("►"+strIndex,3));
-    for (i = gMaxStep; i < MAX_STEP; i++) {
+    for (i = gDcaLimit; i < DCA_LIMIT; i++) {
         strIndex     = IntegerToString(i);
         objIndex     = "objIndex"     + strIndex;
         objLowerStep = "objLowerStep" + strIndex;
@@ -421,40 +410,40 @@ void refreshDashBoard()
     // Feature:
     createLabel("objFeature",       "      TÍNH NĂNG"                                           , 330, 30);
     createLabel("objIsRunning",     "● Chạy BOT:     " +   (gIsRunning ? " [ON]"   : "[OFF]")   , 330, 45);
-    createLabel("objIsCreateNewS0", "● Tạo mới S0: " + (gDoCreateNewS0 ? " [TRUE]" : "[FALSE]") , 330, 60);
+    createLabel("objIsCreateNewS0", "● Tạo mới L0:  " + (gbCreateNewL0 ? " [TRUE]" : "[FALSE]") , 330, 60);
     createLabel("objBtnCloseAll",   "● Đóng tất cả:[Close]"                                     , 330, 75);
     createLabel("objConfigFile",    "● Conf::" + gSetFile                                       , 330, 90);
     createLabel("objBtnSaveSetup",  "          ---> [Save]"                                     , 330, 105);
 }
 void dashBoardOnObjClick(string sparam) {
     if (StringFind(sparam, "objIsCreateNewS0") != -1) {
-        gDoCreateNewS0 = !gDoCreateNewS0;
+        gbCreateNewL0 = !gbCreateNewL0;
         updateSizeOfStep();
     }
     else if (StringFind(sparam, "objIsRunning") != -1) {
         gIsRunning = !gIsRunning;
         updateSizeOfStep();
-    } 
+    }
     else if (StringFind(sparam, "objBtnSaveSetup") != -1) {
         saveSetup();
-    } 
+    }
 }
 void dashBoardOnObjChange(string sparam) {
     double value;
     if (StringFind(sparam, "objLowerStep") != -1) {
         value = StringToDouble(ObjectGetString(0, sparam, OBJPROP_TEXT));
         StringReplace(sparam, "objLowerStep", "");
-        gLowerSteps[StringToInteger(sparam)] = value;
+        gDcaDistances[StringToInteger(sparam)] = value;
         updateSizeOfStep();
     }
     else if (StringFind(sparam, "objUpperStep") != -1) {
         value = StringToDouble(ObjectGetString(0, sparam, OBJPROP_TEXT));
         StringReplace(sparam, "objUpperStep", "");
-        gUpperSteps[StringToInteger(sparam)] = value;
+        gTpDistances[StringToInteger(sparam)] = value;
         updateSizeOfStep();
     }
     else if (StringFind(sparam, "objHeso") != -1) {
-        gHeso = StringToDouble(ObjectGetString(0, sparam, OBJPROP_TEXT));
+        gMultiplier = StringToDouble(ObjectGetString(0, sparam, OBJPROP_TEXT));
         updateSizeOfStep();
     }
     else if (StringFind(sparam, "objDefenseGate") != -1) {
@@ -462,7 +451,7 @@ void dashBoardOnObjChange(string sparam) {
         updateSizeOfStep();
     }
     else if (StringFind(sparam, "objMaxStep") != -1) {
-        gMaxStep = (int)StringToInteger(ObjectGetString(0, sparam, OBJPROP_TEXT));
+        gDcaLimit = (int)StringToInteger(ObjectGetString(0, sparam, OBJPROP_TEXT));
         updateSizeOfStep();
     }
     else if (StringFind(sparam, "objConfigFile") != -1) {
@@ -478,19 +467,13 @@ void saveSetup() {
     int file_handle=FileOpen(gSetFile,FILE_READ|FILE_WRITE|FILE_TXT);
     if(file_handle!=INVALID_HANDLE)
     {
-        FileWrite(file_handle,"InpInitLot=" + DoubleToString(InpInitLot));
-        FileWrite(file_handle,"InpLotMultiplier=" + DoubleToString(gHeso));
-        FileWrite(file_handle,"InpDefenseGate=" + IntegerToString(gDefenseGate));
-        FileWrite(file_handle,"InpMaxStep=" + IntegerToString(gMaxStep));
-        for (int i = 0; i < MAX_STEP; i++) {
-            if (i < 10) {
-                FileWrite(file_handle,"InpLowerStep0" + IntegerToString(i) + "="+ DoubleToString(gLowerSteps[i]));
-                FileWrite(file_handle,"InpUpperStep0" + IntegerToString(i) + "="+ DoubleToString(gUpperSteps[i]));
-            }
-            else {
-                FileWrite(file_handle,"InpLowerStep" + IntegerToString(i) + "="+ DoubleToString(gLowerSteps[i]));
-                FileWrite(file_handle,"InpUpperStep" + IntegerToString(i) + "="+ DoubleToString(gUpperSteps[i]));
-            }
+        FileWrite(file_handle,"InpInitVol=" + DoubleToString(InpInitVol));
+        FileWrite(file_handle,"InpVolMultiplier=" + DoubleToString(gMultiplier));
+        FileWrite(file_handle,"InpTpAllGate=" + IntegerToString(gDefenseGate));
+        FileWrite(file_handle,"InpDcaLimit=" + IntegerToString(gDcaLimit));
+        for (int i = 0; i < DCA_LIMIT; i++) {
+            FileWrite(file_handle,"InpDcaDistances" + IntegerToString(i) + "="+ DoubleToString(gDcaDistances[i]));
+            FileWrite(file_handle,"InpTpDistances" + IntegerToString(i) + "="+ DoubleToString(gTpDistances[i]));
         }
         FileClose(file_handle);
         Alert("Writen to:\n" + TerminalInfoString(TERMINAL_DATA_PATH) + "\\MQL5\\Files\\" + gSetFile);
