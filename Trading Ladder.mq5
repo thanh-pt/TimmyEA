@@ -33,11 +33,12 @@ datetime time1;
 datetime time2;
 
 bool    gIndiOn = true;
-double  gContractSize = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_CONTRACT_SIZE);
+double  gContractSize = 100;//SymbolInfoDouble(_Symbol, SYMBOL_TRADE_CONTRACT_SIZE);
 
 int OnCalculate(const int rates_total, const int prev_calculated, const int begin, const double& price[] ){return rates_total;}
 
 int OnInit() {
+/*
     time0 = iTime(_Symbol, PERIOD_CURRENT, 0);
     double quangGia = (iHigh(_Symbol, PERIOD_CURRENT, 1) - iLow(_Symbol, PERIOD_CURRENT, 1)) / 4;
     priceL0  = iOpen(_Symbol, PERIOD_CURRENT, 0);
@@ -47,6 +48,7 @@ int OnInit() {
     priceSL  = priceL0 + quangGia * 5;
     createObj();
     refreshLadder();
+    */
     return INIT_SUCCEEDED;
 }
 
