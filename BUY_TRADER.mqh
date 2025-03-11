@@ -41,8 +41,8 @@ void MtHandler::OnChartEvent(const int id, const long &lparam, const double &dpa
 
 input string THONG_SO_HE_THONG="";
 input double InpInitVol=0.01;
-input double InpVolMultiplier=1.4;
-input int    InpTpAllGate=5;
+input double InpVolMultiplier=2;
+input int    InpTpAllGate=1;
 input int    InpDcaLimit=DCA_LIMIT;
 
 input string DCA_DISTANCES="";
@@ -105,11 +105,11 @@ double gStoploss;
 
 double  gMultiplier        = 0;
 int     gDcaLimit     = 0;
-int     gDefenseGate = 0;
+int     gTpAllGate = 0;
 void initValue() {
     gMultiplier      = InpVolMultiplier;
     gDcaLimit        = InpDcaLimit;
-    gDefenseGate     = InpTpAllGate;
+    gTpAllGate       = InpTpAllGate;
     gDcaDistances[ 0] = InpDcaDistances0;  gTpDistances[ 0] = InpTpDistances0;
     gDcaDistances[ 1] = InpDcaDistances1;  gTpDistances[ 1] = InpTpDistances1;
     gDcaDistances[ 2] = InpDcaDistances2;  gTpDistances[ 2] = InpTpDistances2;
@@ -130,48 +130,45 @@ void initValue() {
     gDcaDistances[17] = InpDcaDistances17; gTpDistances[17] = InpTpDistances17;
     gDcaDistances[18] = InpDcaDistances18; gTpDistances[18] = InpTpDistances18;
     gDcaDistances[19] = InpDcaDistances19; gTpDistances[19] = InpTpDistances19;
+
     updateSizeOfStep();
 }
 void updateSizeOfStep(){
     int i;
     gVols[0] = NormalizeDouble(InpInitVol,2);
-    gCovers[0] = 0;
-    gLoads[0] = 0;
-    gRewards[0] = gVols[0] * gTpDistances[i] * 100;
+    gCovers[0]  = 0;
+    gLoads[0]   = 0;
+    gRewards[0] = gVols[0] * gTpDistances[0] * 100;
+    // Calculate Raw Vols
     for (i = 1; i < DCA_LIMIT; i++) {
-        gVols[i] = NormalizeDouble(gMultiplier * calculateSize(i), 2);
+        gVols[i] = gMultiplier * gVols[i-1];
+    }
+    // Normalize Vols
+    for (i = 1; i < DCA_LIMIT; i++) {
+        gVols[i] = NormalizeDouble(MathCeil(gVols[i] * 100)/100, 2);
+        calculateCoverLoadReward(i);
         gRewards[i] += gVols[i] * gTpDistances[i] * 100;
     }
     refreshDashBoard();
 }
-double calculateSize(int n) {
-    double outputSize = 0;
-    double total = 0;
-    double suffix_sum = 0;
-    double S_sum = 0;
-    int i;
-
+void calculateCoverLoadReward(int n) {
+    int i = 0;
+    gCovers[n] = 0;
+    gLoads[n]  = 0;
+    double totalVols = 0;
+    double sCover = 0;
     for (i = 0; i <= n; i++) {
-        suffix_sum += gDcaDistances[i];
+        sCover += gDcaDistances[i];
     }
-    gCovers[n] = suffix_sum;
-
+    gCovers[n] = sCover - gDcaDistances[n];
     for (i = 0; i < n; i++) {
-        total += gVols[i] * suffix_sum;
-        suffix_sum -= gDcaDistances[i];
-        S_sum += gVols[i];
+        gLoads[n] += gVols[i] * sCover * 100;
+        sCover -= gDcaDistances[i];
+        totalVols += gVols[i];
     }
-    gLoads[n] = total * 100;
-    total -= gTpDistances[n] * S_sum;
-    if (n >= gDefenseGate) {
-        gRewards[n] = -total * 100;
-    }
-    else {
-        gRewards[n] = 0;
-        return InpInitVol;
-    }
-    
-    return MathCeil(total/gTpDistances[n] * 100)/100;
+
+    if (n >= gTpAllGate) gRewards[n] = totalVols * gTpDistances[n] * 100 - gLoads[n];
+    else gRewards[n] = 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -231,7 +228,7 @@ void MtHandler::OnTick() {
 
     // ROBOT LOGIC - BUY LOGIC - TODO: develop SELL logic
     if (PAL::Bid() >= gTpPrices[gCurLayer]) {
-        if (gCurLayer >= gDefenseGate) {
+        if (gCurLayer >= gTpAllGate) {
             for (int i = gCurLayer; i >= 0; i--) closeStep(i);
             gCurLayer = -1;
         }
@@ -271,7 +268,7 @@ void createDCA()
     PAL::Buy(gVols[gCurLayer], NULL, 0, gStoploss, gTpPrices[gCurLayer], "L"+IntegerToString(gCurLayer));
     gTickets[gCurLayer] = PAL::ResultOrder();
     openStep(gCurLayer, TimeCurrent(), PAL::Ask(), gTpPrices[gCurLayer], gDcaPrices[gCurLayer]);
-    if (gCurLayer >= gDefenseGate) {
+    if (gCurLayer >= gTpAllGate) {
         for (int i = 0; i < gCurLayer; i++) {
             PAL::PositionModify(gTickets[i], gStoploss, gTpPrices[gCurLayer]);
             modifyStep(i, gTpPrices[gCurLayer], gStoploss);
@@ -369,12 +366,12 @@ void refreshDashBoard()
     int loadsLength = StringLen(DoubleToString(gLoads[gDcaLimit-1], 2));
     int rewardsLength = StringLen(DoubleToString(gRewards[gDcaLimit-1], 2));
 
-    createLabel("objSetup"      , "         THÔNG SỐ HỆ THỐNG"          , 10, 30);
-    createLabel("objHeso"       , "●Hệ Số:"+DoubleToString(gMultiplier, 1)             ,  10, 45);
-    createLabel("objDefenseGate", "●Defense Gate:"+IntegerToString(gDefenseGate) , 105, 45);
-    createLabel("objMaxStep"    , "●Max Step:"+IntegerToString(gDcaLimit)         , 230, 45);
-    createLabel("objTableHeader", "STT Lower Upper"  , 10, 60);
-    createLabel("objLtCovLoadHeader", fixedText("Lot",5) + " "
+    createLabel("objSetup"      , "         THÔNG SỐ HỆ THỐNG"             ,  10, 30);
+    createLabel("objHeso"       , "●Hệ Số:"+DoubleToString(gMultiplier, 1) ,  10, 45);
+    createLabel("objDefenseGate", "●TP all: L"+IntegerToString(gTpAllGate) , 105, 45);
+    createLabel("objMaxStep"    , "●Giới hạn lệnh: "+IntegerToString(gDcaLimit), 200, 45);
+    createLabel("objTableHeader", " Lv  DCA   TP"  , 10, 60);
+    createLabel("objLtCovLoadHeader", fixedText("Vol",5) + " "
                                     + fixedText("Cover", 5) + " "
                                     + fixedText("Load", loadsLength) + " "
                                     + fixedText("Reward", rewardsLength), 120, 60);
@@ -384,17 +381,17 @@ void refreshDashBoard()
         objIndex            = "objIndex"        + strIndex;
         objLowerStep        = "objLowerStep"    + strIndex;
         objUpperStep        = "objUpperStep"    + strIndex;
-        objLtCovLoad        = "objLtCovLoad" + strIndex;
+        objLtCovLoad        = "objLtCovLoad"    + strIndex;
         strLotCoverLoad = fixedText(gVols[i], 2, 5) + " "
                         + fixedText(gCovers[i], 1, 5) + " "
                         + fixedText(gLoads[i], 2, loadsLength) + " "
                         + fixedText(gRewards[i], 2, rewardsLength);
         createLabel(objIndex    , fixedText(strIndex, 3)            ,  10, 75 + 15*i);
-        createLabel(objLowerStep, fixedText(gDcaDistances[i], 1, 5) ,  40, 75 + 15*i);
-        createLabel(objUpperStep, fixedText(gTpDistances[i], 1, 5)  ,  80, 75 + 15*i);
+        createLabel(objLowerStep, fixedText(gDcaDistances[i], 1, 5) ,  30, 75 + 15*i);
+        createLabel(objUpperStep, fixedText(gTpDistances[i], 1, 5)  ,  70, 75 + 15*i);
         createLabel(objLtCovLoad, strLotCoverLoad                   , 120, 75 + 15*i);
     }
-    strIndex = IntegerToString(gDefenseGate);
+    strIndex = IntegerToString(gTpAllGate);
     ObjectSetString(0, "objIndex" + strIndex, OBJPROP_TEXT, fixedText("►"+strIndex,3));
     for (i = gDcaLimit; i < DCA_LIMIT; i++) {
         strIndex     = IntegerToString(i);
@@ -447,7 +444,7 @@ void dashBoardOnObjChange(string sparam) {
         updateSizeOfStep();
     }
     else if (StringFind(sparam, "objDefenseGate") != -1) {
-        gDefenseGate = (int)StringToInteger(ObjectGetString(0, sparam, OBJPROP_TEXT));
+        gTpAllGate = (int)StringToInteger(ObjectGetString(0, sparam, OBJPROP_TEXT));
         updateSizeOfStep();
     }
     else if (StringFind(sparam, "objMaxStep") != -1) {
@@ -469,7 +466,7 @@ void saveSetup() {
     {
         FileWrite(file_handle,"InpInitVol=" + DoubleToString(InpInitVol));
         FileWrite(file_handle,"InpVolMultiplier=" + DoubleToString(gMultiplier));
-        FileWrite(file_handle,"InpTpAllGate=" + IntegerToString(gDefenseGate));
+        FileWrite(file_handle,"InpTpAllGate=" + IntegerToString(gTpAllGate));
         FileWrite(file_handle,"InpDcaLimit=" + IntegerToString(gDcaLimit));
         for (int i = 0; i < DCA_LIMIT; i++) {
             FileWrite(file_handle,"InpDcaDistances" + IntegerToString(i) + "="+ DoubleToString(gDcaDistances[i]));
