@@ -198,6 +198,7 @@ void MtHandler::OnTick() {
         createL0();
     }
 
+    /*
     // LOGIC SELECT TIME TO TRADE - SHOULD REMOVE IN FUTURE - OR HAVE INPUT FOR IT
     // Exclude sunday
     if (gStCurDt.day_of_week == 0) return;
@@ -219,6 +220,7 @@ void MtHandler::OnTick() {
         gbCreateNewL0 = false;
         refreshDashBoard();
     }
+    */
 
     // Cannot open trade in 22 EST hour - Maintain time of broker
     if (gStCurDt.hour == 22) return;
