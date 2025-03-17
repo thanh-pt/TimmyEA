@@ -4,7 +4,7 @@
 #property indicator_chart_window
 #property indicator_plots 0
 
-#define APP_TAG "Static*MTF Candles"
+#define APP_TAG "*MTF Candles"
 
 enum eCandleType{
     eBackground,    // Background
@@ -108,6 +108,7 @@ void drawingCandle(double hi, double lo, double op, double cl, datetime dtOp, da
     ObjectSetInteger(0, candleTag + "-Body", OBJPROP_TIME, 1, dtCl);
     ObjectSetDouble(0,  candleTag + "-Body", OBJPROP_PRICE, 0, op);
     ObjectSetDouble(0,  candleTag + "-Body", OBJPROP_PRICE, 1, cl);
+    ObjectSetString(0,  candleTag + "-Body", OBJPROP_TOOLTIP, "\n");
 
     ObjectCreate(0,     candleTag + "-Wick1", OBJ_TREND, 0, 0, 0);
     ObjectSetInteger(0, candleTag + "-Wick1", OBJPROP_BACK, true);
@@ -118,6 +119,7 @@ void drawingCandle(double hi, double lo, double op, double cl, datetime dtOp, da
     ObjectSetInteger(0, candleTag + "-Wick1", OBJPROP_TIME, 1, wichTime);
     ObjectSetDouble(0,  candleTag + "-Wick1", OBJPROP_PRICE, 0, hi);
     ObjectSetDouble(0,  candleTag + "-Wick1", OBJPROP_PRICE, 1, op>cl ? op : cl);
+    ObjectSetString(0,  candleTag + "-Wick1", OBJPROP_TOOLTIP, "\n");
 
     ObjectCreate(0,     candleTag + "-Wick2", OBJ_TREND, 0, 0, 0);
     ObjectSetInteger(0, candleTag + "-Wick2", OBJPROP_BACK, true);
@@ -128,6 +130,7 @@ void drawingCandle(double hi, double lo, double op, double cl, datetime dtOp, da
     ObjectSetInteger(0, candleTag + "-Wick2", OBJPROP_TIME, 1, wichTime);
     ObjectSetDouble(0,  candleTag + "-Wick2", OBJPROP_PRICE, 0, lo);
     ObjectSetDouble(0,  candleTag + "-Wick2", OBJPROP_PRICE, 1, op>cl ? cl : op);
+    ObjectSetString(0,  candleTag + "-Wick2", OBJPROP_TOOLTIP, "\n");
 }
 
 void hideUnusedCandle ()
@@ -166,6 +169,7 @@ void updateLiveCandle(double hi, double lo, double op, double cl, datetime dtOp,
     ObjectSetInteger(0, candleTag + "-Body", OBJPROP_TIME, 1, dtCl);
     ObjectSetDouble(0,  candleTag + "-Body", OBJPROP_PRICE, 0, op);
     ObjectSetDouble(0,  candleTag + "-Body", OBJPROP_PRICE, 1, cl);
+    ObjectSetString(0,  candleTag + "-Body", OBJPROP_TOOLTIP, "\n");
 
     ObjectCreate(0,     candleTag + "-Wick1", OBJ_TREND, 0, 0, 0);
     ObjectSetInteger(0, candleTag + "-Wick1", OBJPROP_BACK, true);
@@ -176,6 +180,7 @@ void updateLiveCandle(double hi, double lo, double op, double cl, datetime dtOp,
     ObjectSetInteger(0, candleTag + "-Wick1", OBJPROP_TIME, 1, wichTime);
     ObjectSetDouble(0,  candleTag + "-Wick1", OBJPROP_PRICE, 0, hi);
     ObjectSetDouble(0,  candleTag + "-Wick1", OBJPROP_PRICE, 1, op>cl ? op : cl);
+    ObjectSetString(0,  candleTag + "-Wick1", OBJPROP_TOOLTIP, "\n");
 
     ObjectCreate(0,     candleTag + "-Wick2", OBJ_TREND, 0, 0, 0);
     ObjectSetInteger(0, candleTag + "-Wick2", OBJPROP_BACK, true);
@@ -186,4 +191,5 @@ void updateLiveCandle(double hi, double lo, double op, double cl, datetime dtOp,
     ObjectSetInteger(0, candleTag + "-Wick2", OBJPROP_TIME, 1, wichTime);
     ObjectSetDouble(0,  candleTag + "-Wick2", OBJPROP_PRICE, 0, lo);
     ObjectSetDouble(0,  candleTag + "-Wick2", OBJPROP_PRICE, 1, op>cl ? cl : op);
+    ObjectSetString(0,  candleTag + "-Wick2", OBJPROP_TOOLTIP, "\n");
 }
