@@ -1,11 +1,11 @@
 import os
 import shutil
 
-root_EA = r"D:\3. RESOURCES\Software\000 Potable Program File\mt5\2.ROBO TRADE\MQL5\Experts\TimmyEA"
+root_EA = r"C:\Users\tient\Documents\mt5\2.ROBO TRADE\MQL5\Experts\TimmyEA"
 
 clients = [
-    r"D:\3. RESOURCES\Software\000 Potable Program File\mt5\1.MANUAL TRADE\MQL5\Experts\TimmyEA",
-    r"D:\3. RESOURCES\Software\000 Potable Program File\mt5\3.FUND TRADE\MQL5\Experts\TimmyEA",
+    r"C:\Users\tient\Documents\mt5\1.MANUAL TRADE\MQL5\Experts\TimmyEA",
+    r"C:\Users\tient\Documents\mt5\3.FUND TRADE\MQL5\Experts\TimmyEA",
 ]
 
 for client in clients:
