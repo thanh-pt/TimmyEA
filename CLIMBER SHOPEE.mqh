@@ -5,6 +5,7 @@
 */
 #include "Library/IMtHandler.mqh"
 #define APP_TAG "CLIMBER SHOPEE"
+#define BTN_ONOFFCREATEL1 APP_TAG+"btnNewL1"
 class MtHandler: public IMtHandler
 {
 public:
@@ -13,15 +14,19 @@ public:
     virtual int OnInit();
 };
 int MtHandler::OnInit() {
+    gInitBot = false;
     ChartSetInteger(0, CHART_SHOW_GRID, false);
-    ChartSetInteger(0, CHART_SHOW_ASK_LINE, true);
-    ChartSetInteger(0, CHART_SHOW_BID_LINE, true);
     ChartSetInteger(0, CHART_MODE, CHART_CANDLES);
     
     initValue();
+    InitBOT();
+    displayDashboard();
     return INIT_SUCCEEDED;
 }
 void MtHandler::OnChartEvent(const int id, const long &lparam, const double &dparam, const string &sparam) {
+    if (id == CHARTEVENT_OBJECT_CLICK) {
+        handleClick(sparam);
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -100,6 +105,7 @@ double gTpDistances[LAYER_MAX];
 double gVols[LAYER_MAX];
 double gCover;
 double gCenterPrice;
+bool   gInitBot = false;
 // BUY Data
 int    gBuyLayer = -1;
 double gBuyStoploss;
@@ -149,6 +155,53 @@ void initValue() {
     gCenterPrice = InpCenterPrice;
 }
 
+void InitBOT(){
+    strBuyPrefix  = InpBotName + "|Buy L";
+    strSellPrefix = InpBotName + "|Sell L";
+
+    ENUM_POSITION_TYPE type;
+    double priceOpen;
+    double spread = PAL::Ask() - PAL::Bid();
+    string comment;
+    int layer = 0;
+    gBuyLayer = -1;
+    gSellLayer = -1;
+    for (int i = 0; i < PositionsTotal(); i++) {
+        PositionSelectByTicket(PositionGetTicket(i));
+        type = (ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);
+        comment = PositionGetString(POSITION_COMMENT);
+        if (StringFind(comment, strBuyPrefix) != -1) {
+            StringReplace(comment, strBuyPrefix, "");
+            layer = (int)StringToInteger(comment);
+            priceOpen = PositionGetDouble(POSITION_PRICE_OPEN);
+            gBuyTickets[layer] = PositionGetInteger(POSITION_TICKET);
+            gBuyTpPrices[layer] = PositionGetDouble(POSITION_TP);
+            gBuyDcaPrices[layer] = priceOpen - gDcaDistances[layer];
+            if (layer > gBuyLayer) gBuyLayer = layer;
+            if (layer == 0) {
+                gBuyStoploss = priceOpen - spread - gCover;
+                displayGridLevel("BUY", priceOpen, spread, gBuyStoploss);
+            }
+        }
+        else if (StringFind(comment, strSellPrefix) != -1) {
+            StringReplace(comment, strSellPrefix, "");
+            layer = (int)StringToInteger(comment);
+            priceOpen = PositionGetDouble(POSITION_PRICE_OPEN);
+            gSellTickets[layer] = PositionGetInteger(POSITION_TICKET);
+            gSellTpPrices[layer] = PositionGetDouble(POSITION_TP);
+            gSellDcaPrices[layer] = priceOpen + gDcaDistances[layer];
+            if (layer > gSellLayer) gSellLayer = layer;
+            if (layer == 0) {
+                gSellStoploss = priceOpen + spread + gCover;
+                displayGridLevel("SELL", priceOpen, spread, gBuyStoploss);
+            }
+        }
+    }
+    gbCreateNewL1 = true;
+    if (StringFind(ObjectGetString(0, BTN_ONOFFCREATEL1, OBJPROP_TEXT), "[OFF]") != -1) gbCreateNewL1 =  false;
+    gInitBot = true;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////// ON_TICK - LOGIC XỬ LÝ
@@ -162,8 +215,11 @@ string      gStrPreDate = "";
 
 double      gPreDailyClose = 0;
 
-bool        gbCreateNewL0  = true;
+bool        gbCreateNewL1  = true;
+string      strBuyPrefix  = InpBotName + "|Buy L";
+string      strSellPrefix = InpBotName + "|Sell L";
 void MtHandler::OnTick() {
+    if (gInitBot == false) return;
     // LOGIC CHECK NEW DAY
     gCurDt = iTime(_Symbol, PERIOD_CURRENT, 0);
     if (gCurDt == 0) return;
@@ -179,34 +235,10 @@ void MtHandler::OnTick() {
         gStrPreDate = gStrCurDate;
     }
 
-    /*
-    // LOGIC SELECT TIME TO TRADE - SHOULD REMOVE IN FUTURE - OR HAVE INPUT FOR IT
-    // Exclude sunday
-    if (gStCurDt.day_of_week == 0) return;
-    // Monday
-    if (gStCurDt.day_of_week == 1) {
-        // Morning Monday
-        if (gStCurDt.hour < 12) {
-            gbCreateNewL0 = false;
-            refreshDashBoard();
-        }
-        // Start trading from afternoon
-        else {
-            gbCreateNewL0 = true;
-            refreshDashBoard();
-        }
-    }
-    // After noon friday
-    else if (gStCurDt.day_of_week == 5 && gStCurDt.hour > 12) {
-        gbCreateNewL0 = false;
-        refreshDashBoard();
-    }
-    */
+    // TODO: Time to turn off
 
     // Cannot open trade in 22 EST hour - Maintain time of broker
     if (gStCurDt.hour == 22) return;
-
-
 
     /////// BUY LOGIC ////////////////////////////////////////////
     if (gBuyLayer >= 0) {                                       //
@@ -241,25 +273,27 @@ void MtHandler::OnTick() {
 void createBuyL1()
 {
     hideGridLevel("BUY");
-    // L0 Condition
-    if (gbCreateNewL0 == false) return;
+    // L1 Condition
+    if (gbCreateNewL1 == false) return;
     if (PAL::Bid() > gCenterPrice-InpStartL1Space) return;
 
     // Create new L1
     gBuyLayer++;
-    gBuyTpPrices[gBuyLayer] = PAL::Ask() + gTpDistances[gBuyLayer];
+    gBuyTpPrices[gBuyLayer]  = PAL::Ask() + gTpDistances[gBuyLayer];
     gBuyDcaPrices[gBuyLayer] = PAL::Bid() - gDcaDistances[gBuyLayer];
     gBuyStoploss = PAL::Bid() - gCover;
-    PAL::Buy(gVols[gBuyLayer], NULL, 0, gBuyStoploss, gBuyTpPrices[gBuyLayer], InpBotName + "|Buy L"+IntegerToString(gBuyLayer));
-    gBuyTickets[gBuyLayer] = PAL::ResultOrder();
-
-    displayGridLevel("BUY", gBuyStoploss);
+    if (PAL::Buy(gVols[gBuyLayer], gBuyStoploss, gBuyTpPrices[gBuyLayer], strBuyPrefix+IntegerToString(gBuyLayer))){
+        gBuyTickets[gBuyLayer] = PAL::ResultOrder();
+        displayGridLevel("BUY", PAL::Ask(), PAL::Ask()-PAL::Bid(), gBuyStoploss);
+    }
+    else gBuyLayer = -1;
+    displayDashboard();
 }
 void createSellL1()
 {
     hideGridLevel("SELL");
-    // L0 Condition
-    if (gbCreateNewL0 == false) return;
+    // L1 Condition
+    if (gbCreateNewL1 == false) return;
     if (PAL::Bid() < gCenterPrice+InpStartL1Space) return;
 
     // Create new L1
@@ -267,10 +301,12 @@ void createSellL1()
     gSellTpPrices[gSellLayer]  = PAL::Bid() - gTpDistances[gSellLayer];
     gSellDcaPrices[gSellLayer] = PAL::Ask() + gDcaDistances[gSellLayer];
     gSellStoploss = PAL::Ask() + gCover;
-    PAL::Sell(gVols[gSellLayer], NULL, 0, gSellStoploss, gSellTpPrices[gSellLayer], InpBotName + "|Sell L"+IntegerToString(gSellLayer));
-    gSellTickets[gSellLayer] = PAL::ResultOrder();
-
-    displayGridLevel("SELL", gSellStoploss);
+    if (PAL::Sell(gVols[gSellLayer], gSellStoploss, gSellTpPrices[gSellLayer], strSellPrefix+IntegerToString(gSellLayer))) {
+        gSellTickets[gSellLayer] = PAL::ResultOrder();
+        displayGridLevel("SELL", PAL::Bid(), PAL::Ask()-PAL::Bid(), gSellStoploss);
+    }
+    else gSellLayer = -1;
+    displayDashboard();
 }
 
 void createBuyDca()
@@ -284,8 +320,10 @@ void createBuyDca()
     gBuyLayer++;
     gBuyTpPrices[gBuyLayer]  = PAL::Ask() + gTpDistances[gBuyLayer];
     gBuyDcaPrices[gBuyLayer] = PAL::Bid() - gDcaDistances[gBuyLayer];
-    PAL::Buy(gVols[gBuyLayer], NULL, 0, gBuyStoploss, gBuyTpPrices[gBuyLayer], InpBotName + "|Buy L"+IntegerToString(gBuyLayer));
-    gBuyTickets[gBuyLayer] = PAL::ResultOrder();
+    if (PAL::Buy(gVols[gBuyLayer], gBuyStoploss, gBuyTpPrices[gBuyLayer], strBuyPrefix+IntegerToString(gBuyLayer))){
+        gBuyTickets[gBuyLayer] = PAL::ResultOrder();
+    }
+    else gBuyLayer--;
     
     // Tp Gộp
     if (gBuyLayer >= InpTpAllLayer-1) {
@@ -293,6 +331,7 @@ void createBuyDca()
             PAL::PositionModify(gBuyTickets[i], gBuyStoploss, gBuyTpPrices[gBuyLayer]);
         }
     }
+    displayDashboard();
 }
 void createSellDca()
 {
@@ -305,8 +344,10 @@ void createSellDca()
     gSellLayer++;
     gSellTpPrices[gSellLayer]  = PAL::Bid() - gTpDistances[gSellLayer];
     gSellDcaPrices[gSellLayer] = PAL::Ask() + gDcaDistances[gSellLayer];
-    PAL::Sell(gVols[gSellLayer], NULL, 0, gSellStoploss, gSellTpPrices[gSellLayer], InpBotName + "|Sell L"+IntegerToString(gSellLayer));
-    gSellTickets[gSellLayer] = PAL::ResultOrder();
+    if (PAL::Sell(gVols[gSellLayer], gSellStoploss, gSellTpPrices[gSellLayer], strSellPrefix+IntegerToString(gSellLayer))){
+        gSellTickets[gSellLayer] = PAL::ResultOrder();
+    }
+    else gSellLayer--;
     
     // Tp Gộp
     if (gSellLayer >= InpTpAllLayer-1) {
@@ -314,6 +355,7 @@ void createSellDca()
             PAL::PositionModify(gSellTickets[i], gSellStoploss, gSellTpPrices[gSellLayer]);
         }
     }
+    displayDashboard();
 }
 //////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
@@ -321,16 +363,18 @@ void createSellDca()
 //////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 /// @brief Apprearence and Action
-void createLabel(string objName, string text, int posX, int posY)
+void createLabel(string objName, string text, int posX, int posY, int size = 10, color clr = clrNavy)
 {
     ObjectCreate(0,     objName, OBJ_LABEL, 0, 0, 0, 0, 0);
-    ObjectSetInteger(0, objName, OBJPROP_COLOR, clrLightGray);
-    ObjectSetInteger(0, objName, OBJPROP_CORNER, CORNER_LEFT_UPPER);
-    ObjectSetInteger(0, objName, OBJPROP_ANCHOR, ANCHOR_LEFT_UPPER);
-    ObjectSetInteger(0, objName, OBJPROP_SELECTABLE, true);
+    ObjectSetInteger(0, objName, OBJPROP_CORNER, CORNER_LEFT_LOWER);
+    ObjectSetInteger(0, objName, OBJPROP_ANCHOR, ANCHOR_LEFT_LOWER);
+    // ObjectSetInteger(0, objName, OBJPROP_SELECTABLE, true);
+    ObjectSetInteger(0, objName, OBJPROP_SELECTABLE, false);
     ObjectSetInteger(0, objName, OBJPROP_BACK, false);
-    ObjectSetInteger(0, objName, OBJPROP_FONTSIZE, 10);
     ObjectSetString(0,  objName, OBJPROP_FONT, "Consolas");
+    ObjectSetString(0,  objName, OBJPROP_TOOLTIP, "\n");
+    ObjectSetInteger(0, objName, OBJPROP_COLOR, clr);
+    ObjectSetInteger(0, objName, OBJPROP_FONTSIZE, size);
     ObjectSetString(0,  objName, OBJPROP_TEXT, text);
     ObjectSetInteger(0, objName, OBJPROP_XDISTANCE, posX);
     ObjectSetInteger(0, objName, OBJPROP_YDISTANCE, posY);
@@ -346,6 +390,20 @@ string fixedText(double dvalue, int decimal, int size) {
     return fixedText(str, size);
 }
 
+void handleClick(string sparam){
+    if (StringFind(sparam, BTN_ONOFFCREATEL1) != -1) {
+        gbCreateNewL1 = !gbCreateNewL1;
+        displayDashboard();
+    }
+}
+void displayDashboard() {
+    createLabel(APP_TAG+"BG1"    , "███████"        , 0, 55, 32, clrLightSlateGray);
+    createLabel(APP_TAG+"BG2"    , "███████"        , 0, 25, 32, clrDarkSeaGreen);
+    createLabel(APP_TAG+"BotName", "♟ "+InpBotName , 0, 75, 20);
+    createLabel(APP_TAG+"State"  , "SELL:"+IntegerToString(gSellLayer+1)+"  BUY:"+IntegerToString(gBuyLayer+1), 10, 54);
+    if (gbCreateNewL1) createLabel(BTN_ONOFFCREATEL1, "NEW L1: [ ON]", 10, 30, 14, clrGreen);
+    else               createLabel(BTN_ONOFFCREATEL1, "NEW L1: [OFF]", 10, 30, 14, clrCrimson);
+}
 void hideGridLevel(string tag) {
     string objName;
     for (int i = 0; i <= InpLayerLimit; i++){
@@ -353,16 +411,13 @@ void hideGridLevel(string tag) {
         ObjectSetDouble(0,  objName, OBJPROP_PRICE, 0, 0);
     }
 }
-void displayGridLevel(string tag, double& lastSL) {
+void displayGridLevel(string tag, double price, double spread, double& lastSL) {
     int fliper = 1;
-    double price = PAL::Bid();
-    double spread = PAL::Ask() - PAL::Bid();
     string objName;
     datetime curTime = iTime(_Symbol, PERIOD_CURRENT, 0) + 10 * PeriodSeconds(_Period);
     color clr = clrRed;
     if (tag == "BUY") {
         fliper = -1;
-        price = PAL::Ask();
         clr = clrGreen;
     }
 
@@ -374,13 +429,14 @@ void displayGridLevel(string tag, double& lastSL) {
         ObjectSetInteger(0, objName, OBJPROP_BACK, true);
         ObjectSetInteger(0, objName, OBJPROP_FONTSIZE, 10);
         ObjectSetString(0,  objName, OBJPROP_FONT, "Consolas");
+        ObjectSetString(0,  objName, OBJPROP_TOOLTIP, "\n");
         ObjectSetString(0,  objName, OBJPROP_TEXT, "_______L" + IntegerToString(i));
         ObjectSetDouble(0,  objName, OBJPROP_PRICE, 0, price);
         ObjectSetInteger(0, objName, OBJPROP_TIME, 0, curTime);
-        price = price + fliper * gDcaDistances[i-1]+spread;
+        price = price + fliper * (gDcaDistances[i-1]+spread);
     }
     objName = APP_TAG + tag + IntegerToString(InpTpAllLayer);
-    ObjectSetInteger(0, objName, OBJPROP_COLOR, clrYellow);
+    ObjectSetInteger(0, objName, OBJPROP_COLOR, clrGold);
     ObjectSetString(0,  objName, OBJPROP_TEXT, "_______L" + IntegerToString(InpTpAllLayer) + " tp gộp");
     objName = APP_TAG + tag + "0";
     ObjectCreate(0,     objName, OBJ_TEXT, 0, 0, 0, 0, 0);
@@ -389,6 +445,7 @@ void displayGridLevel(string tag, double& lastSL) {
     ObjectSetInteger(0, objName, OBJPROP_BACK, true);
     ObjectSetInteger(0, objName, OBJPROP_FONTSIZE, 10);
     ObjectSetString(0,  objName, OBJPROP_FONT, "Consolas");
+    ObjectSetString(0,  objName, OBJPROP_TOOLTIP, "\n");
     ObjectSetString(0,  objName, OBJPROP_TEXT, "_______SL");
     ObjectSetDouble(0,  objName, OBJPROP_PRICE, 0, lastSL);
     ObjectSetInteger(0, objName, OBJPROP_TIME, 0, curTime);
