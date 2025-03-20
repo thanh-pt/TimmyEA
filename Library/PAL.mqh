@@ -1,4 +1,4 @@
-#define _PAL_GROUP(gr, grStr) input group grStr
+#define PAL_GROUP(gr, grStr) input group grStr
 
 class PAL
 {

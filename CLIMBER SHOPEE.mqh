@@ -38,61 +38,61 @@ enum eTypeTrade {
 
 input string InpBotName = "CLB";
 
-_PAL_GROUP(_L1_CONDITION, "_L1_CONDITION")
+PAL_GROUP(L1_CONDITION, "ĐIỀU KIỆN L1")
 input eTypeTrade InpTypeTrade   = eUseDailyClose;
 input double     InpCenterPrice = 0;
 input double     InpStartL1Space= 0;
 
-_PAL_GROUP(_THONG_SO_HE_THONG, "_THONG_SO_HE_THONG")
+PAL_GROUP(THONG_SO_HE_THONG, "THÔNG SỐ HỆ THỐNG")
 input double InpVolInit         = 0.01;
 input double InpVolMul          = 2;
-input int    InpTpAllLayer      = 1;
+input int    InpTpAllLayer      = 3;
 input int    InpLayerLimit      = LAYER_MAX;
 input double InpLastSL          = 5;
 
-_PAL_GROUP(_DCA_DISTANCES, "_DCA_DISTANCES")
-input double InpDcaDistances1   = 1;
-input double InpDcaDistances2   = 1;
-input double InpDcaDistances3   = 1;
-input double InpDcaDistances4   = 1;
-input double InpDcaDistances5   = 1;
-input double InpDcaDistances6   = 1;
-input double InpDcaDistances7   = 1;
-input double InpDcaDistances8   = 1;
-input double InpDcaDistances9   = 1;
-input double InpDcaDistances10  = 1;
-input double InpDcaDistances11  = 1;
-input double InpDcaDistances12  = 1;
-input double InpDcaDistances13  = 1;
-input double InpDcaDistances14  = 1;
-input double InpDcaDistances15  = 1;
-input double InpDcaDistances16  = 1;
-input double InpDcaDistances17  = 1;
-input double InpDcaDistances18  = 1;
-input double InpDcaDistances19  = 1;
-input double InpDcaDistances20  = 1;
+PAL_GROUP(DCA_DISTANCES, "KHOẢNG CÁCH DCA")
+input double InpDcaDistances1   = 3;
+input double InpDcaDistances2   = 3;
+input double InpDcaDistances3   = 3;
+input double InpDcaDistances4   = 3;
+input double InpDcaDistances5   = 3;
+input double InpDcaDistances6   = 3;
+input double InpDcaDistances7   = 3;
+input double InpDcaDistances8   = 3;
+input double InpDcaDistances9   = 3;
+input double InpDcaDistances10  = 3;
+input double InpDcaDistances11  = 3;
+input double InpDcaDistances12  = 3;
+input double InpDcaDistances13  = 3;
+input double InpDcaDistances14  = 3;
+input double InpDcaDistances15  = 3;
+input double InpDcaDistances16  = 3;
+input double InpDcaDistances17  = 3;
+input double InpDcaDistances18  = 3;
+input double InpDcaDistances19  = 3;
+input double InpDcaDistances20  = 3;
 
-_PAL_GROUP(_TAKE_PROFIT_DISTANCES, "_TAKE_PROFIT_DISTANCES")
-input double InpTpDistances1    = 2;
-input double InpTpDistances2    = 2;
-input double InpTpDistances3    = 2;
-input double InpTpDistances4    = 2;
-input double InpTpDistances5    = 2;
-input double InpTpDistances6    = 2;
-input double InpTpDistances7    = 2;
-input double InpTpDistances8    = 2;
-input double InpTpDistances9    = 2;
-input double InpTpDistances10   = 2;
-input double InpTpDistances11   = 2;
-input double InpTpDistances12   = 2;
-input double InpTpDistances13   = 2;
-input double InpTpDistances14   = 2;
-input double InpTpDistances15   = 2;
-input double InpTpDistances16   = 2;
-input double InpTpDistances17   = 2;
-input double InpTpDistances18   = 2;
-input double InpTpDistances19   = 2;
-input double InpTpDistances20   = 2;
+PAL_GROUP(TAKE_PROFIT_DISTANCES, "KHOẢNG CÁCH TP")
+input double InpTpDistances1    = 3;
+input double InpTpDistances2    = 3;
+input double InpTpDistances3    = 3;
+input double InpTpDistances4    = 3;
+input double InpTpDistances5    = 3;
+input double InpTpDistances6    = 3;
+input double InpTpDistances7    = 3;
+input double InpTpDistances8    = 3;
+input double InpTpDistances9    = 3;
+input double InpTpDistances10   = 3;
+input double InpTpDistances11   = 3;
+input double InpTpDistances12   = 3;
+input double InpTpDistances13   = 3;
+input double InpTpDistances14   = 3;
+input double InpTpDistances15   = 3;
+input double InpTpDistances16   = 3;
+input double InpTpDistances17   = 3;
+input double InpTpDistances18   = 3;
+input double InpTpDistances19   = 3;
+input double InpTpDistances20   = 3;
 
 
 double gDcaDistances[LAYER_MAX];
