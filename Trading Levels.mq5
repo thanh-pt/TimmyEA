@@ -44,7 +44,7 @@ int OnCalculate(const int rates_total,
 {
     gIsShowTradeLevel = (bool) ChartGetInteger(0, CHART_SHOW_TRADE_LEVELS);
     if (gIsShowTradeLevel == false || InpOverload == true) {
-        ChartSetInteger(0, CHART_SHOW_OBJECT_DESCR, 1);
+        int levelCount = 0;
         gIsOverLoad = (gIsShowTradeLevel && InpOverload);
         gLevelIndex = 0;
         gDealIdx = 1;
@@ -58,6 +58,7 @@ int OnCalculate(const int rates_total,
                         PositionGetDouble(POSITION_SL),
                         PositionGetDouble(POSITION_VOLUME),
                         type);
+                levelCount++;
             } 
         }
         for (int i = 0; i < OrdersTotal(); i++) {
@@ -69,9 +70,12 @@ int OnCalculate(const int rates_total,
                         OrderGetDouble(ORDER_SL),
                         OrderGetDouble(ORDER_VOLUME_CURRENT),
                         type);
+                levelCount++;
             }
         }
         hideTradeLevel();
+        if (levelCount > 0) ChartSetInteger(0, CHART_SHOW_OBJECT_DESCR, 1);
+        else ChartSetInteger(0, CHART_SHOW_OBJECT_DESCR, 0);
     }
     else {
         gLevelIndex = 0;
