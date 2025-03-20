@@ -9,6 +9,8 @@
 
 #define MAX_STEP 20
 
+_PAL_GROUP(Varible, "Xin chao")
+
 double gLowerSteps[MAX_STEP];
 double gUpperSteps[MAX_STEP];
 double gSize[MAX_STEP];
