@@ -1,3 +1,5 @@
+#define _PAL_GROUP(gr, grStr) input group grStr
+
 class PAL
 {
     static ulong lastOrderResult;

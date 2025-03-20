@@ -29,7 +29,7 @@ void MtHandler::OnChartEvent(const int id, const long &lparam, const double &dpa
 /////////////////////////////// INPUT - INIT - TINH TOAN
 //////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-#define DCA_LIMIT 20
+#define LAYER_MAX 20
 
 enum eTypeTrade {
     eUseDailyClose,
@@ -38,19 +38,19 @@ enum eTypeTrade {
 
 input string InpBotName = "CLB";
 
-input string _L0_CONDITION;
+_PAL_GROUP(_L1_CONDITION, "_L1_CONDITION")
 input eTypeTrade InpTypeTrade   = eUseDailyClose;
 input double     InpCenterPrice = 0;
+input double     InpStartL1Space= 0;
 
-input string _THONG_SO_HE_THONG;
-input double InpInitVol         = 0.01;
-input double InpVolMultiplier   = 2;
-input int    InpTpAllGate       = 1;
-input int    InpDcaLimit        = DCA_LIMIT;
-input double InpLastSL          = 20;
+_PAL_GROUP(_THONG_SO_HE_THONG, "_THONG_SO_HE_THONG")
+input double InpVolInit         = 0.01;
+input double InpVolMul          = 2;
+input int    InpTpAllLayer      = 1;
+input int    InpLayerLimit      = LAYER_MAX;
+input double InpLastSL          = 5;
 
-input string _DCA_DISTANCES;
-input double InpDcaDistances0   = 1;
+_PAL_GROUP(_DCA_DISTANCES, "_DCA_DISTANCES")
 input double InpDcaDistances1   = 1;
 input double InpDcaDistances2   = 1;
 input double InpDcaDistances3   = 1;
@@ -70,9 +70,9 @@ input double InpDcaDistances16  = 1;
 input double InpDcaDistances17  = 1;
 input double InpDcaDistances18  = 1;
 input double InpDcaDistances19  = 1;
+input double InpDcaDistances20  = 1;
 
-input string _TAKE_PROFIT_DISTANCES;
-input double InpTpDistances0    = 2;
+_PAL_GROUP(_TAKE_PROFIT_DISTANCES, "_TAKE_PROFIT_DISTANCES")
 input double InpTpDistances1    = 2;
 input double InpTpDistances2    = 2;
 input double InpTpDistances3    = 2;
@@ -92,49 +92,59 @@ input double InpTpDistances16   = 2;
 input double InpTpDistances17   = 2;
 input double InpTpDistances18   = 2;
 input double InpTpDistances19   = 2;
+input double InpTpDistances20   = 2;
 
 
-double gDcaDistances[DCA_LIMIT];
-double gTpDistances[DCA_LIMIT];
-double gVols[DCA_LIMIT];
+double gDcaDistances[LAYER_MAX];
+double gTpDistances[LAYER_MAX];
+double gVols[LAYER_MAX];
 double gCover;
+double gCenterPrice;
 // BUY Data
 int    gBuyLayer = -1;
 double gBuyStoploss;
-double gBuyDcaPrices[DCA_LIMIT];
-double gBuyTpPrices[DCA_LIMIT];
-ulong  gBuyTickets[DCA_LIMIT];
+double gBuyDcaPrices[LAYER_MAX];
+double gBuyTpPrices[LAYER_MAX];
+ulong  gBuyTickets[LAYER_MAX];
+// SELL Data
+int    gSellLayer = -1;
+double gSellStoploss;
+double gSellDcaPrices[LAYER_MAX];
+double gSellTpPrices[LAYER_MAX];
+ulong  gSellTickets[LAYER_MAX];
 
 void initValue() {
-    gDcaDistances[ 0] = InpDcaDistances0;  gTpDistances[ 0] = InpTpDistances0;
-    gDcaDistances[ 1] = InpDcaDistances1;  gTpDistances[ 1] = InpTpDistances1;
-    gDcaDistances[ 2] = InpDcaDistances2;  gTpDistances[ 2] = InpTpDistances2;
-    gDcaDistances[ 3] = InpDcaDistances3;  gTpDistances[ 3] = InpTpDistances3;
-    gDcaDistances[ 4] = InpDcaDistances4;  gTpDistances[ 4] = InpTpDistances4;
-    gDcaDistances[ 5] = InpDcaDistances5;  gTpDistances[ 5] = InpTpDistances5;
-    gDcaDistances[ 6] = InpDcaDistances6;  gTpDistances[ 6] = InpTpDistances6;
-    gDcaDistances[ 7] = InpDcaDistances7;  gTpDistances[ 7] = InpTpDistances7;
-    gDcaDistances[ 8] = InpDcaDistances8;  gTpDistances[ 8] = InpTpDistances8;
-    gDcaDistances[ 9] = InpDcaDistances9;  gTpDistances[ 9] = InpTpDistances9;
-    gDcaDistances[10] = InpDcaDistances10; gTpDistances[10] = InpTpDistances10;
-    gDcaDistances[11] = InpDcaDistances11; gTpDistances[11] = InpTpDistances11;
-    gDcaDistances[12] = InpDcaDistances12; gTpDistances[12] = InpTpDistances12;
-    gDcaDistances[13] = InpDcaDistances13; gTpDistances[13] = InpTpDistances13;
-    gDcaDistances[14] = InpDcaDistances14; gTpDistances[14] = InpTpDistances14;
-    gDcaDistances[15] = InpDcaDistances15; gTpDistances[15] = InpTpDistances15;
-    gDcaDistances[16] = InpDcaDistances16; gTpDistances[16] = InpTpDistances16;
-    gDcaDistances[17] = InpDcaDistances17; gTpDistances[17] = InpTpDistances17;
-    gDcaDistances[18] = InpDcaDistances18; gTpDistances[18] = InpTpDistances18;
-    gDcaDistances[19] = InpDcaDistances19; gTpDistances[19] = InpTpDistances19;
+    gDcaDistances[ 0] = InpDcaDistances1 ; gTpDistances[ 0] = InpTpDistances1 ;
+    gDcaDistances[ 1] = InpDcaDistances2 ; gTpDistances[ 1] = InpTpDistances2 ;
+    gDcaDistances[ 2] = InpDcaDistances3 ; gTpDistances[ 2] = InpTpDistances3 ;
+    gDcaDistances[ 3] = InpDcaDistances4 ; gTpDistances[ 3] = InpTpDistances4 ;
+    gDcaDistances[ 4] = InpDcaDistances5 ; gTpDistances[ 4] = InpTpDistances5 ;
+    gDcaDistances[ 5] = InpDcaDistances6 ; gTpDistances[ 5] = InpTpDistances6 ;
+    gDcaDistances[ 6] = InpDcaDistances7 ; gTpDistances[ 6] = InpTpDistances7 ;
+    gDcaDistances[ 7] = InpDcaDistances8 ; gTpDistances[ 7] = InpTpDistances8 ;
+    gDcaDistances[ 8] = InpDcaDistances9 ; gTpDistances[ 8] = InpTpDistances9 ;
+    gDcaDistances[ 9] = InpDcaDistances10; gTpDistances[ 9] = InpTpDistances10;
+    gDcaDistances[10] = InpDcaDistances11; gTpDistances[10] = InpTpDistances11;
+    gDcaDistances[11] = InpDcaDistances12; gTpDistances[11] = InpTpDistances12;
+    gDcaDistances[12] = InpDcaDistances13; gTpDistances[12] = InpTpDistances13;
+    gDcaDistances[13] = InpDcaDistances14; gTpDistances[13] = InpTpDistances14;
+    gDcaDistances[14] = InpDcaDistances15; gTpDistances[14] = InpTpDistances15;
+    gDcaDistances[15] = InpDcaDistances16; gTpDistances[15] = InpTpDistances16;
+    gDcaDistances[16] = InpDcaDistances17; gTpDistances[16] = InpTpDistances17;
+    gDcaDistances[17] = InpDcaDistances18; gTpDistances[17] = InpTpDistances18;
+    gDcaDistances[18] = InpDcaDistances19; gTpDistances[18] = InpTpDistances19;
+    gDcaDistances[19] = InpDcaDistances20; gTpDistances[19] = InpTpDistances20;
     
     int i;
-    gVols[0] = InpInitVol;
+    gVols[0] = InpVolInit;
     // Calculate Raw Vols
-    for (i = 1; i < DCA_LIMIT; i++) gVols[i] = InpVolMultiplier * gVols[i-1];
+    for (i = 1; i < LAYER_MAX; i++) gVols[i] = InpVolMul * gVols[i-1];
     // Normalize Vols
-    for (i = 0; i < DCA_LIMIT; i++) gVols[i] = NormalizeDouble(MathCeil(gVols[i] * 100)/100, 2);
-    for (i = 1; i < InpDcaLimit; i++) gCover += gDcaDistances[i];
+    for (i = 0; i < LAYER_MAX; i++) gVols[i] = NormalizeDouble(MathCeil(gVols[i] * 100)/100, 2);
+    for (i = 1; i < InpLayerLimit; i++) gCover += gDcaDistances[i];
     gCover += InpLastSL;
+
+    if (InpTypeTrade == eUseCenterPrice) gCenterPrice = InpCenterPrice;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -154,10 +164,59 @@ bool        gbCreateNewL0  = true;
 void MtHandler::OnTick() {
     // LOGIC CHECK NEW DAY
     gCurDt = iTime(_Symbol, PERIOD_CURRENT, 0);
+    if (gCurDt == 0) return;
     TimeToStruct(gCurDt, gStCurDt);
     gStrCurDate = TimeToString(gCurDt, TIME_DATE);
     if (gStrCurDate != gStrPreDate) {
-        gPreDailyClose = iClose(_Symbol, PERIOD_D1, 1);
+        if (InpTypeTrade == eUseDailyClose) {
+            gPreDailyClose = iClose(_Symbol, PERIOD_D1, 1);
+            gCenterPrice = gPreDailyClose;
+
+            datetime time0 = iTime(_Symbol, PERIOD_D1, 0);
+            datetime time1 = time0 + PeriodSeconds(PERIOD_D1);
+            double price = gCenterPrice;
+            // Create Gốc mía
+            string objName = APP_TAG + gStrCurDate + "Center Price";
+            ObjectCreate(0,     objName, OBJ_TREND, 0, 0, 0);
+            ObjectSetInteger(0, objName, OBJPROP_BACK, true);
+            ObjectSetInteger(0, objName, OBJPROP_RAY, false);
+            ObjectSetInteger(0, objName, OBJPROP_WIDTH, 2);
+            ObjectSetString(0,  objName, OBJPROP_TOOLTIP, "\n");
+            ObjectSetInteger(0, objName, OBJPROP_COLOR, clrGray);
+            ObjectSetInteger(0, objName, OBJPROP_TIME, 0, time0);
+            ObjectSetInteger(0, objName, OBJPROP_TIME, 1, time1);
+            ObjectSetDouble(0,  objName, OBJPROP_PRICE, 0, price);
+            ObjectSetDouble(0,  objName, OBJPROP_PRICE, 1, price);
+
+            price = gCenterPrice+InpStartL1Space;
+            objName = APP_TAG + gStrCurDate + "Upper Price";
+            ObjectCreate(0,     objName, OBJ_TREND, 0, 0, 0);
+            ObjectSetInteger(0, objName, OBJPROP_BACK, true);
+            ObjectSetInteger(0, objName, OBJPROP_RAY, false);
+            ObjectSetInteger(0, objName, OBJPROP_WIDTH, 1);
+            ObjectSetInteger(0, objName, OBJPROP_STYLE, STYLE_DOT);
+            ObjectSetString(0,  objName, OBJPROP_TOOLTIP, "\n");
+            ObjectSetInteger(0, objName, OBJPROP_COLOR, clrLightGray);
+            ObjectSetInteger(0, objName, OBJPROP_TIME, 0, time0);
+            ObjectSetInteger(0, objName, OBJPROP_TIME, 1, time1);
+            ObjectSetDouble(0,  objName, OBJPROP_PRICE, 0, price);
+            ObjectSetDouble(0,  objName, OBJPROP_PRICE, 1, price);
+
+            price = gCenterPrice-InpStartL1Space;
+            objName = APP_TAG + gStrCurDate + "Lower Price";
+            ObjectCreate(0,     objName, OBJ_TREND, 0, 0, 0);
+            ObjectSetInteger(0, objName, OBJPROP_BACK, true);
+            ObjectSetInteger(0, objName, OBJPROP_RAY, false);
+            ObjectSetInteger(0, objName, OBJPROP_WIDTH, 1);
+            ObjectSetInteger(0, objName, OBJPROP_STYLE, STYLE_DOT);
+            ObjectSetString(0,  objName, OBJPROP_TOOLTIP, "\n");
+            ObjectSetInteger(0, objName, OBJPROP_COLOR, clrLightGray);
+            ObjectSetInteger(0, objName, OBJPROP_TIME, 0, time0);
+            ObjectSetInteger(0, objName, OBJPROP_TIME, 1, time1);
+            ObjectSetDouble(0,  objName, OBJPROP_PRICE, 0, price);
+            ObjectSetDouble(0,  objName, OBJPROP_PRICE, 1, price);
+        }
+        
         gStrPreDate = gStrCurDate;
     }
 
@@ -188,56 +247,185 @@ void MtHandler::OnTick() {
     // Cannot open trade in 22 EST hour - Maintain time of broker
     if (gStCurDt.hour == 22) return;
 
-    if (gBuyLayer >= 0) {
-        if (PAL::Bid() >= gBuyTpPrices[gBuyLayer]) {
-            if (gBuyLayer >= InpTpAllGate) gBuyLayer = -1;
-            else gBuyLayer--;
-        }
-        else if (PAL::Ask() <= gBuyDcaPrices[gBuyLayer]){
-            createBuyDca();
-        }
-    }
 
-    // No running trade
-    if (gBuyLayer < 0) createBuyL0();
 
-    // ROBOT LOGIC - BUY LOGIC - TODO: develop SELL logic
+    /////// BUY LOGIC ////////////////////////////////////////////
+    if (gBuyLayer >= 0) {                                       //
+        if (PAL::Bid() >= gBuyTpPrices[gBuyLayer]) {            //
+            if (gBuyLayer >= InpTpAllLayer-1) gBuyLayer = -1;   //
+            else gBuyLayer--;                                   //
+        }                                                       //
+        else if (PAL::Ask() <= gBuyDcaPrices[gBuyLayer]){       //
+            createBuyDca();                                     //
+        }                                                       //
+    }                                                           //
+    // No running trade                                         //
+    if (gBuyLayer < 0) createBuyL1();                           //
+    //////////////////////////////////////////////////////////////
+    
+
+    /////// SELL LOGIC ///////////////////////////////////////////
+    if (gSellLayer >= 0) {                                      //
+        if (PAL::Ask() <= gSellTpPrices[gSellLayer]) {          //
+            if (gSellLayer >= InpTpAllLayer-1) gSellLayer = -1; //
+            else gSellLayer--;                                  //
+        }                                                       //
+        else if (PAL::Bid() >= gSellDcaPrices[gSellLayer]){     //
+            createSellDca();                                    //
+        }                                                       //
+    }                                                           //
+    // No running trade                                         //
+    if (gSellLayer < 0) createSellL1();                         //
+    //////////////////////////////////////////////////////////////
 }
 
-void createBuyL0()
+void createBuyL1()
 {
     // L0 Condition
+    int i = 0;
+    string objName;
+    for (i = 0; i <= InpLayerLimit; i++){
+        objName = APP_TAG + "BUY L" + IntegerToString(i);
+        ObjectSetDouble(0,  objName, OBJPROP_PRICE, 0, 0);
+    }
     if (gbCreateNewL0 == false) return;
+    if (PAL::Bid() > gCenterPrice-InpStartL1Space) return;
 
-    Print(APP_TAG, "New L0 | Time:", gStCurDt.hour);
+    // Create new L1
     gBuyLayer++;
     gBuyTpPrices[gBuyLayer] = PAL::Ask() + gTpDistances[gBuyLayer];
     gBuyDcaPrices[gBuyLayer] = PAL::Bid() - gDcaDistances[gBuyLayer];
     gBuyStoploss = PAL::Bid() - gCover;
-    PAL::Buy(gVols[gBuyLayer], NULL, 0, gBuyStoploss, gBuyTpPrices[gBuyLayer], InpBotName + "|L"+IntegerToString(gBuyLayer));
+    PAL::Buy(gVols[gBuyLayer], NULL, 0, gBuyStoploss, gBuyTpPrices[gBuyLayer], InpBotName + "|Buy L"+IntegerToString(gBuyLayer));
     gBuyTickets[gBuyLayer] = PAL::ResultOrder();
-    for (int i = 0; i < InpDcaLimit; i++) {
-        //
+
+    // Hien thi BUY GRID
+    double dcaPrice = PAL::Ask();
+    double spread = PAL::Ask() - PAL::Bid();
+    datetime curTime = iTime(_Symbol, PERIOD_CURRENT, 0) + 10 * PeriodSeconds(_Period);
+    for (i = 1; i <= InpLayerLimit; i++) {
+        objName = APP_TAG + "BUY L" + IntegerToString(i);
+        ObjectCreate(0,     objName, OBJ_TEXT, 0, 0, 0, 0, 0);
+        ObjectSetInteger(0, objName, OBJPROP_COLOR, clrGreen);
+        ObjectSetInteger(0, objName, OBJPROP_ANCHOR, ANCHOR_LEFT_LOWER);
+        ObjectSetInteger(0, objName, OBJPROP_BACK, true);
+        ObjectSetInteger(0, objName, OBJPROP_FONTSIZE, 10);
+        ObjectSetString(0,  objName, OBJPROP_FONT, "Consolas");
+        ObjectSetString(0,  objName, OBJPROP_TEXT, "_______L" + IntegerToString(i));
+        ObjectSetDouble(0,  objName, OBJPROP_PRICE, 0, dcaPrice);
+        ObjectSetInteger(0, objName, OBJPROP_TIME, 0, curTime);
+        dcaPrice -= gDcaDistances[i-1]+spread;
     }
+    objName = APP_TAG + "BUY L" + IntegerToString(InpTpAllLayer);
+    ObjectSetInteger(0, objName, OBJPROP_COLOR, clrYellow);
+    ObjectSetString(0,  objName, OBJPROP_TEXT, "_______L" + IntegerToString(InpTpAllLayer) + " tp gộp");
+    objName = APP_TAG + "BUY L0";
+    ObjectCreate(0,     objName, OBJ_TEXT, 0, 0, 0, 0, 0);
+    ObjectSetInteger(0, objName, OBJPROP_COLOR, clrRed);
+    ObjectSetInteger(0, objName, OBJPROP_ANCHOR, ANCHOR_LEFT_LOWER);
+    ObjectSetInteger(0, objName, OBJPROP_BACK, true);
+    ObjectSetInteger(0, objName, OBJPROP_FONTSIZE, 10);
+    ObjectSetString(0,  objName, OBJPROP_FONT, "Consolas");
+    ObjectSetString(0,  objName, OBJPROP_TEXT, "_______SL");
+    ObjectSetDouble(0,  objName, OBJPROP_PRICE, 0, gBuyStoploss);
+    ObjectSetInteger(0, objName, OBJPROP_TIME, 0, curTime);
 }
 
 void createBuyDca()
 {
     // DCA Condition
-    if (gBuyLayer >= InpDcaLimit-1) return;
+    if (gBuyLayer >= InpLayerLimit-1) {
+        if (PAL::Ask() <= gBuyStoploss) gBuyLayer = -1;
+        return;
+    }
 
     gBuyLayer++;
     gBuyTpPrices[gBuyLayer] = PAL::Ask() + gTpDistances[gBuyLayer];
     gBuyDcaPrices[gBuyLayer] = PAL::Bid() - gDcaDistances[gBuyLayer];
-    PAL::Buy(gVols[gBuyLayer], NULL, 0, gBuyStoploss, gBuyTpPrices[gBuyLayer], InpBotName + "|L"+IntegerToString(gBuyLayer));
+    PAL::Buy(gVols[gBuyLayer], NULL, 0, gBuyStoploss, gBuyTpPrices[gBuyLayer], InpBotName + "|Buy L"+IntegerToString(gBuyLayer));
     gBuyTickets[gBuyLayer] = PAL::ResultOrder();
-    if (gBuyLayer >= InpTpAllGate) {
+    
+    // Tp Gộp
+    if (gBuyLayer >= InpTpAllLayer-1) {
         for (int i = 0; i < gBuyLayer; i++) {
             PAL::PositionModify(gBuyTickets[i], gBuyStoploss, gBuyTpPrices[gBuyLayer]);
         }
     }
 }
 
+void createSellL1()
+{
+    // L0 Condition
+    int i = 0;
+    string objName;
+    for (i = 0; i <= InpLayerLimit; i++) {
+        objName = APP_TAG + "SELL L" + IntegerToString(i);
+        ObjectSetDouble(0,  objName, OBJPROP_PRICE, 0, 0);
+    }
+    if (gbCreateNewL0 == false) return;
+    if (PAL::Bid() < gCenterPrice+InpStartL1Space) return;
+
+    // Create new L1
+    gSellLayer++;
+    gSellTpPrices[gSellLayer] = PAL::Bid() - gTpDistances[gSellLayer];
+    gSellDcaPrices[gSellLayer] = PAL::Ask() + gDcaDistances[gSellLayer];
+    gSellStoploss = PAL::Ask() + gCover;
+    PAL::Sell(gVols[gSellLayer], NULL, 0, gSellStoploss, gSellTpPrices[gSellLayer], InpBotName + "|Sell L"+IntegerToString(gSellLayer));
+    gSellTickets[gSellLayer] = PAL::ResultOrder();
+
+    // Hien thi Sell GRID
+    double dcaPrice = PAL::Bid();
+    double spread = PAL::Ask() - PAL::Bid();
+    datetime curTime = iTime(_Symbol, PERIOD_CURRENT, 0) + 10 * PeriodSeconds(_Period);
+    for (i = 1; i <= InpLayerLimit; i++) {
+        objName = APP_TAG + "SELL L" + IntegerToString(i);
+        ObjectCreate(0,     objName, OBJ_TEXT, 0, 0, 0, 0, 0);
+        ObjectSetInteger(0, objName, OBJPROP_COLOR, clrRed);
+        ObjectSetInteger(0, objName, OBJPROP_ANCHOR, ANCHOR_LEFT_LOWER);
+        ObjectSetInteger(0, objName, OBJPROP_BACK, true);
+        ObjectSetInteger(0, objName, OBJPROP_FONTSIZE, 10);
+        ObjectSetString(0,  objName, OBJPROP_FONT, "Consolas");
+        ObjectSetString(0,  objName, OBJPROP_TEXT, "_______L" + IntegerToString(i));
+        ObjectSetDouble(0,  objName, OBJPROP_PRICE, 0, dcaPrice);
+        ObjectSetInteger(0, objName, OBJPROP_TIME, 0, curTime);
+        dcaPrice += gDcaDistances[i-1]+spread;
+    }
+    objName = APP_TAG + "SELL L" + IntegerToString(InpTpAllLayer);
+    ObjectSetInteger(0, objName, OBJPROP_COLOR, clrYellow);
+    ObjectSetString(0,  objName, OBJPROP_TEXT, "_______L" + IntegerToString(InpTpAllLayer) + " tp gộp");
+    objName = APP_TAG + "SELL L0";
+    ObjectCreate(0,     objName, OBJ_TEXT, 0, 0, 0, 0, 0);
+    ObjectSetInteger(0, objName, OBJPROP_COLOR, clrRed);
+    ObjectSetInteger(0, objName, OBJPROP_ANCHOR, ANCHOR_LEFT_LOWER);
+    ObjectSetInteger(0, objName, OBJPROP_BACK, true);
+    ObjectSetInteger(0, objName, OBJPROP_FONTSIZE, 10);
+    ObjectSetString(0,  objName, OBJPROP_FONT, "Consolas");
+    ObjectSetString(0,  objName, OBJPROP_TEXT, "_______SL");
+    ObjectSetDouble(0,  objName, OBJPROP_PRICE, 0, gSellStoploss);
+    ObjectSetInteger(0, objName, OBJPROP_TIME, 0, curTime);
+}
+
+void createSellDca()
+{
+    // DCA Condition
+    if (gSellLayer >= InpLayerLimit-1) {
+        if (PAL::Bid() >= gSellStoploss) gSellLayer = -1;
+        return;
+    }
+
+    gSellLayer++;
+    gSellTpPrices[gSellLayer] = PAL::Bid() - gTpDistances[gSellLayer];
+    gSellDcaPrices[gSellLayer] = PAL::Ask() + gDcaDistances[gSellLayer];
+    PAL::Sell(gVols[gSellLayer], NULL, 0, gSellStoploss, gSellTpPrices[gSellLayer], InpBotName + "|Sell L"+IntegerToString(gSellLayer));
+    gSellTickets[gSellLayer] = PAL::ResultOrder();
+    
+    // Tp Gộp
+    if (gSellLayer >= InpTpAllLayer-1) {
+        for (int i = 0; i < gSellLayer; i++) {
+            PAL::PositionModify(gSellTickets[i], gSellStoploss, gSellTpPrices[gSellLayer]);
+        }
+    }
+}
 
 //////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
