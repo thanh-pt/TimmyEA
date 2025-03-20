@@ -26,7 +26,6 @@ int gPnlFactor = (InpLevelType == eBUY ? 1:-1);
 //+------------------------------------------------------------------+
 int OnInit()
 {
-    ChartSetInteger(0, CHART_SHOW_OBJECT_DESCR, 1);
     return(INIT_SUCCEEDED);
 }
 //+------------------------------------------------------------------+
@@ -45,6 +44,7 @@ int OnCalculate(const int rates_total,
 {
     gIsShowTradeLevel = (bool) ChartGetInteger(0, CHART_SHOW_TRADE_LEVELS);
     if (gIsShowTradeLevel == false || InpOverload == true) {
+        ChartSetInteger(0, CHART_SHOW_OBJECT_DESCR, 1);
         gIsOverLoad = (gIsShowTradeLevel && InpOverload);
         gLevelIndex = 0;
         gDealIdx = 1;
@@ -75,6 +75,7 @@ int OnCalculate(const int rates_total,
     }
     else {
         gLevelIndex = 0;
+        ChartSetInteger(0, CHART_SHOW_OBJECT_DESCR, 0);
         hideTradeLevel();
     }
     return(rates_total);

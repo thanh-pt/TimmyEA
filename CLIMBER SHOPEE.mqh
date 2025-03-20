@@ -136,15 +136,17 @@ void initValue() {
     gDcaDistances[19] = InpDcaDistances20; gTpDistances[19] = InpTpDistances20;
     
     int i;
-    gVols[0] = InpVolInit;
-    // Calculate Raw Vols
-    for (i = 1; i < LAYER_MAX; i++) gVols[i] = InpVolMul * gVols[i-1];
-    // Normalize Vols
-    for (i = 0; i < LAYER_MAX; i++) gVols[i] = NormalizeDouble(MathCeil(gVols[i] * 100)/100, 2);
-    for (i = 1; i < InpLayerLimit; i++) gCover += gDcaDistances[i];
+    gVols[0] = NormalizeDouble(InpVolInit, 2);
+    // Calculate Vols
+    for (i = 1; i < LAYER_MAX; i++) {
+        gVols[i] = MathCeil(InpVolMul * gVols[i-1] * 100)/100;
+        gVols[i] = NormalizeDouble(gVols[i], 2);
+    }
+    // Calculate Cover
+    for (i = 0; i < InpLayerLimit-1; i++) gCover += gDcaDistances[i];
     gCover += InpLastSL;
 
-    if (InpTypeTrade == eUseCenterPrice) gCenterPrice = InpCenterPrice;
+    gCenterPrice = InpCenterPrice;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -172,51 +174,8 @@ void MtHandler::OnTick() {
             gPreDailyClose = iClose(_Symbol, PERIOD_D1, 1);
             gCenterPrice = gPreDailyClose;
 
-            datetime time0 = iTime(_Symbol, PERIOD_D1, 0);
-            datetime time1 = time0 + PeriodSeconds(PERIOD_D1);
-            double price = gCenterPrice;
-            // Create Gốc mía
-            string objName = APP_TAG + gStrCurDate + "Center Price";
-            ObjectCreate(0,     objName, OBJ_TREND, 0, 0, 0);
-            ObjectSetInteger(0, objName, OBJPROP_BACK, true);
-            ObjectSetInteger(0, objName, OBJPROP_RAY, false);
-            ObjectSetInteger(0, objName, OBJPROP_WIDTH, 2);
-            ObjectSetString(0,  objName, OBJPROP_TOOLTIP, "\n");
-            ObjectSetInteger(0, objName, OBJPROP_COLOR, clrGray);
-            ObjectSetInteger(0, objName, OBJPROP_TIME, 0, time0);
-            ObjectSetInteger(0, objName, OBJPROP_TIME, 1, time1);
-            ObjectSetDouble(0,  objName, OBJPROP_PRICE, 0, price);
-            ObjectSetDouble(0,  objName, OBJPROP_PRICE, 1, price);
-
-            price = gCenterPrice+InpStartL1Space;
-            objName = APP_TAG + gStrCurDate + "Upper Price";
-            ObjectCreate(0,     objName, OBJ_TREND, 0, 0, 0);
-            ObjectSetInteger(0, objName, OBJPROP_BACK, true);
-            ObjectSetInteger(0, objName, OBJPROP_RAY, false);
-            ObjectSetInteger(0, objName, OBJPROP_WIDTH, 1);
-            ObjectSetInteger(0, objName, OBJPROP_STYLE, STYLE_DOT);
-            ObjectSetString(0,  objName, OBJPROP_TOOLTIP, "\n");
-            ObjectSetInteger(0, objName, OBJPROP_COLOR, clrLightGray);
-            ObjectSetInteger(0, objName, OBJPROP_TIME, 0, time0);
-            ObjectSetInteger(0, objName, OBJPROP_TIME, 1, time1);
-            ObjectSetDouble(0,  objName, OBJPROP_PRICE, 0, price);
-            ObjectSetDouble(0,  objName, OBJPROP_PRICE, 1, price);
-
-            price = gCenterPrice-InpStartL1Space;
-            objName = APP_TAG + gStrCurDate + "Lower Price";
-            ObjectCreate(0,     objName, OBJ_TREND, 0, 0, 0);
-            ObjectSetInteger(0, objName, OBJPROP_BACK, true);
-            ObjectSetInteger(0, objName, OBJPROP_RAY, false);
-            ObjectSetInteger(0, objName, OBJPROP_WIDTH, 1);
-            ObjectSetInteger(0, objName, OBJPROP_STYLE, STYLE_DOT);
-            ObjectSetString(0,  objName, OBJPROP_TOOLTIP, "\n");
-            ObjectSetInteger(0, objName, OBJPROP_COLOR, clrLightGray);
-            ObjectSetInteger(0, objName, OBJPROP_TIME, 0, time0);
-            ObjectSetInteger(0, objName, OBJPROP_TIME, 1, time1);
-            ObjectSetDouble(0,  objName, OBJPROP_PRICE, 0, price);
-            ObjectSetDouble(0,  objName, OBJPROP_PRICE, 1, price);
+            displayCloseD1();
         }
-        
         gStrPreDate = gStrCurDate;
     }
 
@@ -281,13 +240,8 @@ void MtHandler::OnTick() {
 
 void createBuyL1()
 {
+    hideGridLevel("BUY");
     // L0 Condition
-    int i = 0;
-    string objName;
-    for (i = 0; i <= InpLayerLimit; i++){
-        objName = APP_TAG + "BUY L" + IntegerToString(i);
-        ObjectSetDouble(0,  objName, OBJPROP_PRICE, 0, 0);
-    }
     if (gbCreateNewL0 == false) return;
     if (PAL::Bid() > gCenterPrice-InpStartL1Space) return;
 
@@ -299,36 +253,24 @@ void createBuyL1()
     PAL::Buy(gVols[gBuyLayer], NULL, 0, gBuyStoploss, gBuyTpPrices[gBuyLayer], InpBotName + "|Buy L"+IntegerToString(gBuyLayer));
     gBuyTickets[gBuyLayer] = PAL::ResultOrder();
 
-    // Hien thi BUY GRID
-    double dcaPrice = PAL::Ask();
-    double spread = PAL::Ask() - PAL::Bid();
-    datetime curTime = iTime(_Symbol, PERIOD_CURRENT, 0) + 10 * PeriodSeconds(_Period);
-    for (i = 1; i <= InpLayerLimit; i++) {
-        objName = APP_TAG + "BUY L" + IntegerToString(i);
-        ObjectCreate(0,     objName, OBJ_TEXT, 0, 0, 0, 0, 0);
-        ObjectSetInteger(0, objName, OBJPROP_COLOR, clrGreen);
-        ObjectSetInteger(0, objName, OBJPROP_ANCHOR, ANCHOR_LEFT_LOWER);
-        ObjectSetInteger(0, objName, OBJPROP_BACK, true);
-        ObjectSetInteger(0, objName, OBJPROP_FONTSIZE, 10);
-        ObjectSetString(0,  objName, OBJPROP_FONT, "Consolas");
-        ObjectSetString(0,  objName, OBJPROP_TEXT, "_______L" + IntegerToString(i));
-        ObjectSetDouble(0,  objName, OBJPROP_PRICE, 0, dcaPrice);
-        ObjectSetInteger(0, objName, OBJPROP_TIME, 0, curTime);
-        dcaPrice -= gDcaDistances[i-1]+spread;
-    }
-    objName = APP_TAG + "BUY L" + IntegerToString(InpTpAllLayer);
-    ObjectSetInteger(0, objName, OBJPROP_COLOR, clrYellow);
-    ObjectSetString(0,  objName, OBJPROP_TEXT, "_______L" + IntegerToString(InpTpAllLayer) + " tp gộp");
-    objName = APP_TAG + "BUY L0";
-    ObjectCreate(0,     objName, OBJ_TEXT, 0, 0, 0, 0, 0);
-    ObjectSetInteger(0, objName, OBJPROP_COLOR, clrRed);
-    ObjectSetInteger(0, objName, OBJPROP_ANCHOR, ANCHOR_LEFT_LOWER);
-    ObjectSetInteger(0, objName, OBJPROP_BACK, true);
-    ObjectSetInteger(0, objName, OBJPROP_FONTSIZE, 10);
-    ObjectSetString(0,  objName, OBJPROP_FONT, "Consolas");
-    ObjectSetString(0,  objName, OBJPROP_TEXT, "_______SL");
-    ObjectSetDouble(0,  objName, OBJPROP_PRICE, 0, gBuyStoploss);
-    ObjectSetInteger(0, objName, OBJPROP_TIME, 0, curTime);
+    displayGridLevel("BUY", gBuyStoploss);
+}
+void createSellL1()
+{
+    hideGridLevel("SELL");
+    // L0 Condition
+    if (gbCreateNewL0 == false) return;
+    if (PAL::Bid() < gCenterPrice+InpStartL1Space) return;
+
+    // Create new L1
+    gSellLayer++;
+    gSellTpPrices[gSellLayer]  = PAL::Bid() - gTpDistances[gSellLayer];
+    gSellDcaPrices[gSellLayer] = PAL::Ask() + gDcaDistances[gSellLayer];
+    gSellStoploss = PAL::Ask() + gCover;
+    PAL::Sell(gVols[gSellLayer], NULL, 0, gSellStoploss, gSellTpPrices[gSellLayer], InpBotName + "|Sell L"+IntegerToString(gSellLayer));
+    gSellTickets[gSellLayer] = PAL::ResultOrder();
+
+    displayGridLevel("SELL", gSellStoploss);
 }
 
 void createBuyDca()
@@ -340,7 +282,7 @@ void createBuyDca()
     }
 
     gBuyLayer++;
-    gBuyTpPrices[gBuyLayer] = PAL::Ask() + gTpDistances[gBuyLayer];
+    gBuyTpPrices[gBuyLayer]  = PAL::Ask() + gTpDistances[gBuyLayer];
     gBuyDcaPrices[gBuyLayer] = PAL::Bid() - gDcaDistances[gBuyLayer];
     PAL::Buy(gVols[gBuyLayer], NULL, 0, gBuyStoploss, gBuyTpPrices[gBuyLayer], InpBotName + "|Buy L"+IntegerToString(gBuyLayer));
     gBuyTickets[gBuyLayer] = PAL::ResultOrder();
@@ -352,59 +294,6 @@ void createBuyDca()
         }
     }
 }
-
-void createSellL1()
-{
-    // L0 Condition
-    int i = 0;
-    string objName;
-    for (i = 0; i <= InpLayerLimit; i++) {
-        objName = APP_TAG + "SELL L" + IntegerToString(i);
-        ObjectSetDouble(0,  objName, OBJPROP_PRICE, 0, 0);
-    }
-    if (gbCreateNewL0 == false) return;
-    if (PAL::Bid() < gCenterPrice+InpStartL1Space) return;
-
-    // Create new L1
-    gSellLayer++;
-    gSellTpPrices[gSellLayer] = PAL::Bid() - gTpDistances[gSellLayer];
-    gSellDcaPrices[gSellLayer] = PAL::Ask() + gDcaDistances[gSellLayer];
-    gSellStoploss = PAL::Ask() + gCover;
-    PAL::Sell(gVols[gSellLayer], NULL, 0, gSellStoploss, gSellTpPrices[gSellLayer], InpBotName + "|Sell L"+IntegerToString(gSellLayer));
-    gSellTickets[gSellLayer] = PAL::ResultOrder();
-
-    // Hien thi Sell GRID
-    double dcaPrice = PAL::Bid();
-    double spread = PAL::Ask() - PAL::Bid();
-    datetime curTime = iTime(_Symbol, PERIOD_CURRENT, 0) + 10 * PeriodSeconds(_Period);
-    for (i = 1; i <= InpLayerLimit; i++) {
-        objName = APP_TAG + "SELL L" + IntegerToString(i);
-        ObjectCreate(0,     objName, OBJ_TEXT, 0, 0, 0, 0, 0);
-        ObjectSetInteger(0, objName, OBJPROP_COLOR, clrRed);
-        ObjectSetInteger(0, objName, OBJPROP_ANCHOR, ANCHOR_LEFT_LOWER);
-        ObjectSetInteger(0, objName, OBJPROP_BACK, true);
-        ObjectSetInteger(0, objName, OBJPROP_FONTSIZE, 10);
-        ObjectSetString(0,  objName, OBJPROP_FONT, "Consolas");
-        ObjectSetString(0,  objName, OBJPROP_TEXT, "_______L" + IntegerToString(i));
-        ObjectSetDouble(0,  objName, OBJPROP_PRICE, 0, dcaPrice);
-        ObjectSetInteger(0, objName, OBJPROP_TIME, 0, curTime);
-        dcaPrice += gDcaDistances[i-1]+spread;
-    }
-    objName = APP_TAG + "SELL L" + IntegerToString(InpTpAllLayer);
-    ObjectSetInteger(0, objName, OBJPROP_COLOR, clrYellow);
-    ObjectSetString(0,  objName, OBJPROP_TEXT, "_______L" + IntegerToString(InpTpAllLayer) + " tp gộp");
-    objName = APP_TAG + "SELL L0";
-    ObjectCreate(0,     objName, OBJ_TEXT, 0, 0, 0, 0, 0);
-    ObjectSetInteger(0, objName, OBJPROP_COLOR, clrRed);
-    ObjectSetInteger(0, objName, OBJPROP_ANCHOR, ANCHOR_LEFT_LOWER);
-    ObjectSetInteger(0, objName, OBJPROP_BACK, true);
-    ObjectSetInteger(0, objName, OBJPROP_FONTSIZE, 10);
-    ObjectSetString(0,  objName, OBJPROP_FONT, "Consolas");
-    ObjectSetString(0,  objName, OBJPROP_TEXT, "_______SL");
-    ObjectSetDouble(0,  objName, OBJPROP_PRICE, 0, gSellStoploss);
-    ObjectSetInteger(0, objName, OBJPROP_TIME, 0, curTime);
-}
-
 void createSellDca()
 {
     // DCA Condition
@@ -414,7 +303,7 @@ void createSellDca()
     }
 
     gSellLayer++;
-    gSellTpPrices[gSellLayer] = PAL::Bid() - gTpDistances[gSellLayer];
+    gSellTpPrices[gSellLayer]  = PAL::Bid() - gTpDistances[gSellLayer];
     gSellDcaPrices[gSellLayer] = PAL::Ask() + gDcaDistances[gSellLayer];
     PAL::Sell(gVols[gSellLayer], NULL, 0, gSellStoploss, gSellTpPrices[gSellLayer], InpBotName + "|Sell L"+IntegerToString(gSellLayer));
     gSellTickets[gSellLayer] = PAL::ResultOrder();
@@ -426,7 +315,6 @@ void createSellDca()
         }
     }
 }
-
 //////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////// GIAO DIỆN - HIỂN THỊ
@@ -456,6 +344,99 @@ string fixedText(string str, int size) {
 string fixedText(double dvalue, int decimal, int size) {
     string str = DoubleToString(dvalue, decimal);
     return fixedText(str, size);
+}
+
+void hideGridLevel(string tag) {
+    string objName;
+    for (int i = 0; i <= InpLayerLimit; i++){
+        objName = APP_TAG + tag + IntegerToString(i);
+        ObjectSetDouble(0,  objName, OBJPROP_PRICE, 0, 0);
+    }
+}
+void displayGridLevel(string tag, double& lastSL) {
+    int fliper = 1;
+    double price = PAL::Bid();
+    double spread = PAL::Ask() - PAL::Bid();
+    string objName;
+    datetime curTime = iTime(_Symbol, PERIOD_CURRENT, 0) + 10 * PeriodSeconds(_Period);
+    color clr = clrRed;
+    if (tag == "BUY") {
+        fliper = -1;
+        price = PAL::Ask();
+        clr = clrGreen;
+    }
+
+    for (int i = 1; i <= InpLayerLimit; i++) {
+        objName = APP_TAG + tag + IntegerToString(i);
+        ObjectCreate(0,     objName, OBJ_TEXT, 0, 0, 0, 0, 0);
+        ObjectSetInteger(0, objName, OBJPROP_COLOR, clr);
+        ObjectSetInteger(0, objName, OBJPROP_ANCHOR, ANCHOR_LEFT_LOWER);
+        ObjectSetInteger(0, objName, OBJPROP_BACK, true);
+        ObjectSetInteger(0, objName, OBJPROP_FONTSIZE, 10);
+        ObjectSetString(0,  objName, OBJPROP_FONT, "Consolas");
+        ObjectSetString(0,  objName, OBJPROP_TEXT, "_______L" + IntegerToString(i));
+        ObjectSetDouble(0,  objName, OBJPROP_PRICE, 0, price);
+        ObjectSetInteger(0, objName, OBJPROP_TIME, 0, curTime);
+        price = price + fliper * gDcaDistances[i-1]+spread;
+    }
+    objName = APP_TAG + tag + IntegerToString(InpTpAllLayer);
+    ObjectSetInteger(0, objName, OBJPROP_COLOR, clrYellow);
+    ObjectSetString(0,  objName, OBJPROP_TEXT, "_______L" + IntegerToString(InpTpAllLayer) + " tp gộp");
+    objName = APP_TAG + tag + "0";
+    ObjectCreate(0,     objName, OBJ_TEXT, 0, 0, 0, 0, 0);
+    ObjectSetInteger(0, objName, OBJPROP_COLOR, clrRed);
+    ObjectSetInteger(0, objName, OBJPROP_ANCHOR, ANCHOR_LEFT_LOWER);
+    ObjectSetInteger(0, objName, OBJPROP_BACK, true);
+    ObjectSetInteger(0, objName, OBJPROP_FONTSIZE, 10);
+    ObjectSetString(0,  objName, OBJPROP_FONT, "Consolas");
+    ObjectSetString(0,  objName, OBJPROP_TEXT, "_______SL");
+    ObjectSetDouble(0,  objName, OBJPROP_PRICE, 0, lastSL);
+    ObjectSetInteger(0, objName, OBJPROP_TIME, 0, curTime);
+}
+void displayCloseD1(){
+    datetime time0 = iTime(_Symbol, PERIOD_D1, 0);
+    datetime time1 = time0 + PeriodSeconds(PERIOD_D1);
+    // Create Gốc mía
+    string objName = APP_TAG + gStrCurDate + "Close D1";
+    ObjectCreate(0,     objName, OBJ_TREND, 0, 0, 0);
+    ObjectSetInteger(0, objName, OBJPROP_BACK, true);
+    ObjectSetInteger(0, objName, OBJPROP_RAY, false);
+    ObjectSetInteger(0, objName, OBJPROP_WIDTH, 1);
+    ObjectSetString(0,  objName, OBJPROP_TOOLTIP, "\n");
+    ObjectSetInteger(0, objName, OBJPROP_COLOR, clrNavy);
+    ObjectSetInteger(0, objName, OBJPROP_TIME, 0, time0);
+    ObjectSetInteger(0, objName, OBJPROP_TIME, 1, time1);
+    ObjectSetDouble(0,  objName, OBJPROP_PRICE, 0, gCenterPrice);
+    ObjectSetDouble(0,  objName, OBJPROP_PRICE, 1, gCenterPrice);
+    if (InpStartL1Space > 0) {
+        double price = gCenterPrice+InpStartL1Space;
+        objName = APP_TAG + gStrCurDate + "Upper Price";
+        ObjectCreate(0,     objName, OBJ_TREND, 0, 0, 0);
+        ObjectSetInteger(0, objName, OBJPROP_BACK, true);
+        ObjectSetInteger(0, objName, OBJPROP_RAY, false);
+        ObjectSetInteger(0, objName, OBJPROP_WIDTH, 1);
+        ObjectSetInteger(0, objName, OBJPROP_STYLE, STYLE_DOT);
+        ObjectSetString(0,  objName, OBJPROP_TOOLTIP, "\n");
+        ObjectSetInteger(0, objName, OBJPROP_COLOR, clrDarkGray);
+        ObjectSetInteger(0, objName, OBJPROP_TIME, 0, time0);
+        ObjectSetInteger(0, objName, OBJPROP_TIME, 1, time1);
+        ObjectSetDouble(0,  objName, OBJPROP_PRICE, 0, price);
+        ObjectSetDouble(0,  objName, OBJPROP_PRICE, 1, price);
+
+        price = gCenterPrice-InpStartL1Space;
+        objName = APP_TAG + gStrCurDate + "Lower Price";
+        ObjectCreate(0,     objName, OBJ_TREND, 0, 0, 0);
+        ObjectSetInteger(0, objName, OBJPROP_BACK, true);
+        ObjectSetInteger(0, objName, OBJPROP_RAY, false);
+        ObjectSetInteger(0, objName, OBJPROP_WIDTH, 1);
+        ObjectSetInteger(0, objName, OBJPROP_STYLE, STYLE_DOT);
+        ObjectSetString(0,  objName, OBJPROP_TOOLTIP, "\n");
+        ObjectSetInteger(0, objName, OBJPROP_COLOR, clrDarkGray);
+        ObjectSetInteger(0, objName, OBJPROP_TIME, 0, time0);
+        ObjectSetInteger(0, objName, OBJPROP_TIME, 1, time1);
+        ObjectSetDouble(0,  objName, OBJPROP_PRICE, 0, price);
+        ObjectSetDouble(0,  objName, OBJPROP_PRICE, 1, price);
+    }
 }
 //////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
