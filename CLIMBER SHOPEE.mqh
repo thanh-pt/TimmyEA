@@ -34,7 +34,7 @@ void MtHandler::OnChartEvent(const int id, const long &lparam, const double &dpa
 /////////////////////////////// INPUT - INIT - TINH TOAN
 //////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-#define LAYER_MAX 20
+#define LAYER_MAX 100
 
 enum eTypeTrade {
     eUseDailyClose,
@@ -51,8 +51,8 @@ input double     InpStartL1Space= 0;
 PAL_GROUP(THONG_SO_HE_THONG, "THÔNG SỐ HỆ THỐNG")
 input double InpVolInit         = 0.01;
 input double InpVolMul          = 2;
-input int    InpTpAllLayer      = 3;
 input int    InpLayerLimit      = LAYER_MAX;
+input int    InpTpAllLayer      = 3;
 input double InpLastSL          = 5;
 
 PAL_GROUP(DCA_DISTANCES, "KHOẢNG CÁCH DCA")
@@ -76,6 +76,7 @@ input double InpDcaDistances17  = 3;
 input double InpDcaDistances18  = 3;
 input double InpDcaDistances19  = 3;
 input double InpDcaDistances20  = 3;
+input double InpDcaDistancesPlus= 3;
 
 PAL_GROUP(TAKE_PROFIT_DISTANCES, "KHOẢNG CÁCH TP")
 input double InpTpDistances1    = 3;
@@ -98,6 +99,7 @@ input double InpTpDistances17   = 3;
 input double InpTpDistances18   = 3;
 input double InpTpDistances19   = 3;
 input double InpTpDistances20   = 3;
+input double InpTpDistancesPlus = 3;
 
 
 double gDcaDistances[LAYER_MAX];
@@ -140,12 +142,21 @@ void initValue() {
     gDcaDistances[17] = InpDcaDistances18; gTpDistances[17] = InpTpDistances18;
     gDcaDistances[18] = InpDcaDistances19; gTpDistances[18] = InpTpDistances19;
     gDcaDistances[19] = InpDcaDistances20; gTpDistances[19] = InpTpDistances20;
-    
+
     int i;
-    gVols[0] = NormalizeDouble(InpVolInit, 2);
-    // Calculate Vols
+    for (i = 20; i < LAYER_MAX; i++) {
+        gDcaDistances[i] = InpDcaDistancesPlus;
+        gTpDistances[i] = InpTpDistancesPlus;
+    }
+    
+    gVols[0] = InpVolInit;
+    // Calculate Vols Raw
     for (i = 1; i < LAYER_MAX; i++) {
-        gVols[i] = MathCeil(InpVolMul * gVols[i-1] * 100)/100;
+        gVols[i] = InpVolMul * gVols[i-1];
+    }
+    // Normalize Vol
+    for (i = 0; i < LAYER_MAX; i++) {
+        gVols[i] = MathCeil(gVols[i] * 100)/100;
         gVols[i] = NormalizeDouble(gVols[i], 2);
     }
     // Calculate Cover
@@ -405,7 +416,7 @@ void displayDashboard() {
     createLabel(APP_TAG+"BotName", "♟ "+InpBotName , 0, 75, 20);
     createLabel(APP_TAG+"State"  , "SELL:"+IntegerToString(gSellLayer+1)+"  BUY:"+IntegerToString(gBuyLayer+1), 10, 54);
     if (gbCreateNewL1) createLabel(BTN_ONOFFCREATEL1, "NEW L1: [ ON]", 10, 30, 14, clrGreen);
-    else               createLabel(BTN_ONOFFCREATEL1, "NEW L1: [OFF]", 10, 30, 14, clrCrimson);
+    else               createLabel(BTN_ONOFFCREATEL1, "NEW L1: [OFF]", 10, 30, 14, clrBrown);
 }
 void hideGridLevel(string tag) {
     string objName;
