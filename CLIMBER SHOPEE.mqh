@@ -149,6 +149,7 @@ void initValue() {
         gVols[i] = NormalizeDouble(gVols[i], 2);
     }
     // Calculate Cover
+    gCover = 0;
     for (i = 0; i < InpLayerLimit-1; i++) gCover += gDcaDistances[i];
     gCover += InpLastSL;
 
@@ -172,28 +173,28 @@ void InitBOT(){
         comment = PositionGetString(POSITION_COMMENT);
         if (StringFind(comment, strBuyPrefix) != -1) {
             StringReplace(comment, strBuyPrefix, "");
-            layer = (int)StringToInteger(comment);
+            layer = (int)StringToInteger(comment)-1;
             priceOpen = PositionGetDouble(POSITION_PRICE_OPEN);
             gBuyTickets[layer] = PositionGetInteger(POSITION_TICKET);
             gBuyTpPrices[layer] = PositionGetDouble(POSITION_TP);
             gBuyDcaPrices[layer] = priceOpen - gDcaDistances[layer];
             if (layer > gBuyLayer) gBuyLayer = layer;
             if (layer == 0) {
-                gBuyStoploss = priceOpen - spread - gCover;
+                gBuyStoploss = NormalizeDouble(priceOpen - spread - gCover, _Digits);
                 displayGridLevel("BUY", priceOpen, spread, gBuyStoploss);
             }
         }
         else if (StringFind(comment, strSellPrefix) != -1) {
             StringReplace(comment, strSellPrefix, "");
-            layer = (int)StringToInteger(comment);
+            layer = (int)StringToInteger(comment)-1;
             priceOpen = PositionGetDouble(POSITION_PRICE_OPEN);
             gSellTickets[layer] = PositionGetInteger(POSITION_TICKET);
             gSellTpPrices[layer] = PositionGetDouble(POSITION_TP);
             gSellDcaPrices[layer] = priceOpen + gDcaDistances[layer];
             if (layer > gSellLayer) gSellLayer = layer;
             if (layer == 0) {
-                gSellStoploss = priceOpen + spread + gCover;
-                displayGridLevel("SELL", priceOpen, spread, gBuyStoploss);
+                gSellStoploss = NormalizeDouble(priceOpen + spread + gCover, _Digits);
+                displayGridLevel("SELL", priceOpen, spread, gSellStoploss);
             }
         }
     }
@@ -276,13 +277,14 @@ void createBuyL1()
     // L1 Condition
     if (gbCreateNewL1 == false) return;
     if (PAL::Bid() > gCenterPrice-InpStartL1Space) return;
+    // if (gStCurDt.hour >= 12) return;
 
     // Create new L1
     gBuyLayer++;
     gBuyTpPrices[gBuyLayer]  = PAL::Ask() + gTpDistances[gBuyLayer];
     gBuyDcaPrices[gBuyLayer] = PAL::Bid() - gDcaDistances[gBuyLayer];
     gBuyStoploss = PAL::Bid() - gCover;
-    if (PAL::Buy(gVols[gBuyLayer], gBuyStoploss, gBuyTpPrices[gBuyLayer], strBuyPrefix+IntegerToString(gBuyLayer))){
+    if (PAL::Buy(gVols[gBuyLayer], gBuyStoploss, gBuyTpPrices[gBuyLayer], strBuyPrefix+IntegerToString(gBuyLayer+1))){
         gBuyTickets[gBuyLayer] = PAL::ResultOrder();
         displayGridLevel("BUY", PAL::Ask(), PAL::Ask()-PAL::Bid(), gBuyStoploss);
     }
@@ -295,13 +297,14 @@ void createSellL1()
     // L1 Condition
     if (gbCreateNewL1 == false) return;
     if (PAL::Bid() < gCenterPrice+InpStartL1Space) return;
+    // if (gStCurDt.hour >= 12) return;
 
     // Create new L1
     gSellLayer++;
     gSellTpPrices[gSellLayer]  = PAL::Bid() - gTpDistances[gSellLayer];
     gSellDcaPrices[gSellLayer] = PAL::Ask() + gDcaDistances[gSellLayer];
     gSellStoploss = PAL::Ask() + gCover;
-    if (PAL::Sell(gVols[gSellLayer], gSellStoploss, gSellTpPrices[gSellLayer], strSellPrefix+IntegerToString(gSellLayer))) {
+    if (PAL::Sell(gVols[gSellLayer], gSellStoploss, gSellTpPrices[gSellLayer], strSellPrefix+IntegerToString(gSellLayer+1))) {
         gSellTickets[gSellLayer] = PAL::ResultOrder();
         displayGridLevel("SELL", PAL::Bid(), PAL::Ask()-PAL::Bid(), gSellStoploss);
     }
@@ -320,7 +323,7 @@ void createBuyDca()
     gBuyLayer++;
     gBuyTpPrices[gBuyLayer]  = PAL::Ask() + gTpDistances[gBuyLayer];
     gBuyDcaPrices[gBuyLayer] = PAL::Bid() - gDcaDistances[gBuyLayer];
-    if (PAL::Buy(gVols[gBuyLayer], gBuyStoploss, gBuyTpPrices[gBuyLayer], strBuyPrefix+IntegerToString(gBuyLayer))){
+    if (PAL::Buy(gVols[gBuyLayer], gBuyStoploss, gBuyTpPrices[gBuyLayer], strBuyPrefix+IntegerToString(gBuyLayer+1))){
         gBuyTickets[gBuyLayer] = PAL::ResultOrder();
     }
     else gBuyLayer--;
@@ -344,7 +347,7 @@ void createSellDca()
     gSellLayer++;
     gSellTpPrices[gSellLayer]  = PAL::Bid() - gTpDistances[gSellLayer];
     gSellDcaPrices[gSellLayer] = PAL::Ask() + gDcaDistances[gSellLayer];
-    if (PAL::Sell(gVols[gSellLayer], gSellStoploss, gSellTpPrices[gSellLayer], strSellPrefix+IntegerToString(gSellLayer))){
+    if (PAL::Sell(gVols[gSellLayer], gSellStoploss, gSellTpPrices[gSellLayer], strSellPrefix+IntegerToString(gSellLayer+1))){
         gSellTickets[gSellLayer] = PAL::ResultOrder();
     }
     else gSellLayer--;
@@ -406,7 +409,7 @@ void displayDashboard() {
 }
 void hideGridLevel(string tag) {
     string objName;
-    for (int i = 0; i <= InpLayerLimit; i++){
+    for (int i = 0; i <= LAYER_MAX; i++){
         objName = APP_TAG + tag + IntegerToString(i);
         ObjectSetDouble(0,  objName, OBJPROP_PRICE, 0, 0);
     }

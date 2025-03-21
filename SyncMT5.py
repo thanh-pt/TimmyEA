@@ -6,6 +6,7 @@ root_EA = r"C:\Users\tient\Documents\mt5\2.ROBO TRADE\MQL5\Experts\TimmyEA"
 clients = [
     r"C:\Users\tient\Documents\mt5\1.MANUAL TRADE\MQL5\Experts\TimmyEA",
     r"C:\Users\tient\Documents\mt5\3.FUND TRADE\MQL5\Experts\TimmyEA",
+    r"C:\Users\tient\Documents\mt5\4.ROBO2\MQL5\Experts\TimmyEA",
 ]
 
 for client in clients:
